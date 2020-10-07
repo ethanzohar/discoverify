@@ -131,13 +131,20 @@ async function addToPlaylist(tracks, access_token) {
 
 async function updatePlaylist() {
     const access_token = await getNewAccessToken();
+    console.log("Got access token")
     const allTop = await getAllTop(access_token);
+    console.log("Got all top");
     const seeds = await getSeeds(allTop);
+    console.log("Got seeds");
     const tracks = await getTracks(seeds, access_token);
+    console.log("Got tracks");
     await clearPlaylist(access_token);
+    console.log("Playlist cleared");
     await addToPlaylist(tracks, access_token);
+    console.log("Playlist updated");
 }
 
-cron.schedule('0 2 * * *', () => {
+cron.schedule('40 23 * * *', () => {
+    console.log("Starting job");
     updatePlaylist();
 });
