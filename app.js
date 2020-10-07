@@ -54,9 +54,9 @@ async function getTop(type, range, access_token) {
 }
 
 async function getAllTop(access_token) {
-    let allTimeArtists = await getTop('artists', 'long_term', access_token);
+    let allTimeArtists = await getTop('artists', 'medium_term', access_token);
     let curArtists = await getTop('artists', 'short_term', access_token);
-    let allTimeTracks = await getTop('tracks', 'long_term', access_token);
+    let allTimeTracks = await getTop('tracks', 'medium_term', access_token);
     let curTracks = await getTop('tracks', 'short_term', access_token);
 
     return [allTimeArtists, curArtists, allTimeTracks, curTracks];
@@ -72,7 +72,7 @@ async function getSeeds(top) {
 }
 
 async function getTracks(seeds, access_token) {
-    const LIMIT = 40;
+    const LIMIT = 50;
 
     let url = `https://api.spotify.com/v1/recommendations?limit=${LIMIT}&min_popularity=15`;
     url += `&seed_artists=${seeds[0]},${seeds[1]}`;
@@ -144,7 +144,7 @@ async function updatePlaylist() {
     console.log("Playlist updated");
 }
 
-cron.schedule('31 21 * * *', () => {
+cron.schedule('0 6 * * *', () => {
     console.log("Starting job");
     updatePlaylist();
 });
