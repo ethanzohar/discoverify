@@ -1,0 +1,9 @@
+{
+    "name": "NodeServer",
+    "version": "1.0.0",
+    "dependencies": {
+        "dotenv": "^8.2.0",
+        "node-cron": "^2.0.3",
+        "node-fetch": "^2.6.1"
+    }
+}
