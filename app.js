@@ -1,9 +1,5 @@
 require('dotenv').config()
-const http = require('http');
 const cron = require('node-cron');const fetch = require("node-fetch");
-
-const hostname = '127.0.0.1';
-const port = 3000;
 
 const CLIENT_ID = process.env.SPOTIFY_API_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET;
@@ -152,13 +148,3 @@ cron.schedule('0 6 * * *', () => {
     console.log("Starting job");
     updatePlaylist();
 });
-
-const server = http.createServer((req, res) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('Hello World');
-  });
-  
-  server.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
-  });
