@@ -144,7 +144,7 @@ async function updatePlaylist() {
     console.log("Playlist updated");
 }
 
-cron.schedule('42 3 * * *', () => {
+cron.schedule('0 2 * * *', () => {
     console.log("Starting job");
     updatePlaylist();
 });
