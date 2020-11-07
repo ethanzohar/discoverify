@@ -10,6 +10,11 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
+app.get('/forcePlaylistGeneration', (req, res) => {
+    SpotifyHelper.updatePlaylist();
+    res.send('Playlist Generation has been started');
+})
+
 app.listen(port, () => {
   console.log(`Example app listening at port: ${port}`)
 })

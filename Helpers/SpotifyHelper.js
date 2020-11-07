@@ -59,7 +59,7 @@ class SpotifyHelper {
         return [allTimeArtists, curArtists, allTimeTracks, curTracks];
     }
     
-    static async getSeeds(top) {
+    static getSeeds(top) {
         let allTimeArtistsPick = top[0][Math.floor(Math.random() * top[0].length)];
         let curArtistsPick = top[1][Math.floor(Math.random() * top[1].length)];
         let allTimeTracksPick = top[2][Math.floor(Math.random() * top[2].length)];
@@ -131,7 +131,7 @@ class SpotifyHelper {
         console.log("Got access token")
         const allTop = await this.getAllTop(access_token);
         console.log("Got all top");
-        const seeds = await this.getSeeds(allTop);
+        const seeds = this.getSeeds(allTop);
         console.log("Got seeds");
         const tracks = await this.getTracks(seeds, access_token);
         console.log("Got tracks");
