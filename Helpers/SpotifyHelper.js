@@ -1,21 +1,25 @@
 require('dotenv').config()
 const fetch = require("node-fetch");
+const UserController = require('../controllers/userController');
 
 const CLIENT_ID = process.env.SPOTIFY_API_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET;
 const PLAYLIST_ID = process.env.PLAYLIST_ID;
 const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
 
+const PLAYLIST_NAME = "Discover Daily";
+const PLAYLIST_DESCRIPTION = "Here is the playlist description."
+
 class SpotifyHelper {
     static async getNewAccessToken(refreshToken) {
-        var details = {
+        const details = {
             'grant_type': 'refresh_token',
             'refresh_token': refreshToken,
             'client_id': CLIENT_ID,
             'client_secret': CLIENT_SECRET
         }
     
-        var formBody = [];
+        let formBody = [];
         for (var property in details) {
             var encodedKey = encodeURIComponent(property);
             var encodedValue = encodeURIComponent(details[property]);
@@ -23,7 +27,7 @@ class SpotifyHelper {
         }
         formBody = formBody.join("&");
     
-        let result = await fetch(`https://accounts.spotify.com/api/token`, {
+        const result = await fetch(`https://accounts.spotify.com/api/token`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -31,13 +35,13 @@ class SpotifyHelper {
             body: formBody
         });
     
-        let resultJSON = await result.json();
+        const resultJSON = await result.json();
     
         return resultJSON.access_token;
     }
     
     static async getTop(type, range, access_token) {
-        let result = await fetch(`https://api.spotify.com/v1/me/top/${type}?limit=25&time_range=${range}`, {
+        const result = await fetch(`https://api.spotify.com/v1/me/top/${type}?limit=25&time_range=${range}`, {
             Accepts: 'application/json',
             method: 'GET',
             headers: {
@@ -45,25 +49,25 @@ class SpotifyHelper {
             }
         });
     
-        let resultJSON = await result.json();
+        const resultJSON = await result.json();
     
         return resultJSON.items.map(x => x.id);
     }
     
     static async getAllTop(access_token) {
-        let allTimeArtists = await getTop('artists', 'medium_term', access_token);
-        let curArtists = await getTop('artists', 'short_term', access_token);
-        let allTimeTracks = await getTop('tracks', 'medium_term', access_token);
-        let curTracks = await getTop('tracks', 'short_term', access_token);
+        const allTimeArtists = await this.getTop('artists', 'medium_term', access_token);
+        const curArtists = await this.getTop('artists', 'short_term', access_token);
+        const allTimeTracks = await this.getTop('tracks', 'medium_term', access_token);
+        const curTracks = await this.getTop('tracks', 'short_term', access_token);
     
         return [allTimeArtists, curArtists, allTimeTracks, curTracks];
     }
     
     static getSeeds(top) {
-        let allTimeArtistsPick = top[0][Math.floor(Math.random() * top[0].length)];
-        let curArtistsPick = top[1][Math.floor(Math.random() * top[1].length)];
-        let allTimeTracksPick = top[2][Math.floor(Math.random() * top[2].length)];
-        let curTracksPick = top[3][Math.floor(Math.random() * top[3].length)];
+        const allTimeArtistsPick = top[0][Math.floor(Math.random() * top[0].length)];
+        const curArtistsPick = top[1][Math.floor(Math.random() * top[1].length)];
+        const allTimeTracksPick = top[2][Math.floor(Math.random() * top[2].length)];
+        const curTracksPick = top[3][Math.floor(Math.random() * top[3].length)];
     
         return [allTimeArtistsPick, curArtistsPick, allTimeTracksPick, curTracksPick];
     }
@@ -75,7 +79,7 @@ class SpotifyHelper {
         url += `&seed_artists=${seeds[0]},${seeds[1]}`;
         url += `&seed_track=${seeds[2]},${seeds[3]}`;
     
-        let recommendations = await fetch(url, {
+        const recommendations = await fetch(url, {
             Accepts: 'application/json',
             method: 'GET',
             headers: {
@@ -83,13 +87,13 @@ class SpotifyHelper {
             }
         });
     
-        let recommendationsJSON = await recommendations.json();
+        const recommendationsJSON = await recommendations.json();
     
         return recommendationsJSON.tracks.map(x => x.uri);
     }
     
     static async clearPlaylist(playlistId, access_token) {
-        let result = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
+        const result = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
             Accepts: 'application/json',
             method: 'GET',
             headers: {
@@ -97,9 +101,9 @@ class SpotifyHelper {
             }
         })
     
-        let resultJSON = await result.json();
+        const resultJSON = await result.json();
     
-        let tracksInPlaylist = resultJSON.tracks.items.map(x => { return { 'uri': x.track.uri }; });
+        const tracksInPlaylist = resultJSON.tracks.items.map(x => { return { 'uri': x.track.uri }; });
     
         await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
             method: 'DELETE',
@@ -113,9 +117,9 @@ class SpotifyHelper {
         })
     }
     
-    static async addToPlaylist(playlistId, tracks, access_token) {
+    static async updatePlaylistTracks(playlistId, tracks, access_token) {
         await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 Authorization: 'Bearer ' + access_token
@@ -126,8 +130,53 @@ class SpotifyHelper {
         })
     }
 
-    static async updatePlaylist() {
-        const access_token = await this.getNewAccessToken(REFRESH_TOKEN);
+    static async getPlaylist(userId, playlistId, access_token) {
+        if (!playlistId) return null;
+
+        const result = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
+            Accepts: 'application/json',
+            method: 'GET',
+            headers: {
+                Authorization: 'Bearer ' + access_token
+            }
+        });
+    
+        let resultJSON = await result.json();
+
+        return resultJSON.owner.id === userId ? resultJSON : null;
+    }
+
+    static async createPlaylist(userId, access_token) {
+        const response = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + access_token
+            },
+            body: JSON.stringify({
+                name: PLAYLIST_NAME,
+                public: false,
+                description: PLAYLIST_DESCRIPTION
+            })
+        })
+
+        const responseJSON = await response.json();
+
+        const user = await UserController.getUser(userId);
+        user.playlistId = responseJSON.id;
+        user.save();
+
+        return responseJSON;
+    }
+
+    static async updatePlaylists(users) {
+        await Promise.all(users.map(user => this.updatePlaylist(user)));
+        console.log("All jobs complete");
+    }
+
+    static async updatePlaylist(user) {
+        console.log(`Starting job for user: ${user.userId}`);
+        const access_token = await this.getNewAccessToken(user.refreshToken);
         console.log("Got access token")
         const allTop = await this.getAllTop(access_token);
         console.log("Got all top");
@@ -135,10 +184,17 @@ class SpotifyHelper {
         console.log("Got seeds");
         const tracks = await this.getTracks(seeds, access_token);
         console.log("Got tracks");
-        await this.clearPlaylist(PLAYLIST_ID, access_token);
-        console.log("Playlist cleared");
-        await this.addToPlaylist(PLAYLIST_ID, tracks, access_token);
-        console.log("Playlist updated");
+        
+        let playlist = await this.getPlaylist(user.userId, user.playlistId, access_token);
+
+        console.log(playlist);
+
+        if (!playlist) {
+            playlist = this.createPlaylist(user.userId, access_token);
+        }
+
+        await this.updatePlaylistTracks(playlist.id, tracks, access_token);
+        console.log(`Playlist updated for user: ${user.userId}`);
     }
 }
 

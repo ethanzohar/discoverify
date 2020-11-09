@@ -2,13 +2,14 @@ const cron = require('node-cron');
 const express = require('express')
 const http = require('http');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const SpotifyHelper = require('./helpers/SpotifyHelper');
-const playlistGenRouter = require('./routes/playlistGenRoutes');
+const discoverDailyRouter = require('./routes/discoverDailyRoutes');
 
 const app = express();
 const server = http.createServer(app);
-const port = 3000
+const port = 3131
 
 function onListening() {
   const addr = server.address();
@@ -26,13 +27,29 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use('/api/playlistGen', playlistGenRouter);
+app.use('/api/discover-daily', discoverDailyRouter);
 
 app.get('/', (req, res) => {
   res.send('Wow, you hit the server')
 })
 
-cron.schedule('0 6 * * *', () => {
-    console.log("Starting job");
-    SpotifyHelper.updatePlaylist();
+mongoose.connect('mongodb://localhost:27017/playlist-generator', {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useUnifiedTopology: true,
 });
+
+const { connection } = mongoose;
+
+connection.on('connected', () => {
+  console.log('MongoDB database connected');
+});
+
+connection.on('error', () => {
+  console.log('MongoDB Connection Error');
+});
+
+// cron.schedule('0 6 * * *', () => {
+//     console.log("Starting job");
+//     SpotifyHelper.updatePlaylist();
+// });

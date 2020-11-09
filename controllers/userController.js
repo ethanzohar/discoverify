@@ -5,8 +5,16 @@ class UserController {
     return UserModel.findOne({ userId });
   }
 
-  static async createUser(userId) {
-    return UserModel.create({ userId });
+  static async getAllUsers() {
+    return UserModel.find();
+  }
+
+  static async createUser(userId, refreshToken) {
+    return UserModel.create({ userId, refreshToken });
+  }
+
+  static async deleteUser(userId) {
+    return UserModel.deleteOne({ userId });
   }
 
   static async setUserPlaylistId(userId, playListId) {
