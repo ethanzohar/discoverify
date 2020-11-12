@@ -174,6 +174,18 @@ class SpotifyHelper {
         console.log("All jobs complete");
     }
 
+    static async getMe(accessToken) {
+        const response = await fetch('https://api.spotify.com/v1/me', {
+            Accepts: 'application/json',
+            method: 'GET',
+            headers: {
+                Authorization: 'Bearer ' + accessToken
+            }
+        });
+
+        return response.json();
+    }
+
     static async updatePlaylist(user) {
         console.log(`Starting job for user: ${user.userId}`);
         const access_token = await this.getNewAccessToken(user.refreshToken);

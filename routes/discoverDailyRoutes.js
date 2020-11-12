@@ -16,10 +16,18 @@ router.get('/', function (req, res) {
 
 router.get('/force', async function (req, res) {
     const users = await UserController.getAllUsers();
-    console.log(users);
     SpotifyHelper.updatePlaylists(users);
     res.send('Playlist Generation has been started');
 })
+
+router.get('/getUser/:userId', async function(req, res) {
+    const { userId, playlistId } = await UserController.getUser(req.params.userId);
+    if (userId) {
+        res.status(200).send({ userId, playlistId });
+    } else {
+        res.status(403).send({ success: false });
+    }
+});
 
 router.post('/subscribe', async function(req, res) {
     const { userId, refreshToken } = req.body;
@@ -31,13 +39,20 @@ router.post('/subscribe', async function(req, res) {
     } else {
         user = await UserController.createUser(userId, refreshToken);
     }
-    console.log(user);
-    res.send(req.body);
+
+    res.send(user);
 })
 
 router.post('/unsubscribe', async function(req, res) {
-    await UserController.deleteUser(req.body.userId);
-    res.send({ success: true });
+    const {userId, accessToken } = req.body;
+    const user = await SpotifyHelper.getMe(accessToken);
+
+    if (user.id === userId) {
+        await UserController.deleteUser(req.body.userId);
+        res.send({ success: true });
+    } else {
+        res.send({ success: false })
+    }
 })
 
 module.exports = router;
