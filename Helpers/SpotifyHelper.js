@@ -1,11 +1,11 @@
 require('dotenv').config()
 const fetch = require("node-fetch");
+const fs = require('fs');
+
 const UserController = require('../controllers/userController');
 
 const CLIENT_ID = process.env.SPOTIFY_API_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET;
-const PLAYLIST_ID = process.env.PLAYLIST_ID;
-const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
 
 const PLAYLIST_NAME = "Discover Daily";
 const PLAYLIST_DESCRIPTION = "Here is the playlist description."
@@ -37,15 +37,16 @@ class SpotifyHelper {
     
         const resultJSON = await result.json();
     
+        console.log("Got access token")
         return resultJSON.access_token;
     }
     
-    static async getTop(type, range, access_token) {
+    static async getTop(type, range, accessToken) {
         const result = await fetch(`https://api.spotify.com/v1/me/top/${type}?limit=25&time_range=${range}`, {
             Accepts: 'application/json',
             method: 'GET',
             headers: {
-                Authorization: 'Bearer ' + access_token
+                'Authorization': `Bearer ${accessToken}`
             }
         });
     
@@ -60,6 +61,7 @@ class SpotifyHelper {
         const allTimeTracks = await this.getTop('tracks', 'medium_term', access_token);
         const curTracks = await this.getTop('tracks', 'short_term', access_token);
     
+        console.log("Got all top");
         return [allTimeArtists, curArtists, allTimeTracks, curTracks];
     }
     
@@ -69,10 +71,11 @@ class SpotifyHelper {
         const allTimeTracksPick = top[2][Math.floor(Math.random() * top[2].length)];
         const curTracksPick = top[3][Math.floor(Math.random() * top[3].length)];
     
+        console.log("Got seeds");
         return [allTimeArtistsPick, curArtistsPick, allTimeTracksPick, curTracksPick];
     }
     
-    static async getTracks(seeds, access_token) {
+    static async getTracks(seeds, accessToken) {
         const LIMIT = 50;
     
         let url = `https://api.spotify.com/v1/recommendations?limit=${LIMIT}&min_popularity=15`;
@@ -83,21 +86,22 @@ class SpotifyHelper {
             Accepts: 'application/json',
             method: 'GET',
             headers: {
-                Authorization: 'Bearer ' + access_token
+                'Authorization': `Bearer ${accessToken}`
             }
         });
-    
-        const recommendationsJSON = await recommendations.json();
-    
-        return recommendationsJSON.tracks.map(x => x.uri);
+        
+        const uris = (await recommendations.json()).tracks.map(x => x.uri);
+
+        console.log("Got tracks");
+        return uris;
     }
     
-    static async clearPlaylist(playlistId, access_token) {
+    static async clearPlaylist(playlistId, accessToken) {
         const result = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
             Accepts: 'application/json',
             method: 'GET',
             headers: {
-                Authorization: 'Bearer ' + access_token
+                'Authorization': `Bearer ${accessToken}`
             }
         })
     
@@ -109,7 +113,7 @@ class SpotifyHelper {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + access_token
+                'Authorization': `Bearer ${accessToken}`
             },
             body: JSON.stringify({
                 'tracks': tracksInPlaylist
@@ -117,12 +121,12 @@ class SpotifyHelper {
         })
     }
     
-    static async updatePlaylistTracks(playlistId, tracks, access_token) {
+    static async updatePlaylistTracks(playlistId, tracks, accessToken) {
         await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + access_token
+                'Authorization': `Bearer ${accessToken}`
             },
             body: JSON.stringify({
                 'uris': tracks
@@ -130,14 +134,14 @@ class SpotifyHelper {
         })
     }
 
-    static async getPlaylist(userId, playlistId, access_token) {
+    static async getPlaylist(userId, playlistId, accessToken) {
         if (!playlistId) return null;
 
         const result = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
             Accepts: 'application/json',
             method: 'GET',
             headers: {
-                Authorization: 'Bearer ' + access_token
+                'Authorization': `Bearer ${accessToken}`
             }
         });
     
@@ -146,12 +150,12 @@ class SpotifyHelper {
         return resultJSON.owner.id === userId ? resultJSON : null;
     }
 
-    static async createPlaylist(userId, access_token) {
+    static async createPlaylist(userId, accessToken) {
         const response = await fetch(`https://api.spotify.com/v1/users/${userId}/playlists`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + access_token
+                'Authorization': `Bearer ${accessToken}`
             },
             body: JSON.stringify({
                 name: PLAYLIST_NAME,
@@ -169,44 +173,107 @@ class SpotifyHelper {
         return responseJSON;
     }
 
-    static async updatePlaylists(users) {
-        await Promise.all(users.map(user => this.updatePlaylist(user)));
-        console.log("All jobs complete");
-    }
-
     static async getMe(accessToken) {
         const response = await fetch('https://api.spotify.com/v1/me', {
             Accepts: 'application/json',
             method: 'GET',
             headers: {
-                Authorization: 'Bearer ' + accessToken
+                'Authorization': `Bearer ${accessToken}`
             }
         });
 
         return response.json();
     }
 
-    static async updatePlaylist(user) {
-        console.log(`Starting job for user: ${user.userId}`);
-        const access_token = await this.getNewAccessToken(user.refreshToken);
-        console.log("Got access token")
-        const allTop = await this.getAllTop(access_token);
-        console.log("Got all top");
-        const seeds = this.getSeeds(allTop);
-        console.log("Got seeds");
-        const tracks = await this.getTracks(seeds, access_token);
-        console.log("Got tracks");
+    static async getUserPlaylists(accessToken) {
+        const response = await fetch('https://api.spotify.com/v1/me/playlists?limit=50', {
+            Accepts: 'application/json',
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        return response.json();
+    }
+
+    static async getGenericFetch(uri, accessToken) {
+        const response = await fetch(uri, {
+            Accepts: 'application/json',
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        return response.json();
+    }
+
+    static async doesMyPlaylistExists(playlistId, accessToken) {
+        let playlists = await this.getUserPlaylists(accessToken);
+        let next = playlists.next;
+
+        do {
+            for (let i = 0; i < playlists.items.length; ++i) {
+                if (playlists.items[i].id === playlistId) {
+                    return true;
+                }
+            }
+
+            if (next) {
+                playlists = await this.getGenericFetch(next, accessToken);
+                next = playlists.next;
+            }
+        } while (next);
+
+        return false;
+    }
+
+    static async addPlaylistCover(playlistId, encodedImage, accessToken) {
+        await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/images`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'image/jpeg',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: fs.createReadStream(encodedImage)
+        })
         
-        let playlist = await this.getPlaylist(user.userId, user.playlistId, access_token);
+        console.log('Playlist image added');
+    }
 
-        console.log(playlist);
+    static async updatePlaylist(user, playlistCover) {
+        console.log(`Starting job for user: ${user.userId}`);
 
-        if (!playlist) {
-            playlist = this.createPlaylist(user.userId, access_token);
+        const access_token = await this.getNewAccessToken(user.refreshToken);
+
+        const tracks = this.getAllTop(access_token)
+            .then((allTop) => this.getSeeds(allTop))
+            .then((seeds) => this.getTracks(seeds, access_token));
+
+        const doesMyPlaylistExist = this.doesMyPlaylistExists(user.playlistId, access_token);
+        let playlist = this.getPlaylist(user.userId, user.playlistId, access_token);
+
+        if (!(await playlist) || !(await doesMyPlaylistExist)) {
+            playlist = await this.createPlaylist(user.userId, access_token);
         }
 
-        await this.updatePlaylistTracks(playlist.id, tracks, access_token);
+        const playlistId = (await playlist).id;
+
+        await this.updatePlaylistTracks(playlistId, await tracks, access_token);
+
+        if (playlistCover) {
+            await this.addPlaylistCover(playlistId, playlistCover, access_token);
+        }
+
         console.log(`Playlist updated for user: ${user.userId}`);
+    }
+
+    static async updatePlaylists() {
+        const users = await UserController.getAllUsers();
+        const playlistCover = 'images/playlistCover.jpeg';
+        await Promise.all(users.map(user => this.updatePlaylist(user, null)));
+        console.log("All jobs complete");
     }
 }
 
