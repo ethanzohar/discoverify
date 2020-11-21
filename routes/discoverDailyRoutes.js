@@ -62,6 +62,9 @@ router.post('/subscribe', async function(req, res) {
 router.post('/unsubscribe', async function(req, res) {
     const {userId, accessToken } = req.body;
     const user = await SpotifyHelper.getMe(accessToken);
+    console.log(user);
+    console.log(userId, user.id);
+    console.log(userId === user.id);
 
     if (user.id === userId) {
         await UserController.deleteUser(req.body.userId);
