@@ -31,11 +31,6 @@ router.get('/users', async function (req, res) {
     res.send({users});
 })
 
-router.post('/accessToken', async function(req, res) {
-    const accessToken = await SpotifyHelper.getNewAccessToken(req.body.refreshToken);
-    res.send({ accessToken });
-});
-
 router.get('/getUser/:userId', async function(req, res) {
     const user = await UserController.getUser(req.params.userId);
     if (user && user.userId) {
