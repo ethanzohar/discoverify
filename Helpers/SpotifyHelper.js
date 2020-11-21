@@ -8,7 +8,7 @@ const CLIENT_ID = process.env.SPOTIFY_API_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET;
 
 const PLAYLIST_NAME = "Discover Daily";
-const PLAYLIST_DESCRIPTION = "Here is the playlist description."
+const PLAYLIST_DESCRIPTION = "Daily music, curated for you based on your listening history. If you don't want to get this daily playlist anymore, you can unsubscribe at https://ethanzohar.com/discover-daily";
 
 class SpotifyHelper {
     static async getNewAccessToken(refreshToken) {
@@ -251,8 +251,8 @@ class SpotifyHelper {
             .then((allTop) => this.getSeeds(allTop))
             .then((seeds) => this.getTracks(seeds, access_token));
 
-        const doesMyPlaylistExist = this.doesMyPlaylistExists(user.playlistId, access_token);
         let playlist = this.getPlaylist(user.userId, user.playlistId, access_token);
+        const doesMyPlaylistExist = this.doesMyPlaylistExists(user.playlistId, access_token);
 
         if (!(await playlist) || !(await doesMyPlaylistExist)) {
             playlist = await this.createPlaylist(user.userId, access_token);

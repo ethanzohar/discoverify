@@ -19,6 +19,16 @@ router.get('/force', async function (req, res) {
     // console.log(users);
     SpotifyHelper.updatePlaylists(users);
     res.send('Playlist Generation has been started');
+});
+
+router.get('/count', async function (req, res) {
+    const users = await UserController.getAllUsers();
+    res.send(`Total users: ${users.length}`);
+})
+
+router.get('/users', async function (req, res) {
+    const users = await UserController.getAllUsers();
+    res.send({users});
 })
 
 router.post('/accessToken', async function(req, res) {
