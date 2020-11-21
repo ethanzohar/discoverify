@@ -4,6 +4,8 @@ const http = require('http');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
+
+const UserController = require('./controllers/userController');
 const SpotifyHelper = require('./helpers/spotifyHelper');
 const discoverDailyRouter = require('./routes/discoverDailyRoutes');
 
@@ -49,7 +51,8 @@ connection.on('error', () => {
   console.log('MongoDB Connection Error');
 });
 
-// cron.schedule('0 6 * * *', () => {
-//     console.log("Starting job");
-//     SpotifyHelper.updatePlaylist();
-// });
+cron.schedule('0 6 * * *', () => {
+    console.log("Starting job");
+    const users = await UserController.getAllUsers();
+    SpotifyHelper.updatePlaylists(users);
+});

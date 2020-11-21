@@ -1,8 +1,9 @@
 {
-    "name": "NodeServer",
+    "name": "discover_daily_backend",
     "version": "1.0.0",
     "scripts": {
-        "start": "nodemon app.js"
+        "start": "nodemon app.js",
+        "deploy": "git pull && pm2 delete discover-daily-backend && pm2 start app.js --name discover-daily-backend"
     },
     "dependencies": {
         "body-parser": "^1.19.0",

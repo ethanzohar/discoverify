@@ -16,7 +16,6 @@ router.get('/', function (req, res) {
 
 router.get('/force', async function (req, res) {
     const users = await UserController.getAllUsers();
-    // console.log(users);
     SpotifyHelper.updatePlaylists(users);
     res.send('Playlist Generation has been started');
 });
