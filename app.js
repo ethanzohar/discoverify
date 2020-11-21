@@ -4,7 +4,6 @@ const http = require('http');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-const SpotifyHelper = require('./helpers/SpotifyHelper');
 const discoverDailyRouter = require('./routes/discoverDailyRoutes');
 
 const app = express();
