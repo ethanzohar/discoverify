@@ -213,6 +213,8 @@ class SpotifyHelper {
         let playlists = await this.getUserPlaylists(accessToken);
         let next = playlists.next;
 
+        console.log(accessToken);
+        console.log(playlists);
         do {
             for (let i = 0; i < playlists.items.length; ++i) {
                 if (playlists.items[i].id === playlistId) {
