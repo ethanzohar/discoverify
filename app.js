@@ -9,7 +9,7 @@ const discoverDailyRouter = require('./routes/discoverDailyRoutes');
 
 const app = express();
 const server = http.createServer(app);
-const port = 3131
+const port = 443;
 
 function onListening() {
   const addr = server.address();
