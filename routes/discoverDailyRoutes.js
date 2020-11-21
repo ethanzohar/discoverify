@@ -2,7 +2,7 @@ const bodyparser = require('body-parser');
 const express = require('express');
 
 const UserController = require('../controllers/userController');
-const SpotifyHelper = require('../helpers/SpotifyHelper');
+const SpotifyHelper = require('../helpers/spotifyHelper');
 
 const router = express.Router();
 const app = express();
