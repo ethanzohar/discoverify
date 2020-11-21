@@ -36,6 +36,7 @@ class SpotifyHelper {
         });
     
         const resultJSON = await result.json();
+        console.log(resultJSON)
     
         console.log("Got access token")
         return resultJSON.access_token;
