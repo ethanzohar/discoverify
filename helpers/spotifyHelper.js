@@ -247,7 +247,9 @@ class SpotifyHelper {
     static async updatePlaylist(user, playlistCover) {
         console.log(`Starting job for user: ${user.userId}`);
 
+        console.log(user.refreshToken);
         const access_token = await this.getNewAccessToken(user.refreshToken);
+        console.log(access_token)
 
         const tracks = this.getAllTop(access_token)
             .then((allTop) => this.getSeeds(allTop))
