@@ -36,7 +36,6 @@ class SpotifyHelper {
         });
     
         const resultJSON = await result.json();
-        console.log(resultJSON)
     
         console.log("Got access token")
         return resultJSON.access_token;
@@ -213,9 +212,7 @@ class SpotifyHelper {
     static async doesMyPlaylistExists(playlistId, accessToken) {
         let playlists = await this.getUserPlaylists(accessToken);
         let next = playlists.next;
-
-        console.log(accessToken);
-        console.log(playlists);
+        
         do {
             for (let i = 0; i < playlists.items.length; ++i) {
                 if (playlists.items[i].id === playlistId) {
@@ -248,9 +245,7 @@ class SpotifyHelper {
     static async updatePlaylist(user, playlistCover) {
         console.log(`Starting job for user: ${user.userId}`);
 
-        console.log(user.refreshToken);
         const access_token = await this.getNewAccessToken(user.refreshToken);
-        console.log(access_token)
 
         const tracks = this.getAllTop(access_token)
             .then((allTop) => this.getSeeds(allTop))
