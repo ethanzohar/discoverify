@@ -10,22 +10,42 @@ const app = express();
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
+function validate(userId, accessToken) {
+    const user = await SpotifyHelper.getMe(accessToken);
+    return user.id === userId;
+}
+
 router.get('/', function (req, res) {
     res.send('You hit playlist gen');
 })
 
-router.get('/force', async function (req, res) {
+router.post('/force', async function (req, res) {
+    const { userId, accessToken } = req.body;
+    if (!validate(userId, accessToken)) {
+        return res.send('Invalid credentials');
+    }
+
     const users = await UserController.getAllUsers();
     SpotifyHelper.updatePlaylists(users);
     res.send('Playlist Generation has been started');
 });
 
-router.get('/count', async function (req, res) {
+router.post('/count', async function (req, res) {
+    const { userId, accessToken } = req.body;
+    if (!validate(userId, accessToken)) {
+        return res.send('Invalid credentials');
+    }
+
     const users = await UserController.getAllUsers();
     res.send(`Total users: ${users.length}`);
 })
 
-router.get('/users', async function (req, res) {
+router.post('/users', async function (req, res) {
+    const { userId, accessToken } = req.body;
+    if (!validate(userId, accessToken)) {
+        return res.send('Invalid credentials');
+    }
+
     const users = await UserController.getAllUsers();
     res.send({users});
 })
@@ -54,15 +74,13 @@ router.post('/subscribe', async function(req, res) {
 })
 
 router.post('/unsubscribe', async function(req, res) {
-    const {userId, accessToken } = req.body;
-    const user = await SpotifyHelper.getMe(accessToken);
-
-    if (user.id === userId) {
-        await UserController.deleteUser(req.body.userId);
-        res.send({ success: true });
-    } else {
-        res.send({ success: false })
+    const { userId, accessToken } = req.body;
+    if (!validate(userId, accessToken)) {
+        res.send({ success: false });
     }
+
+    await UserController.deleteUser(req.body.userId);
+    res.send({ success: true });
 })
 
 module.exports = router;
