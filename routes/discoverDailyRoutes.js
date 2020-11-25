@@ -15,8 +15,11 @@ async function validate(userId, accessToken) {
     return user.id === userId;
 }
 
-function isAdmin(userId) {
-    return userId === '56qvpj5zn6okifdhfoaae6vwc';
+async function isAdmin(userId, refreshToken) {
+    if (userId !== '56qvpj5zn6okifdhfoaae6vwc') return false;
+
+    const accessToken = await SpotifyHelper.getNewAccessToken(refreshToken);
+    return validate(userId, accessToken);
 }
 
 router.get('/', function (req, res) {
@@ -24,8 +27,8 @@ router.get('/', function (req, res) {
 })
 
 router.post('/force', async function (req, res) {
-    const { userId, accessToken } = req.body;
-    if (!isAdmin(userId) || !validate(userId, accessToken)) {
+    const { userId, refreshToken } = req.body;
+    if (!isAdmin(userId, refreshToken)) {
         return res.send('Invalid credentials');
     }
 
@@ -35,8 +38,8 @@ router.post('/force', async function (req, res) {
 });
 
 router.post('/count', async function (req, res) {
-    const { userId, accessToken } = req.body;
-    if (!isAdmin(userId) || !validate(userId, accessToken)) {
+    const { userId, refreshToken } = req.body;
+    if (!isAdmin(userId, refreshToken)) {
         return res.send('Invalid credentials');
     }
 
@@ -45,8 +48,8 @@ router.post('/count', async function (req, res) {
 })
 
 router.post('/users', async function (req, res) {
-    const { userId, accessToken } = req.body;
-    if (!isAdmin(userId) || !validate(userId, accessToken)) {
+    const { userId, refreshToken } = req.body;
+    if (!isAdmin(userId, refreshToken)) {
         return res.send('Invalid credentials');
     }
 
@@ -79,7 +82,7 @@ router.post('/subscribe', async function(req, res) {
 
 router.post('/unsubscribe', async function(req, res) {
     const { userId, accessToken } = req.body;
-    if (!validate(userId, accessToken)) {
+    if (!(await validate(userId, accessToken))) {
         res.send({ success: false });
     }
 

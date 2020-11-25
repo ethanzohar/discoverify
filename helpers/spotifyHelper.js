@@ -56,31 +56,66 @@ class SpotifyHelper {
     }
     
     static async getAllTop(access_token) {
-        const allTimeArtists = await this.getTop('artists', 'medium_term', access_token);
-        const curArtists = await this.getTop('artists', 'short_term', access_token);
-        const allTimeTracks = await this.getTop('tracks', 'medium_term', access_token);
-        const curTracks = await this.getTop('tracks', 'short_term', access_token);
+        const longTermArtists = await this.getTop('artists', 'long_term', access_token);
+        const longTermTracks = await this.getTop('tracks', 'long_term', access_token);
+
+        const mediumTermArtists = await this.getTop('artists', 'medium_term', access_token);
+        const mediumTermTracks = await this.getTop('tracks', 'medium_term', access_token);
+
+        const shortTermArtists = await this.getTop('artists', 'short_term', access_token);
+        const shortTermTracks = await this.getTop('tracks', 'short_term', access_token);
     
         console.log("Got all top");
-        return [allTimeArtists, curArtists, allTimeTracks, curTracks];
+        return { longTerm: { artists: longTermArtists, tracks : longTermTracks},
+                 mediumTerm: { artists: mediumTermArtists, tracks : mediumTermTracks},
+                 shortTerm: { artists: shortTermArtists, tracks : shortTermTracks},   
+               }
     }
     
     static getSeeds(top) {
-        const allTimeArtistsPick = top[0][Math.floor(Math.random() * top[0].length)];
-        const curArtistsPick = top[1][Math.floor(Math.random() * top[1].length)];
-        const allTimeTracksPick = top[2][Math.floor(Math.random() * top[2].length)];
-        const curTracksPick = top[3][Math.floor(Math.random() * top[3].length)];
+        const artists = [];
+        const tracks = [];
+
+        // longTerm
+        for (let i = 0; i < 1; i += 1) {
+            artists.push(top.longTerm.artists[Math.floor(Math.random() * top.longTerm.artists.length)]);
+            tracks.push(top.longTerm.tracks[Math.floor(Math.random() * top.longTerm.tracks.length)]);
+        }
+
+        // mediumTerm
+        for (let i = 0; i < 2; i += 1) {
+            artists.push(top.mediumTerm.artists[Math.floor(Math.random() * top.mediumTerm.artists.length)]);
+            tracks.push(top.mediumTerm.tracks[Math.floor(Math.random() * top.mediumTerm.tracks.length)]);
+        }
+
+        // shortTerm
+        for (let i = 0; i < 1; i += 1) {
+            artists.push(top.shortTerm.artists[Math.floor(Math.random() * top.shortTerm.artists.length)]);
+            tracks.push(top.shortTerm.tracks[Math.floor(Math.random() * top.shortTerm.tracks.length)]);
+        }
     
         console.log("Got seeds");
-        return [allTimeArtistsPick, curArtistsPick, allTimeTracksPick, curTracksPick];
+        return { artists, tracks };
+    }
+
+    static async getLiked(trackIds, accessToken) {
+        const result = await fetch(`https://api.spotify.com/v1/me/tracks/contains?ids=${trackIds.join(',')}`, {
+            Accepts: 'application/json',
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        return result.json();
     }
     
     static async getTracks(seeds, accessToken) {
-        const LIMIT = 50;
+        const PLAYLIST_SIZE = 30;
     
-        let url = `https://api.spotify.com/v1/recommendations?limit=${LIMIT}&min_popularity=15`;
-        url += `&seed_artists=${seeds[0]},${seeds[1]}`;
-        url += `&seed_track=${seeds[2]},${seeds[3]}`;
+        let url = 'https://api.spotify.com/v1/recommendations?limit=50&min_popularity=15';
+        url += `&seed_artists=${seeds.artists.join(',')}`;
+        url += `&seed_track=${seeds.tracks.join(',')}`;
     
         const recommendations = await fetch(url, {
             Accepts: 'application/json',
@@ -90,10 +125,28 @@ class SpotifyHelper {
             }
         });
         
-        const uris = (await recommendations.json()).tracks.map(x => x.uri);
+        const tracks = (await recommendations.json()).tracks;
+
+        const trackIds = [];
+        const uris = [];
+        for (let i = 0; i < tracks.length; i += 1) {
+            trackIds.push(tracks[i].id);
+            uris.push(tracks[i].uri);
+        }
+
+        const liked = await this.getLiked(trackIds, accessToken);
+
+        const playlistUris = [];
+        for (let i = 0; i < liked.length; i += 1) {
+            if (!liked[i]) {
+                playlistUris.push(uris[i]);
+            }
+
+            if (playlistUris.length >= PLAYLIST_SIZE) break;
+        }
 
         console.log("Got tracks");
-        return uris;
+        return playlistUris;
     }
     
     static async clearPlaylist(playlistId, accessToken) {
