@@ -77,6 +77,8 @@ router.post('/subscribe', async function(req, res) {
         user = await UserController.createUser(userId, refreshToken);
     }
 
+    await SpotifyHelper.updatePlaylists([user]);
+
     res.send({ user });
 })
 
