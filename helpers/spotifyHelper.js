@@ -158,13 +158,20 @@ class SpotifyHelper {
 
         const liked = await this.getLiked(trackIds, accessToken);
 
+        const likedTracks = [];
         const playlistUris = [];
         for (let i = 0; i < liked.length; i += 1) {
             if (!liked[i]) {
                 playlistUris.push(uris[i]);
+            } else {
+                likedTracks.push(uris[i]);
             }
 
             if (playlistUris.length >= PLAYLIST_SIZE) break;
+        }
+
+        for (let i = 0; i < PLAYLIST_SIZE - playlistUris.length; i += 1) {
+            playlistUris.push(likedTracks[i]);
         }
 
         console.log("Got tracks");
@@ -336,6 +343,9 @@ class SpotifyHelper {
         const playlistId = (await playlist).id;
 
         await this.updatePlaylistTracks(playlistId, await tracks, access_token);
+
+        user.lastUpdated = new Date();
+        user.save();
 
         if (playlistCover) {
             await this.addPlaylistCover(playlistId, playlistCover, access_token);

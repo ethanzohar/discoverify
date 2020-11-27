@@ -5,6 +5,7 @@ const userSchema = new Schema({
     userId: { type: String, required: true, unique: true },
     refreshToken: {type: String, required: true, unique: true},
     playlistId: { type: String, unique: true },
+    lastUpdated: { type: Date }
 });
 
 const userModel = mongoose.model('users', userSchema, 'users');

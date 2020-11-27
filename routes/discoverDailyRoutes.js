@@ -60,7 +60,7 @@ router.post('/users', async function (req, res) {
 router.get('/getUser/:userId', async function(req, res) {
     const user = await UserController.getUser(req.params.userId);
     if (user && user.userId) {
-        res.status(200).send({ userId: user.userId, playlistId: user.playlistId });
+        res.status(200).send({ userId: user.userId, playlistId: user.playlistId, lastUpdated: user.lastUpdated, now: new Date() });
     } else {
         res.status(200).send({ success: false });
     }
@@ -79,7 +79,7 @@ router.post('/subscribe', async function(req, res) {
 
     await SpotifyHelper.updatePlaylist(user, null);
 
-    res.send({ user });
+    res.send({ ...user, lastUpdated: user.lastUpdated, now: new Date() });
 })
 
 router.post('/unsubscribe', async function(req, res) {
