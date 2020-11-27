@@ -89,7 +89,7 @@ class SpotifyHelper {
         // }
 
         // mediumTerm artists
-        for (let i = 0; i < 1; i += 1) {
+        for (let i = 0; i < 2; i += 1) {
             const index = Math.floor(Math.random() * top.mediumTerm.artists.length);
             artists.push(top.mediumTerm.artists[index]);
             top.mediumTerm.artists.splice(index, 1);
@@ -103,7 +103,7 @@ class SpotifyHelper {
         }
 
         // shortTerm artists
-        for (let i = 0; i < 0; i += 1) {
+        for (let i = 0; i < 1; i += 1) {
             const index = Math.floor(Math.random() * top.shortTerm.artists.length);
             artists.push(top.shortTerm.artists[index]);
             top.shortTerm.artists.splice(index, 1);
