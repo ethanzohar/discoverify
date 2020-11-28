@@ -1,0 +1,254 @@
+.App {
+  text-align: center;
+}
+
+.HeadShot {
+  height: 250px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.BaseApp {
+  background-color:#eaf2fd;
+  height: 100vh;
+}
+
+.App-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: black;
+  font-family: sans-serif;
+  font-weight: 600;
+  padding-bottom: 20px;
+  padding-top: 30px;
+}
+
+.MainRow::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.MainRow img {
+  width: 80px;
+  margin-bottom: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.App-header h1 {
+  margin-top: 2px;
+}
+
+.App-header h3 {
+  margin: 0;
+}
+
+.App-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: black;
+  font-family: sans-serif;
+  font-weight: 600;
+}
+
+.MainSection {
+  font-weight: 100;
+  max-width: 1200px;
+}
+
+.SectionHeader {
+  margin-bottom: 0;
+  margin-top:0;
+  font-weight: 700;
+  font-size: calc(6px + 2vmin);
+}
+
+.InnerHeader {
+  margin-bottom: 0;
+  margin-top: 10px;
+  font-size: 2vmin;
+  font-weight: 600;
+}
+
+.BodyTextSkills {
+  margin-top: 10px;
+  font-size: 2vmin;
+  margin-bottom: 20px;
+}
+
+.BodyText {
+  margin-top: 2px;
+  font-size: 2vmin;
+  margin-bottom: 20px;
+}
+
+.AboutMeLink {
+  font-size: 2vmin;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* #login, #loggedin {
+  display: none;
+}
+.text-overflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 500px;
+} */
+
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+.spotify-button {
+  background-color: #1DB954;
+  border: none;
+  color: white;
+  padding: 40px 80px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 100px;
+  margin-left: 27%;
+  float: left;
+  font-size: 25px;
+}
+
+.Stream-Button {
+  width: 50%;
+  float: left;
+}
+
+.Listen-Button {
+  width: 50%;
+  display:inline-block;
+}
+
+.spotify-button:hover {
+  background-color: rgb(33, 204, 93);
+  /* transform:scale(1.5, 1.5); */
+}
+
+.Spotify {
+  padding: 23%;
+  overflow: hidden;
+}
+
+.Stream {
+  height: 100%;
+  margin: 0;
+}
+
+.MainSongInformation {
+  position: fixed;
+  height: 80%;
+  width: 100%;
+  padding:0;
+  margin:0;
+}
+
+.MainAlbum {
+  position: relative;
+  display: block;
+  margin-top: 2%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#main-album {
+ display: block;
+ margin-left: auto;
+ margin-right: auto;
+ margin-top:0
+}
+
+.SongInfoDiv {
+  margin-top:1.6%;
+}
+
+.SongInfo {
+  color:white;
+  text-align: center;
+  margin-left:auto;
+  margin-right:auto;
+  font-family: unset;
+  margin-bottom: 0;
+  margin-top: 0.5%;
+  font-size: 32px;
+  font-weight: 200;
+}
+
+#SongName {
+  font-weight: 600;
+}
+
+.MusicNavigation {
+  position: fixed;
+  display: flex;
+  justify-content: space-around;
+  margin-left:20%;
+  margin-right:20%;
+  width: 60%;
+  bottom: 6%;
+}
+
+.MusicNavigationButton {
+  font-size: 100px;
+  background: none;
+  border: none;
+  color: hsl(300, 5%, 80%);
+}
+
+.currentUserMarker {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  left: -10px;
+  top: -10px;
+
+  border-radius: 20px;
+  background-color: #00a3e0;
+  padding: 4px;
+}
+
+.otherUsersMarker {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  left: -20px;
+  top: -20px;
+
+  border: 3px solid black;
+  border-radius: 40px;
+  background-color: orange;
+  text-align: center;
+  color: black;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.otherUsersMarker:hover {
+  transform:scale(1.5, 1.5);
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+}

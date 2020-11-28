@@ -1,0 +1,243 @@
+$discoverDailyDark: rgba(174, 90, 109, 1);
+$discoverDailyLight: white;
+$discoverDailyPercentage: 25%;
+
+.DiscoverDailyMain {
+    background-color: white;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family: Gotham;
+    // background-image: linear-gradient(to left, $discoverDailyLight, $discoverDailyPercentage, $discoverDailyDark);
+
+    h1 {
+        font-size: 6rem;
+    }
+
+    h3 {
+        font-size: 2rem;
+        margin: 1.75% 0;
+    }
+
+    button {
+        font-size: 2.5rem;
+        margin-top: 1%;
+    }
+}
+
+.discoverDailyLeftColumn {
+    min-height: 100vh;
+    width: calc(100vw - 100vh);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    float: left;
+}
+
+.discoverDailyRightColumn {
+    height: 100vh;
+    margin: 0;
+    float: right;
+}
+
+.spotify-button {
+    background-color: #1DB954;
+    border: none;
+    color: white;
+    padding: 0.75% 3%;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 100px;
+    font-size: 3rem;
+    margin: 0;
+    outline: none !important;
+}
+
+.imageRow {
+    width: max-content;
+    margin: 0;
+    height: 25vh;
+}
+
+.imageCol {
+    width: 25vh;
+    height: 25vh;
+    float: right;
+
+    img {
+        width: 25vh;
+    }
+}
+
+// mobile
+@media only screen and (max-width: 768px) {
+    /* For mobile phones: */
+
+    // .DiscoverDailyMain {
+    //     background-image: linear-gradient(to top, $discoverDailyLight, $discoverDailyPercentage, $discoverDailyDark);
+    // }
+    
+    .discoverDailyRightColumn {
+        display: none;
+    }
+
+    .discoverDailyLeftColumn {
+        width: 100% !important;
+        text-align: center;
+
+        h1 {
+            font-size: 6vw;
+        }
+
+        h3 {
+            font-size: 3vw;
+        }
+
+        button {
+            font-size: 4vw;
+            float: inherit;
+        }
+    }
+}
+
+// 4x3
+@media only screen and (max-width: 1800px) and (min-height: 900px) {
+    .imageCol0 {
+        display: none;
+    }
+
+    .discoverDailyLeftColumn {
+        width: calc(100vw - 75vh);
+    }
+}
+
+// 4x2
+@media only screen and (max-width: 1500px) and (min-height: 900px) {
+    .imageCol1 {
+        display: none;
+    }
+
+    .discoverDailyLeftColumn {
+        width: calc(100vw - 50vh);
+    }
+}
+
+//4x1
+@media only screen and (max-width: 1200px) and (min-height: 900px) {
+    .imageCol2 {
+        display: none;
+    }
+
+    .discoverDailyLeftColumn {
+        width: calc(100vw - 25vh);
+    }
+}
+
+// 3x3
+@media only screen and (max-height: 900px) {
+    .imageRow3, .imageCol0 {
+        display: none;
+    }
+
+    .imageRow {
+        height: 33.33vh;
+    }
+    
+    .imageCol {
+        width: 33.33vh;
+        height: 33.33vh;
+        float: right;
+    
+        img {
+            width: 33.33vh;
+        }
+    }
+}
+
+//3x2
+@media only screen and (max-width: 1500px) and (min-height: 600px) and (max-height: 900px) {
+    .imageCol1 {
+        display: none;
+    }
+
+    .discoverDailyLeftColumn {
+        width: calc(100vw - 66.66vh);
+    }
+}
+
+
+// 3x1
+@media only screen and (max-width: 1200px) and (min-height: 600px) and (max-height: 900px) {
+    .imageCol2 {
+        display: none;
+    }
+
+    .discoverDailyLeftColumn {
+        width: calc(100vw - 33.33vh);
+    }
+}
+
+// 3x1 centered
+@media only screen and (max-width: 900px) and (min-height: 600px) and (max-height: 900px) {
+    // .DiscoverDailyMain {
+    //     background-image: linear-gradient(to top, $discoverDailyLight, $discoverDailyPercentage, $discoverDailyDark);
+    // }
+
+    .discoverDailyLeftColumn {
+        text-align: center;
+
+        button {
+            float: inherit;
+        }
+    }
+}
+
+// 2x2
+@media only screen and (max-height: 600px) {
+    .imageRow3, .imageRow2, .imageCol0, .imageCol1 {
+        display: none;
+    }
+
+    .imageRow {
+        height: 50vh;
+    }
+    
+    .imageCol {
+        width: 50vh;
+        height: 50vh;
+        float: right;
+    
+        img {
+            width: 50vh;
+        }
+    }
+}
+
+//2x1
+@media only screen and (max-width: 1500px) and (max-height: 600px) {
+    .imageCol2 {
+        display: none;
+    }
+
+    .discoverDailyLeftColumn {
+        width: calc(100vw - 50vh);
+    }
+}
+
+// 2x1 centered
+@media only screen and (max-width: 1000px) and (max-height: 600px) {
+    // .DiscoverDailyMain {
+    //     background-image: linear-gradient(to top, $discoverDailyLight, $discoverDailyPercentage, $discoverDailyDark);
+    // }
+
+    .discoverDailyLeftColumn {
+        text-align: center;
+
+        button {
+            float: inherit;
+        }
+    }
+}

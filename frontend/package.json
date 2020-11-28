@@ -1,0 +1,45 @@
+{
+  "name": "discoverify-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "proxy": "http://localhost:8081",
+  "dependencies": {
+    "@material-ui/core": "^4.11.0",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.4.0",
+    "@testing-library/user-event": "^7.2.1",
+    "bootstrap": "^4.5.3",
+    "express": "~4.16.0",
+    "node-sass": "^4.14.1",
+    "querystring": "~0.2.0",
+    "react": "^16.12.0",
+    "react-bootstrap": "^1.4.0",
+    "react-dom": "^16.12.0",
+    "react-ga": "^3.3.0",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.4.0",
+    "request": "~2.83.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "deploy": "git pull && npm install && npm run-script build && pm2 delete discoverify-frontend && pm2 serve build 8082 --name discoverify-frontend --spa"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

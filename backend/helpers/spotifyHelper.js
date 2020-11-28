@@ -83,34 +83,34 @@ class SpotifyHelper {
         // SHORT - 1
 
         // longTerm
-        // for (let i = 0; i < 1; i += 1) {
+        // for (let i = 0; i < 1 && top.longTerm.tracks.length > i; i += 1) {
         //     artists.push(top.longTerm.artists[Math.floor(Math.random() * top.longTerm.artists.length)]);
         //     tracks.push(top.longTerm.tracks[Math.floor(Math.random() * top.longTerm.tracks.length)]);
         // }
 
         // mediumTerm artists
-        for (let i = 0; i < 2; i += 1) {
+        for (let i = 0; i < 2 && top.mediumTerm.artists.length > i; i += 1) {
             const index = Math.floor(Math.random() * top.mediumTerm.artists.length);
             artists.push(top.mediumTerm.artists[index]);
             top.mediumTerm.artists.splice(index, 1);
         }
 
         // mediumTerm tracks
-        for (let i = 0; i < 3; i += 1) {
+        for (let i = 0; i < 3 && top.mediumTerm.tracks.length > i; i += 1) {
             const index = Math.floor(Math.random() * top.mediumTerm.tracks.length);
             tracks.push(top.mediumTerm.tracks[index]);
             top.mediumTerm.tracks.splice(index, 1);
         }
 
         // shortTerm artists
-        for (let i = 0; i < 1; i += 1) {
+        for (let i = 0; i < 1 && top.shortTerm.artists.length > i; i += 1) {
             const index = Math.floor(Math.random() * top.shortTerm.artists.length);
             artists.push(top.shortTerm.artists[index]);
             top.shortTerm.artists.splice(index, 1);
         }
 
         // shortTerm tracks
-        for (let i = 0; i < 2; i += 1) {
+        for (let i = 0; i < 2 && top.shortTerm.tracks.length > i; i += 1) {
             const index = Math.floor(Math.random() * top.shortTerm.tracks.length);
             tracks.push(top.shortTerm.tracks[index]);
             top.shortTerm.tracks.splice(index, 1);

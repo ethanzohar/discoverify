@@ -1,0 +1,20 @@
+{
+    "name": "discoverify-backend",
+    "version": "1.0.0",
+    "scripts": {
+        "start": "nodemon app.js",
+        "deploy": "git pull && npm install && pm2 delete discoverify-backend && pm2 start app.js --name discoverify-backend"
+    },
+    "dependencies": {
+        "body-parser": "^1.19.0",
+        "dotenv": "^8.2.0",
+        "express": "^4.17.1",
+        "fs": "0.0.1-security",
+        "mongoose": "^5.10.13",
+        "node-cron": "^2.0.3",
+        "node-fetch": "^2.6.1"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.6"
+    }
+}
