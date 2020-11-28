@@ -11,9 +11,9 @@
         "express": "^4.17.1",
         "fs": "0.0.1-security",
         "mongoose": "^5.10.13",
-        "opencollective-postinstall": "^2.0.3",
         "node-cron": "^2.0.3",
-        "node-fetch": "^2.6.1"
+        "node-fetch": "^2.6.1",
+        "opencollective-postinstall": "^2.0.3"
     },
     "devDependencies": {
         "nodemon": "^2.0.6"
