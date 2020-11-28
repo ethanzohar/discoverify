@@ -32,7 +32,7 @@ class DiscoverDaily extends Component {
   }
 
   sendToLogin() {
-    window.location = window.location.origin + '/discover-daily/login';
+    window.location = window.location.origin + '/login';
   }
 
   updateTime() {

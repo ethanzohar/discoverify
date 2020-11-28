@@ -10,7 +10,7 @@ class DiscoverDailyRedirect extends Component {
 
     sessionStorage.setItem('discoverDaily_code', paramQuery.get('code'));
 
-    window.location = window.location.origin + '/discover-daily';
+    window.location = window.location.origin;
   }
 
   render() {
