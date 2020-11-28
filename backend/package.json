@@ -3,7 +3,8 @@
     "version": "1.0.0",
     "scripts": {
         "start": "nodemon app.js",
-        "deploy": "git pull && npm install && pm2 delete discoverify-backend && pm2 start app.js --name discoverify-backend"
+        "deploy": "git pull && npm install && pm2 delete discoverify-backend && pm2 start app.js --name discoverify-backend",
+        "postinstall": "opencollective-postinstall || exit 0"
     },
     "dependencies": {
         "body-parser": "^1.19.0",
@@ -17,5 +18,8 @@
     },
     "devDependencies": {
         "nodemon": "^2.0.6"
+    },
+    "collective": {
+        "url": "https://opencollective.com/webpack"
     }
 }
