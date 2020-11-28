@@ -1,4 +1,5 @@
-const cron = require('node-cron');
+// const cron = require('node-cron');
+const CronJob = require('cron').CronJob;
 const express = require('express')
 const http = require('http');
 const bodyParser = require('body-parser');
@@ -51,8 +52,15 @@ connection.on('error', () => {
   console.log('MongoDB Connection Error');
 });
 
-cron.schedule('0 6 * * *', async () => {
-    console.log("Starting job");
-    const users = await UserController.getAllUsers();
-    SpotifyHelper.updatePlaylists(users);
-});
+// cron.schedule('0 6 * * *', async () => {
+//     console.log("Starting job");
+//     const users = await UserController.getAllUsers();
+//     SpotifyHelper.updatePlaylists(users);
+// });
+
+const job = new CronJob('00 00 00 * * *', async function() {
+  console.log("Starting job");
+  const users = await UserController.getAllUsers();
+  SpotifyHelper.updatePlaylists(users);
+}, null, true, 'America/Toronto');
+job.start();
