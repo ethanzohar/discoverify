@@ -7,7 +7,7 @@ import ReactGa from 'react-ga';
 import './fonts/Gotham.otf';
 
 function App() {
-  document.title = "Ethan Zohar"
+  document.title = "Discoverify"
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
