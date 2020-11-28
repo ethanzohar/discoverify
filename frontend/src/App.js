@@ -5,7 +5,8 @@ import DiscoverDailyRedirect from "./DiscoverDaily/Redirect";
 import DiscoverDailyLogin from "./DiscoverDaily/Login";
 import DiscoverDailyPlaylistOptions from "./DiscoverDaily/PlaylistOptions";
 import ReactGa from 'react-ga';
-import './fonts/Gotham.otf';
+import './index.css';
+// import './fonts/Gotham.otf';
 
 function App() {
   document.title = "Discoverify"

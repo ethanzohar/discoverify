@@ -1,4 +1,7 @@
-@font-face {font-family: "Gotham"; src: url("//db.onlinewebfonts.com/t/3a47f5f06b5484abfeee9eac90348a9c.eot"); src: url("//db.onlinewebfonts.com/t/3a47f5f06b5484abfeee9eac90348a9c.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/3a47f5f06b5484abfeee9eac90348a9c.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/3a47f5f06b5484abfeee9eac90348a9c.woff") format("woff"), url("//db.onlinewebfonts.com/t/3a47f5f06b5484abfeee9eac90348a9c.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/3a47f5f06b5484abfeee9eac90348a9c.svg#Gotham") format("svg"); }
+@font-face {
+  font-family: 'Gotham';
+  src: local('Gotham'), url(./fonts/Gotham.ttf) format('truetype');
+}
 
 body {
   margin: 0;
