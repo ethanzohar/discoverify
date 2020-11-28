@@ -149,6 +149,8 @@ class SpotifyHelper {
         
         const tracks = (await recommendations.json()).tracks;
 
+        if (!tracks && tracks.length === 0) return [];
+
         const trackIds = [];
         const uris = [];
         for (let i = 0; i < tracks.length; i += 1) {
