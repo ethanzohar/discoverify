@@ -8,7 +8,7 @@ const CLIENT_ID = process.env.SPOTIFY_API_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET;
 
 const PLAYLIST_NAME = "Discover Daily";
-const PLAYLIST_DESCRIPTION = "Daily music, curated for you based on your listening history. If you don't want to get this daily playlist anymore, you can unsubscribe at https://discoverifymsuic.com";
+const PLAYLIST_DESCRIPTION = "Daily music, curated for you based on your listening history. If you don't want to get this daily playlist anymore, you can unsubscribe at https://discoverifymusic.com";
 
 class SpotifyHelper {
     static async getNewAccessToken(refreshToken) {
