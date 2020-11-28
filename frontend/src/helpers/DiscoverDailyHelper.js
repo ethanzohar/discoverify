@@ -34,8 +34,55 @@ class DiscoverDailyHelper {
     return response.json();
   }
 
+  static async restorePlaylistOptions(userId, refreshToken) {
+    const accessToken = await SpotifyHelper.getAccessToken(refreshToken); 
+
+    const response = await fetch('/api/discover-daily/restorePlaylistOptions', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId, accessToken
+      })
+    })
+
+    return (await response.json()).user;
+  }
+
+  static async updatePlaylistOptions(options, userId, refreshToken) {
+    const accessToken = await SpotifyHelper.getAccessToken(refreshToken); 
+
+    const response = await fetch('/api/discover-daily/updatePlaylistOptions', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        accessToken,
+        options
+      })
+    })
+
+    return (await response.json()).user;
+  }
+
   static async getUser(userId) {
     const response = await fetch(`/api/discover-daily/getUser/${userId}`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    return response.json();
+  }
+
+  static async getNow() {
+    const response = await fetch('/api/discover-daily/now', {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',

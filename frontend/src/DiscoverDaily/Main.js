@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import CircularProgress from '@material-ui/core/CircularProgress'
+import CircularProgress from '@material-ui/core/CircularProgress';
 import SpotifyHelper from '../helpers/SpotifyHelper';
 import DiscoverDailyHelper from '../helpers/DiscoverDailyHelper';
 import { images } from './images';
@@ -17,7 +17,8 @@ class DiscoverDaily extends Component {
       refreshToken: null,
       loading: true,
       imageIndexes: new Set(),
-      submitting: false
+      submitting: false,
+      now: null
     }
 
     while (this.state.imageIndexes.size < 16) {
@@ -37,8 +38,8 @@ class DiscoverDaily extends Component {
 
   updateTime() {
     let timeRange = 'second';
-
-    const now = new Date(this.state.user.now);
+    
+    const now = new Date(this.state.now);
     const lastUpdated = new Date(this.state.user.lastUpdated);
     let timeDif = (now.getTime() - lastUpdated.getTime()) / 1000;
 
@@ -56,6 +57,15 @@ class DiscoverDaily extends Component {
   }
 
   async getUserState() {
+    const user = sessionStorage.getItem('discoverDaily_user');
+    const spotifyUserFromStorage = sessionStorage.getItem('discoverDaily_spotifyUser');
+
+    if (user && user !== 'null') {
+      const { now } = await DiscoverDailyHelper.getNow();
+      this.setState({ user: JSON.parse(user), spotifyUser: JSON.parse(spotifyUserFromStorage), now, loading: false });
+      return;
+    }
+
     const code = sessionStorage.getItem('discoverDaily_code');
     const refreshToken = localStorage.getItem('discoverDaily_refreshToken');
 
@@ -67,8 +77,8 @@ class DiscoverDaily extends Component {
         const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
         this.setState({ spotifyUser });
 
-        const user = await DiscoverDailyHelper.getUser(spotifyUser.id);
-        if (user.userId) this.setState({ user });
+        const { user, now } = await DiscoverDailyHelper.getUser(spotifyUser.id);
+        if (user) this.setState({ user, now });
 
         this.setState({ loading: false });
         return;
@@ -82,10 +92,10 @@ class DiscoverDaily extends Component {
       if (!access_token) this.sendToLogin();
       
       const spotifyUser = await SpotifyHelper.getUserInfo(access_token);
-      const user = await DiscoverDailyHelper.getUser(spotifyUser.id);
-      this.setState({ user : user.userId ? user : null, spotifyUser, refreshToken: refresh_token, loading: false });
+      const { user, now } = await DiscoverDailyHelper.getUser(spotifyUser.id);
+      this.setState({ user : user, now, spotifyUser, refreshToken: refresh_token, loading: false });
 
-      if (user.userId) await DiscoverDailyHelper.signupUser(spotifyUser, refresh_token);
+      if (user) await DiscoverDailyHelper.signupUser(spotifyUser, refresh_token);
       return;
     }
 
@@ -93,23 +103,34 @@ class DiscoverDaily extends Component {
   }
 
   async UNSAFE_componentWillMount() {
-    document.title = "Discover Daily";
     await this.getUserState();
-    this.updateTime();
+    sessionStorage.setItem('discoverDaily_user', this.state.user ? JSON.stringify(this.state.user) : null);
+    sessionStorage.setItem('discoverDaily_spotifyUser', this.state.user ? JSON.stringify(this.state.spotifyUser) : null);
+
+    if (this.state.user) {
+      this.updateTime();
+    }
   }
   
   async signupUser () {
     this.setState({submitting: true});
-    const user = await DiscoverDailyHelper.signupUser(this.state.spotifyUser.id, this.state.refreshToken);
-    this.setState({ user, submitting: false });
+    const { user, now } = await DiscoverDailyHelper.signupUser(this.state.spotifyUser.id, this.state.refreshToken);
+    this.setState({ user, now, submitting: false });
+    sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
     this.updateTime();
+  }
+
+  sendToOptions () {
+    window.location = window.location.origin + '/options';
   }
 
   async unsubscribeUser () {
     this.setState({submitting: true});
-    const { success } = await DiscoverDailyHelper.unsubscribeUser(this.state.spotifyUser.id, this.state.refreshToken);
+    const { success } = await DiscoverDailyHelper.unsubscribeUser(this.state.user.userId, this.state.refreshToken);
     if (success) {
       this.setState({ user: null });
+      sessionStorage.setItem('discoverDaily_user', null);
+      sessionStorage.setItem('discoverDaily_spotifyUser', null);
     }
 
     this.setState({submitting: false});
@@ -130,7 +151,8 @@ class DiscoverDaily extends Component {
                         <h3>{`Your playlist was updated ${this.state.lastUpdated} ${this.state.timeRange}${this.state.lastUpdated > 1 ? 's' : ''} ago`}</h3>
                         <h3>A new playlist is on its way and will be ready for you tomorrow morning!</h3>
                         <h3>If you don't want to get a daily playlist anymore you can click the button below to unsubscribe.</h3>
-                        <button className="btn btn-primary spotify-button" onClick={this.unsubscribeUser} disabled={this.state.submitting} style={{ marginBottom: '2%' }}>Unsubscribe</button>
+                        <button className="btn btn-primary spotify-button" onClick={this.sendToOptions} style={{ marginBottom: '2%', marginRight: '2%' }}>Playlist Options</button>
+                        <button className="btn btn-primary spotify-button spotify-red" onClick={this.unsubscribeUser} disabled={this.state.submitting} style={{ marginBottom: '2%' }}>Unsubscribe</button>
                         {this.state.submitting ? (
                           <CircularProgress style={{marginLeft: '2%', width: '4%', height: '4%', color: 'rgb(12, 38, 88)'}}/>
                           ) :

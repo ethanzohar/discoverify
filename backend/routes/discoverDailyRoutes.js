@@ -23,7 +23,7 @@ async function isAdmin(userId, refreshToken) {
 }
 
 router.get('/', function (req, res) {
-    res.send('You hit playlist gen');
+    return res.send('You hit playlist gen');
 })
 
 router.post('/force', async function (req, res) {
@@ -34,7 +34,7 @@ router.post('/force', async function (req, res) {
 
     const users = await UserController.getAllUsers();
     SpotifyHelper.updatePlaylists(users);
-    res.send('Playlist Generation has been started');
+    return res.send('Playlist Generation has been started');
 });
 
 router.post('/count', async function (req, res) {
@@ -44,7 +44,7 @@ router.post('/count', async function (req, res) {
     }
 
     const users = await UserController.getAllUsers();
-    res.send(`Total users: ${users.length}`);
+    return res.send(`Total users: ${users.length}`);
 })
 
 router.post('/users', async function (req, res) {
@@ -54,16 +54,28 @@ router.post('/users', async function (req, res) {
     }
 
     const users = await UserController.getAllUsers();
-    res.send({users});
+    return res.send({users});
 })
 
 router.get('/getUser/:userId', async function(req, res) {
     const user = await UserController.getUser(req.params.userId);
     if (user && user.userId) {
-        res.status(200).send({ userId: user.userId, playlistId: user.playlistId, lastUpdated: user.lastUpdated, now: new Date() });
+        return res.status(200).send({ 
+            user: {
+                userId: user.userId,
+                playlistId: user.playlistId,
+                lastUpdated: user.lastUpdated,
+                refreshToken: user.refreshToken
+            }, 
+            now: new Date() 
+        });
     } else {
-        res.status(200).send({ success: false });
+        return res.status(200).send({ success: false });
     }
+});
+
+router.get('/now', async function(req, res) {
+    return res.status(200).send({ now: new Date() });
 });
 
 router.post('/subscribe', async function(req, res) {
@@ -72,24 +84,44 @@ router.post('/subscribe', async function(req, res) {
     let user = await UserController.getUser(userId);
     if (user) {
         user.refreshToken = refreshToken;
-        user.save();
     } else {
         user = await UserController.createUser(userId, refreshToken);
     }
 
     await SpotifyHelper.updatePlaylist(user, null);
 
-    res.send({ ...user, lastUpdated: user.lastUpdated, now: new Date() });
+    return res.send({ user, now: new Date() });
 })
 
 router.post('/unsubscribe', async function(req, res) {
     const { userId, accessToken } = req.body;
     if (!(await validate(userId, accessToken))) {
-        res.send({ success: false });
+        return res.send({ success: false });
     }
 
-    await UserController.deleteUser(req.body.userId);
-    res.send({ success: true });
+    await UserController.deleteUser(userId);
+    return res.send({ success: true });
+})
+
+router.post('/restorePlaylistOptions', async function(req, res) {
+    const { userId, accessToken } = req.body;
+    if (!(await validate(userId, accessToken))) {
+        return res.send({ success: false });
+    }
+
+    const user = await UserController.restorePlaylistOptions(userId);
+
+    return res.send({ user });
+})
+
+router.post('/updatePlaylistOptions', async function(req, res) {
+    const { userId, accessToken, options } = req.body;
+    if (!(await validate(userId, accessToken))) {
+        return res.send({ success: false });
+    }
+
+    const user = await UserController.updatePlaylistOptions(userId, options);
+    return res.send({ user });
 })
 
 module.exports = router;

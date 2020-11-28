@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { Route, BrowserRouter } from "react-router-dom";
-import DiscoverDaily from "./DiscoverDaily/DiscoverDaily";
-import DiscoverDailyRedirect from "./DiscoverDaily/DiscoverDailyRedirect";
-import DiscoverDailyLogin from "./DiscoverDaily/DiscoverDailyLogin";
+import DiscoverDaily from "./DiscoverDaily/Main";
+import DiscoverDailyRedirect from "./DiscoverDaily/Redirect";
+import DiscoverDailyLogin from "./DiscoverDaily/Login";
+import DiscoverDailyPlaylistOptions from "./DiscoverDaily/PlaylistOptions";
 import ReactGa from 'react-ga';
 import './fonts/Gotham.otf';
 
@@ -19,6 +20,7 @@ function App() {
   return (
     <BrowserRouter>
       <Route exact path="/" component={DiscoverDaily}></Route>
+      <Route exact path="/options" component={DiscoverDailyPlaylistOptions}></Route>
       <Route exact path="/redirect" component={DiscoverDailyRedirect}></Route>
       <Route exact path="/login" component={DiscoverDailyLogin}></Route>
     </BrowserRouter>

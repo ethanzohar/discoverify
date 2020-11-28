@@ -1,20 +1,20 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import SpotifyHelper from '../helpers/SpotifyHelper';
 import { images } from './images';
 
-import './discoverDaily.scss';
+class DiscoverDailyRedirect extends Component {
+  UNSAFE_componentWillMount() {
+    const paramQuery = new URLSearchParams(this.props.location.search);
 
-const DiscoverDailyLogin = () => {
-  document.title = "Discover Daily";
-  
-  const sendLoginRedirect = () => {
-      window.location = SpotifyHelper.getOAuthCodeUrl(window.location.origin + '/redirect');
+    sessionStorage.setItem('discoverDaily_code', paramQuery.get('code'));
+
+    window.location = window.location.origin;
   }
 
-  return (
-    <div className="DiscoverDailyMain">
+  render() {
+    return (
+      <div className="DiscoverDailyMain">
       <Row style={{width: '100%', margin: '0'}}>
         <Col style={{width: '100%', margin: '0'}}>
             <Col className="discoverDailyLeftColumn">
@@ -23,7 +23,7 @@ const DiscoverDailyLogin = () => {
               <h1 style={{ margin: '0 0 3% 0' }}>But Daily</h1>
               <h3>Finding new songs that you love is hard, so let us take care of that for you!</h3>
               <h3>Link your Spotify account by logging in below to get access to daily music playlists curated to you.</h3>
-              <button className="btn btn-primary spotify-button" onClick={sendLoginRedirect}>Login with Spotify</button>
+              <button className="btn btn-primary spotify-button" disabled>Get your daily playlist</button>
             </Row>
           </Col>
           <Col className='discoverDailyRightColumn'>
@@ -47,7 +47,8 @@ const DiscoverDailyLogin = () => {
         </Col>
       </Row>
     </div>
-  );
+    );
+  }
 }
 
-export default DiscoverDailyLogin;
+export default DiscoverDailyRedirect;

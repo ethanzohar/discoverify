@@ -5,7 +5,15 @@ const userSchema = new Schema({
     userId: { type: String, required: true, unique: true },
     refreshToken: {type: String, required: true, unique: true},
     playlistId: { type: String, unique: true },
-    lastUpdated: { type: Date }
+    lastUpdated: { type: Date },
+    playlistOptions: {
+        acousticness: { type: [Number, Number], default: [0, 100] },
+        danceability: { type: [Number, Number], default: [0, 100] },
+        energy: { type: [Number, Number], default: [0, 100] },
+        instrumentalness: { type: [Number, Number], default: [0, 100] },
+        popularity: { type: [Number, Number], default: [50, 100] },
+        valence: { type: [Number, Number], default: [0, 100] },
+    }
 });
 
 const userModel = mongoose.model('users', userSchema, 'users');

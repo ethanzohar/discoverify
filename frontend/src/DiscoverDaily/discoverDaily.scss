@@ -1,6 +1,7 @@
 $discoverDailyDark: rgba(174, 90, 109, 1);
 $discoverDailyLight: white;
 $discoverDailyPercentage: 25%;
+$spotifyGreen: #1DB954;
 
 .DiscoverDailyMain {
     background-color: white;
@@ -9,7 +10,7 @@ $discoverDailyPercentage: 25%;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    font-family: Gotham;
+    font-family: 'Gotham';
     // background-image: linear-gradient(to left, $discoverDailyLight, $discoverDailyPercentage, $discoverDailyDark);
 
     h1 {
@@ -29,7 +30,7 @@ $discoverDailyPercentage: 25%;
 
 .discoverDailyLeftColumn {
     min-height: 100vh;
-    width: calc(100vw - 100vh);
+    width: calc(100vw - 105vh);
     margin: 0;
     display: flex;
     align-items: center;
@@ -43,7 +44,7 @@ $discoverDailyPercentage: 25%;
 }
 
 .spotify-button {
-    background-color: #1DB954;
+    background-color: $spotifyGreen;
     border: none;
     color: white;
     padding: 0.75% 3%;
@@ -54,6 +55,18 @@ $discoverDailyPercentage: 25%;
     font-size: 3rem;
     margin: 0;
     outline: none !important;
+}
+
+.spotify-button:hover {
+    background-color: #22dd63;
+}
+
+.spotify-red {
+    background-color: #ff3419;
+}
+
+.spotify-red:hover {
+    background-color:#f01800;
 }
 
 .imageRow {
@@ -240,4 +253,52 @@ $discoverDailyPercentage: 25%;
             float: inherit;
         }
     }
+}
+
+.spotifySliderHeader {
+    margin-bottom: 4px !important;
+}
+
+.spotifySliderDescription {
+    margin-top: 0px !important;
+    font-size: 1.5rem;
+}
+
+.spotifySlider.MuiSlider-root {
+    color: $spotifyGreen;
+    height: 6px;
+    padding: 13px 0;
+}
+
+.spotifySlider .MuiSlider-rail {
+    opacity: 0.5;
+    height: 6px;
+    border-radius: 6px;
+    color: #4fe383;
+}
+
+.spotifySlider .MuiSlider-track {
+    height: 6px;
+}
+
+.spotifySlider .MuiSlider-thumb {
+    height: 30px;
+    width: 30px;
+    background-color: white;
+    border: 1px solid $spotifyGreen;
+    margin-top: -13px;
+    margin-left: -14px;
+    font-family: 'Gotham';
+    font-size: 12px;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.playlistOptionList::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.playlistOptionList {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }
