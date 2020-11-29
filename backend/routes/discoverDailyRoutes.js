@@ -65,7 +65,8 @@ router.get('/getUser/:userId', async function(req, res) {
                 userId: user.userId,
                 playlistId: user.playlistId,
                 lastUpdated: user.lastUpdated,
-                refreshToken: user.refreshToken
+                refreshToken: user.refreshToken,
+                playlistOptions: user.playlistOptions
             }, 
             now: new Date() 
         });
@@ -121,6 +122,7 @@ router.post('/updatePlaylistOptions', async function(req, res) {
     }
 
     const user = await UserController.updatePlaylistOptions(userId, options);
+    console.log(user);
     return res.send({ user });
 })
 
