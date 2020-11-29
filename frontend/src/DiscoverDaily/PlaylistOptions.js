@@ -64,7 +64,7 @@ export default function DiscoverDailyPlaylistOptions() {
   const getUserState = async () => {
     const user = sessionStorage.getItem('discoverDaily_user');
 
-    if (user) {
+    if (user && user !== 'null') {
       const parsedUser = JSON.parse(user);
       setUser(parsedUser);
       updatePlaylistOptions(parsedUser);
@@ -81,7 +81,7 @@ export default function DiscoverDailyPlaylistOptions() {
       if (accessToken) {
         const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
 
-        const user = await DiscoverDailyHelper.getUser(spotifyUser.id);
+        const { user } = await DiscoverDailyHelper.getUser(spotifyUser.id);
         if (user.userId) {
           setUser(user);
           updatePlaylistOptions(user);
@@ -101,15 +101,17 @@ export default function DiscoverDailyPlaylistOptions() {
       if (!access_token) sendToLogin();
       
       const spotifyUser = await SpotifyHelper.getUserInfo(access_token);
-      const user = await DiscoverDailyHelper.getUser(spotifyUser.id);
+      const { user } = await DiscoverDailyHelper.getUser(spotifyUser.id);
       setUser(user.userId ? user : null);
       setLoading(false);
 
+      console.log('b')
+      console.log(user);
       if (user.userId) {
         updatePlaylistOptions(user);
         await DiscoverDailyHelper.signupUser(spotifyUser, refresh_token);
       } else {
-        sendToMain();
+        // sendToMain();
       }
 
       return;

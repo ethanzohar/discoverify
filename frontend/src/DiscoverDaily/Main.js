@@ -81,6 +81,8 @@ class DiscoverDaily extends Component {
         if (user) this.setState({ user, now });
 
         this.setState({ loading: false });
+
+        sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
         return;
       }
     }
@@ -96,6 +98,8 @@ class DiscoverDaily extends Component {
       this.setState({ user : user, now, spotifyUser, refreshToken: refresh_token, loading: false });
 
       if (user) await DiscoverDailyHelper.signupUser(spotifyUser, refresh_token);
+      
+      sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
       return;
     }
 
