@@ -183,7 +183,7 @@ class SpotifyHelper {
             if (playlistUris.length >= PLAYLIST_SIZE) break;
         }
 
-        for (let i = 0; i < PLAYLIST_SIZE - playlistUris.length; i += 1) {
+        for (let i = 0; i < PLAYLIST_SIZE - playlistUris.length && i < likedTracks.length; i += 1) {
             playlistUris.push(likedTracks[i]);
         }
 
