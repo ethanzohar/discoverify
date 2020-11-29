@@ -57,6 +57,23 @@ router.post('/users', async function (req, res) {
     return res.send({users});
 })
 
+router.post('/displayNames', async function (req, res) {
+    const { userId, refreshToken } = req.body;
+    if (!isAdmin(userId, refreshToken)) {
+        return res.send('Invalid credentials');
+    }
+
+    const users = await UserController.getAllUsers();
+
+    const names = {};
+    for (let i = 0; i < users.length; i += 1) {
+        const user = await SpotifyHelper.getUser(users[i]);
+        names[user.id] = user['display_name'];
+    }
+
+    return res.send(names);
+})
+
 router.get('/getUser/:userId', async function(req, res) {
     const user = await UserController.getUser(req.params.userId);
     if (user && user.userId) {
