@@ -29,7 +29,7 @@ router.get('/', function (req, res) {
 router.post('/force', async function (req, res) {
     const { userId, refreshToken } = req.body;
     if (!isAdmin(userId, refreshToken)) {
-        return res.send('Invalid credentials');
+        return res.status(403).send('Invalid credentials');
     }
 
     const users = await UserController.getAllUsers();
@@ -37,10 +37,29 @@ router.post('/force', async function (req, res) {
     return res.send('Playlist Generation has been started');
 });
 
+
+
+router.post('/force/:target', async function (req, res) {
+    const { userId, refreshToken } = req.body;
+    if (!isAdmin(userId, refreshToken)) {
+        return res.status(403).send('Invalid credentials');
+    }
+
+    const user = await UserController.getUser(req.params.target);
+
+    if (!user) {
+        return res.status(403).send('User does not exist');
+    }
+
+    await SpotifyHelper.updatePlaylist(user, null);
+
+    return res.send(`Playlist updated for user: ${target}`);
+});
+
 router.post('/count', async function (req, res) {
     const { userId, refreshToken } = req.body;
     if (!isAdmin(userId, refreshToken)) {
-        return res.send('Invalid credentials');
+        return res.status(403).send('Invalid credentials');
     }
 
     const users = await UserController.getAllUsers();
@@ -50,7 +69,7 @@ router.post('/count', async function (req, res) {
 router.post('/users', async function (req, res) {
     const { userId, refreshToken } = req.body;
     if (!isAdmin(userId, refreshToken)) {
-        return res.send('Invalid credentials');
+        return res.status(403).send('Invalid credentials');
     }
 
     const users = await UserController.getAllUsers();
@@ -60,7 +79,7 @@ router.post('/users', async function (req, res) {
 router.post('/displayNames', async function (req, res) {
     const { userId, refreshToken } = req.body;
     if (!isAdmin(userId, refreshToken)) {
-        return res.send('Invalid credentials');
+        return res.status(403).send('Invalid credentials');
     }
 
     const users = await UserController.getAllUsers();
