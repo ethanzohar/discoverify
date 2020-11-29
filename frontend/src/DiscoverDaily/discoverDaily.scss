@@ -61,6 +61,10 @@ $spotifyGreen: #1DB954;
     background-color: #22dd63;
 }
 
+.spotify-button:active, .spotify-button:focus {
+    background-color: #15843c;
+}
+
 .spotify-red {
     background-color: #ff3419;
 }
@@ -69,6 +73,9 @@ $spotifyGreen: #1DB954;
     background-color:#f01800;
 }
 
+.spotify-red:active, .spotify-red:focus {
+    background-color: #cc1800;
+}
 .imageRow {
     width: max-content;
     margin: 0;

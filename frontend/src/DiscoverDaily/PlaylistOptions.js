@@ -3,6 +3,8 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Slider from "@material-ui/core/Slider";
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 import SpotifyHelper from '../helpers/SpotifyHelper';
 import DiscoverDailyHelper from '../helpers/DiscoverDailyHelper';
 import { images } from './images';
@@ -11,24 +13,16 @@ import './discoverDaily.scss';
 
 export default function DiscoverDailyPlaylistOptions() {
   const [user, setUser] = useState(null);
-  const [spotifyUser, setSpotifyUser] = useState(null);
-  const [refreshToken, setRefreshToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imageIndexes, setImageIndexes] = useState([]);
-  const [options, setOptions] = useState({
-    acousticness: [0, 100],
-    danceability: [0, 100],
-    energy: [0, 100],
-    instrumentalness: [0, 100],
-    popularity: [50, 100],
-    valence: [0, 100],
-  });
+  const [options, setOptions] = useState({});
   const [acousticness, setAcousticness] = useState([0, 100]);
   const [danceability, setDanceability] = useState([0, 100]);
   const [energy, setEnergy] = useState([0, 100]);
   const [instrumentalness, setInstrumentalness] = useState([0, 100]);
   const [popularity, setPopularity] = useState([50, 100]);
   const [valence, setValence] = useState([0, 100]);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const optionRef = useRef(options);
 
@@ -82,12 +76,10 @@ export default function DiscoverDailyPlaylistOptions() {
     const refreshToken = localStorage.getItem('discoverDaily_refreshToken');
 
     if (refreshToken && refreshToken !== 'null') {
-      setRefreshToken(refreshToken);
       const accessToken = await SpotifyHelper.getAccessToken(refreshToken);
       
       if (accessToken) {
         const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
-        setSpotifyUser(spotifyUser);
 
         const user = await DiscoverDailyHelper.getUser(spotifyUser.id);
         if (user.userId) {
@@ -111,8 +103,6 @@ export default function DiscoverDailyPlaylistOptions() {
       const spotifyUser = await SpotifyHelper.getUserInfo(access_token);
       const user = await DiscoverDailyHelper.getUser(spotifyUser.id);
       setUser(user.userId ? user : null);
-      setSpotifyUser(spotifyUser);
-      setRefreshToken(refresh_token);
       setLoading(false);
 
       if (user.userId) {
@@ -166,13 +156,15 @@ export default function DiscoverDailyPlaylistOptions() {
     setUser(usr);
     updatePlaylistOptions(usr)
     sessionStorage.setItem('discoverDaily_user', JSON.stringify(usr));
+    setSnackbarOpen(true);
   }
 
   const SpotifySliderThumbComponent = (props) => {
     return (
-      <span {...props}>
-        <span>{optionRef.current[props['aria-labelledby']][props['data-index']]}</span>
-      </span>
+      optionRef.current[props['aria-labelledby']] ? (
+        <span {...props}>
+          <span>{optionRef.current[props['aria-labelledby']][props['data-index']]}</span>
+        </span>) : null
     );
   }
 
@@ -262,6 +254,17 @@ export default function DiscoverDailyPlaylistOptions() {
                   <button className="btn btn-primary spotify-button" style={{ float: 'right', marginLeft: '1%' }} onClick={sendUpdatePlaylistOptions}>Save</button>
                   <button className="btn btn-primary spotify-button" onClick={restoreDefaults}>Restore Defaults</button>
                 </Row>
+                <Snackbar open={snackbarOpen}
+                          onClose={() => { setSnackbarOpen(false); }}
+                          autoHideDuration={3000} 
+                          anchorOrigin={{
+                            vertical: 'top',
+                            horizontal: 'center',
+                          }}>
+                  <MuiAlert elevation={6} variant="filled" onClose={() => { setSnackbarOpen(false); }} severity="success" style={{ fontSize: '1.5rem' }}>
+                    Your playlist preferences have been saved! These settings will now be used for all future playlists.
+                  </MuiAlert>
+                </Snackbar>
               </Col>
             )}
           </Col>
