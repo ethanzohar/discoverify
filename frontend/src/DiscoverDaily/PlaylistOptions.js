@@ -1,17 +1,40 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Slider from "@material-ui/core/Slider";
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import Grid from '@material-ui/core/Grid';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import Paper from '@material-ui/core/Paper';
+import ListItemText from '@material-ui/core/ListItemText';
 import SpotifyHelper from '../helpers/SpotifyHelper';
 import DiscoverDailyHelper from '../helpers/DiscoverDailyHelper';
 import { images } from './images';
 
 import './discoverDaily.scss';
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: 'max-content'
+  },
+  paper: {
+    width: 300,
+    height: 55,
+    overflow: 'none',
+  },
+}));
+
+function not(a, b) {
+  return a.filter((value) => value !== b);
+}
+
 export default function DiscoverDailyPlaylistOptions() {
+  const classes = useStyles();
+
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imageIndexes, setImageIndexes] = useState([]);
@@ -23,6 +46,10 @@ export default function DiscoverDailyPlaylistOptions() {
   const [popularity, setPopularity] = useState([50, 100]);
   const [valence, setValence] = useState([0, 100]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [selectedSide, setSelectedSide] = useState(null);
+  const [left, setLeft] = useState(["All Time Artist", "Medium Term Artist", "Short Term Artist", "All Time Track",  "Medium Term Track", "Short Term Track"]);
+  const [right, setRight] = useState([]);
 
   const optionRef = useRef(options);
 
@@ -170,6 +197,42 @@ export default function DiscoverDailyPlaylistOptions() {
     );
   }
 
+  const select = (value, side) => {
+    setSelectedSide(side);
+    setSelected(value);
+    console.log(value, side)
+  }
+
+  const handleSelectRight = () => {
+    console.log(right)
+    setRight(right.concat(selected));
+    setSelected(null);
+    setSelectedSide(null);
+  };
+
+  const handleSelectLeft = () => {
+    setRight(not(right, selected));
+    setSelected(null);
+    setSelectedSide(null);
+  };
+
+  const customList = (items, side) => (
+    <Paper className={classes.paper}>
+      <List dense component="div" role="list">
+        {items.map((value) => {
+          const labelId = `transfer-list-item-${value}-label`;
+
+          return (
+            <ListItem key={value} role="listitem" button onClick={() => { select(value, side); }} style={{ backgroundColor: selected === value ? "#4fe383" : ''}}>
+              <ListItemText id={labelId} primary={value} />
+            </ListItem>
+          );
+        })}
+        <ListItem />
+      </List>
+    </Paper>
+  );
+
   return (
     <div className="DiscoverDailyMain">
       <Row style={{width: '100%', margin: '0'}}>
@@ -190,6 +253,34 @@ export default function DiscoverDailyPlaylistOptions() {
                   <h1 style={{ margin: '0' }}>But Daily</h1>
                 </Row>
                 <Row className="playlistOptionList" style={{ width: '100%', margin: '0 1%', maxHeight: '75vh', overflowY: 'auto', overflowX: 'hidden', padding: '0 8% 0 4%' }}>
+                  <h3 className="spotifySliderHeader">Recommendation Seeds</h3>
+                  <h5 className="spotifySliderDescription">These are your top tracks and artists taken from different time periods in your listening history. All time would encompass your entire listening history, medium term would include the past 6 months, and short term includes the past 4 weeks. Select anywhere between 1 and 5 options to influence your playlist.</h5>
+                  <Grid container spacing={2} justify="center" alignItems="center" className={classes.root}>
+                    <Grid item>{customList(left, 'left')}</Grid>
+                      <Grid item>
+                        <Grid container direction="column" alignItems="center">
+                          <button
+                            className="seedButton"
+                            size="small"
+                            onClick={handleSelectRight}
+                            disabled={!selected || selectedSide !== 'left' || right.length >= 5}
+                            aria-label="move selected right"
+                          >
+                            &gt;
+                          </button>
+                          <button
+                            className="seedButton"
+                            size="small"
+                            onClick={handleSelectLeft}
+                            disabled={!selected || selectedSide !== 'right' || right.length <= 1}
+                            aria-label="move selected left"
+                          >
+                            &lt;
+                          </button>
+                        </Grid>
+                      </Grid>
+                    <Grid item>{customList(right, 'right')}</Grid>
+                  </Grid>
                   <h3 className="spotifySliderHeader">Acousticness</h3>
                   <h5 className="spotifySliderDescription">A confidence measure of whether the track is acoustic.</h5>
                   <Slider

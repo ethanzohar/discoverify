@@ -310,3 +310,37 @@ $spotifyGreen: #1DB954;
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
+
+.MuiTypography-root, .MuiListItemText-root, .MuiTouchRipple-root {
+    width: max-content !important;
+    margin: 0;
+}
+
+.MuiTypography-root {
+    margin: 0 auto !important;
+    color: rgb(12, 38, 88);
+    font-family: 'Gotham' !important
+}
+
+.MuiButtonBase-root.MuiListItem-root.MuiListItem-dense.MuiListItem-gutters.MuiListItem-button {
+    padding: 0 !important;
+}
+
+.MuiListItem-root {
+    width: 33% !important;
+    margin: 1% 0 !important;
+    float: left;
+}
+
+.MuiList-padding {
+    padding: 0 !important;
+}
+
+.seedButton {
+    background-color: white;
+    border: 1px solid $spotifyGreen;
+    color: $spotifyGreen;
+    border-radius: 1000px;
+    line-height: 27px;
+    margin: 10% 0 !important;
+}
