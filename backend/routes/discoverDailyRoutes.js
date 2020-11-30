@@ -132,11 +132,12 @@ router.post('/subscribe', async function(req, res) {
 
 router.post('/unsubscribe', async function(req, res) {
     const { userId, accessToken } = req.body;
+
+    console.log(`Trying to unsub user with ID ${userId}`)
+    
     if (!(await validate(userId, accessToken))) {
         return res.send({ success: false });
     }
-
-    console.log(`Trying to unsub user with ID ${userId}`)
 
     await UserController.deleteUser(userId);
     return res.send({ success: true });
