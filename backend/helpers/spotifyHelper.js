@@ -366,14 +366,14 @@ class SpotifyHelper {
 
         const playlistId = (await playlist).id;
 
-        await this.updatePlaylistTracks(playlistId, await tracks, access_token);
+        // await this.updatePlaylistTracks(playlistId, await tracks, access_token);
 
-        user.lastUpdated = new Date();
-        user.save();
+        // user.lastUpdated = new Date();
+        // user.save();
 
-        if (playlistCover) {
-            await this.addPlaylistCover(playlistId, playlistCover, access_token);
-        }
+        // if (playlistCover) {
+        //     await this.addPlaylistCover(playlistId, playlistCover, access_token);
+        // }
 
         console.log(`Playlist updated for user: ${user.userId}`);
     }
