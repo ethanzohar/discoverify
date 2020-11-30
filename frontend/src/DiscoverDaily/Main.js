@@ -5,6 +5,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import SpotifyHelper from '../helpers/SpotifyHelper';
 import DiscoverDailyHelper from '../helpers/DiscoverDailyHelper';
 import { images } from './images';
+import github from '../images/github.png';
 
 import './discoverDaily.scss';
 class DiscoverDaily extends Component {
@@ -202,6 +203,11 @@ class DiscoverDaily extends Component {
             ))}
           </Col>
           </Col>
+        </Row>
+        <Row style={{ position: 'absolute', left: '15px', bottom: '0' }}>
+          <a href="https://github.com/ethanzohar/discoverify" target="_blank" rel="noopener noreferrer">
+            <img src={github} alt="github" width="10%" style={{ margin: '10px' }} />
+          </a>
         </Row>
     </div>
     );
