@@ -36,8 +36,6 @@ class SpotifyHelper {
         });
     
         const resultJSON = await result.json();
-    
-        console.log("Got access token")
         return resultJSON.access_token;
     }
     
@@ -67,7 +65,6 @@ class SpotifyHelper {
         const shortTermArtists = await this.getTop('artists', 'short_term', access_token);
         const shortTermTracks = await this.getTop('tracks', 'short_term', access_token);
     
-        console.log("Got all top");
         return { longTerm: { artists: longTermArtists, tracks : longTermTracks},
                  mediumTerm: { artists: mediumTermArtists, tracks : mediumTermTracks},
                  shortTerm: { artists: shortTermArtists, tracks : shortTermTracks},   
@@ -116,7 +113,6 @@ class SpotifyHelper {
             top.shortTerm.tracks.splice(index, 1);
         }
     
-        console.log("Got seeds");
         return { artists, tracks };
     }
 
@@ -187,7 +183,6 @@ class SpotifyHelper {
             playlistUris.push(likedTracks[i]);
         }
 
-        console.log("Got tracks");
         return playlistUris;
     }
     
@@ -347,8 +342,6 @@ class SpotifyHelper {
             },
             body: fs.createReadStream(encodedImage)
         })
-        
-        console.log('Playlist image added');
     }
 
     static async updatePlaylist(user, playlistCover) {
