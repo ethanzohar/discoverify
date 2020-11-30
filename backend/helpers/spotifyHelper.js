@@ -49,7 +49,10 @@ class SpotifyHelper {
         });
     
         const resultJSON = await result.json();
-        console.log(resultJSON);
+        
+        if (!resultJSON.items) {
+            console.log(resultJSON)
+        }
     
         return resultJSON.items.map(x => x.id);
     }
@@ -379,11 +382,11 @@ class SpotifyHelper {
         const users = await UserController.getAllUsers();
         console.log(`running ${users.length} jobs`);
         const playlistCover = 'images/playlistCover.jpeg';
-        // await Promise.all(users.map(user => this.updatePlaylist(user, null)));
+        await Promise.all(users.map(user => this.updatePlaylist(user, null)));
 
-        for (let i = 0; i < users.length; i += 1) {
-            await this.updatePlaylist(users[i], null);
-        }
+        // for (let i = 0; i < users.length; i += 1) {
+        //     await this.updatePlaylist(users[i], null);
+        // }
 
         console.log(`${users.length} jobs complete`);
     }
