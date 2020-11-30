@@ -54,10 +54,8 @@ class SpotifyHelper {
     }
     
     static async getAllTop(access_token) {
-        // const longTermArtists = await this.getTop('artists', 'long_term', access_token);
-        // const longTermTracks = await this.getTop('tracks', 'long_term', access_token);
-        const longTermArtists = null;
-        const longTermTracks = null;
+        const allTimeArtists = await this.getTop('artists', 'long_term', access_token);
+        const allTimeTracks = await this.getTop('tracks', 'long_term', access_token);
 
         const mediumTermArtists = await this.getTop('artists', 'medium_term', access_token);
         const mediumTermTracks = await this.getTop('tracks', 'medium_term', access_token);
@@ -65,52 +63,61 @@ class SpotifyHelper {
         const shortTermArtists = await this.getTop('artists', 'short_term', access_token);
         const shortTermTracks = await this.getTop('tracks', 'short_term', access_token);
     
-        return { longTerm: { artists: longTermArtists, tracks : longTermTracks},
+        return { allTime: { artists: allTimeArtists, tracks : allTimeTracks},
                  mediumTerm: { artists: mediumTermArtists, tracks : mediumTermTracks},
                  shortTerm: { artists: shortTermArtists, tracks : shortTermTracks},   
                }
     }
     
-    static getSeeds(top) {
+    static getSeeds(user, top) {
         const artists = [];
         const tracks = [];
 
-        // LONG - 1
-        // MEDIUM - 3
-        // SHORT - 1
-
-        // longTerm
-        // for (let i = 0; i < 1 && top.longTerm.tracks.length > i; i += 1) {
-        //     artists.push(top.longTerm.artists[Math.floor(Math.random() * top.longTerm.artists.length)]);
-        //     tracks.push(top.longTerm.tracks[Math.floor(Math.random() * top.longTerm.tracks.length)]);
-        // }
-
-        // mediumTerm artists
-        for (let i = 0; i < 2 && top.mediumTerm.artists.length > i; i += 1) {
-            const index = Math.floor(Math.random() * top.mediumTerm.artists.length);
-            artists.push(top.mediumTerm.artists[index]);
-            top.mediumTerm.artists.splice(index, 1);
-        }
-
-        // mediumTerm tracks
-        for (let i = 0; i < 3 && top.mediumTerm.tracks.length > i; i += 1) {
-            const index = Math.floor(Math.random() * top.mediumTerm.tracks.length);
-            tracks.push(top.mediumTerm.tracks[index]);
-            top.mediumTerm.tracks.splice(index, 1);
-        }
-
-        // shortTerm artists
-        for (let i = 0; i < 1 && top.shortTerm.artists.length > i; i += 1) {
-            const index = Math.floor(Math.random() * top.shortTerm.artists.length);
-            artists.push(top.shortTerm.artists[index]);
-            top.shortTerm.artists.splice(index, 1);
-        }
-
-        // shortTerm tracks
-        for (let i = 0; i < 2 && top.shortTerm.tracks.length > i; i += 1) {
-            const index = Math.floor(Math.random() * top.shortTerm.tracks.length);
-            tracks.push(top.shortTerm.tracks[index]);
-            top.shortTerm.tracks.splice(index, 1);
+        for (let i = 0; i < user.playlistOptions.seeds.length; i += 1) {
+            switch (user.playlistOptions.seeds[i]){
+                case 'AT':
+                    if (top.allTime.tracks.length > 0) {
+                        const index = Math.floor(Math.random() * top.allTime.tracks.length);
+                        tracks.push(top.allTime.tracks[index]);
+                        top.allTime.tracks.splice(index, 1);
+                    }
+                    break;
+                case 'MT':
+                    if (top.mediumTerm.tracks.length > 0) {
+                        const index = Math.floor(Math.random() * top.mediumTerm.tracks.length);
+                        tracks.push(top.mediumTerm.tracks[index]);
+                        top.mediumTerm.tracks.splice(index, 1);
+                    }
+                    break;
+                case 'ST':
+                    if (top.shortTerm.tracks.length > 0) {
+                        const index = Math.floor(Math.random() * top.shortTerm.tracks.length);
+                        tracks.push(top.shortTerm.tracks[index]);
+                        top.shortTerm.tracks.splice(index, 1);
+                    }
+                    break;
+                case 'AA':
+                    if (top.allTime.artists.length > 0) {
+                        const index = Math.floor(Math.random() * top.allTime.artists.length);
+                        artists.push(top.allTime.artists[index]);
+                        top.allTime.artists.splice(index, 1);
+                    }
+                    break;
+                case 'MA':
+                    if (top.mediumTerm.artists.length > 0) {
+                        const index = Math.floor(Math.random() * top.mediumTerm.artists.length);
+                        artists.push(top.mediumTerm.artists[index]);
+                        top.mediumTerm.artists.splice(index, 1);
+                    }
+                    break;
+                case 'SA':
+                    if (top.shortTerm.artists.length > 0) {
+                        const index = Math.floor(Math.random() * top.shortTerm.artists.length);
+                        artists.push(top.shortTerm.artists[index]);
+                        top.shortTerm.artists.splice(index, 1);
+                    }
+                    break;
+            }
         }
     
         return { artists, tracks };
@@ -350,7 +357,7 @@ class SpotifyHelper {
         const access_token = await this.getNewAccessToken(user.refreshToken);
 
         const tracks = this.getAllTop(access_token)
-            .then((allTop) => this.getSeeds(allTop))
+            .then((allTop) => this.getSeeds(user, allTop))
             .then((seeds) => this.getTracks(user, seeds, access_token));
 
         let playlist = this.getPlaylist(user.userId, user.playlistId, access_token);
