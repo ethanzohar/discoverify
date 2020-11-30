@@ -382,7 +382,7 @@ class SpotifyHelper {
         // await Promise.all(users.map(user => this.updatePlaylist(user, null)));
 
         for (let i = 0; i < users.length; i += 1) {
-            await this.updatePlaylist(user, null);
+            await this.updatePlaylist(users[i], null);
         }
 
         console.log(`${users.length} jobs complete`);
