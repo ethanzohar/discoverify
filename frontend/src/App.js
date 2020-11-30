@@ -6,7 +6,6 @@ import DiscoverDailyLogin from "./DiscoverDaily/Login";
 import DiscoverDailyPlaylistOptions from "./DiscoverDaily/PlaylistOptions";
 import ReactGa from 'react-ga';
 import './index.css';
-// import './fonts/Gotham.otf';
 
 function App() {
   document.title = "Discoverify"
@@ -20,10 +19,10 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Route exact path="/" component={DiscoverDaily}></Route>
       <Route exact path="/options" component={DiscoverDailyPlaylistOptions}></Route>
       <Route exact path="/redirect" component={DiscoverDailyRedirect}></Route>
       <Route exact path="/login" component={DiscoverDailyLogin}></Route>
+      <Route exact path="/" component={DiscoverDaily}></Route>
     </BrowserRouter>
   );
 }
