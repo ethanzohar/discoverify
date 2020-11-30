@@ -12,6 +12,7 @@ $spotifyGreen: #1DB954;
     overflow-x: hidden;
     font-family: 'Gotham';
     color: rgb(12, 38, 88);
+    position: relative;
     // background-image: linear-gradient(to left, $discoverDailyLight, $discoverDailyPercentage, $discoverDailyDark);
 
     h1 {
@@ -336,6 +337,10 @@ $spotifyGreen: #1DB954;
     padding: 0 !important;
 }
 
+// .MuiPaper-root .makeStyles-paper-2 .MuiPaper-elevation1 .MuiPaper-rounded {
+//     width: 60% !important;
+// }
+
 .seedButton {
     background-color: white;
     border: 1px solid $spotifyGreen;
@@ -343,4 +348,9 @@ $spotifyGreen: #1DB954;
     border-radius: 1000px;
     line-height: 27px;
     margin: 10% 0 !important;
+    outline: none !important;
+}
+
+.seedButton:disabled {
+    background-color: rgb(230, 230, 230);
 }

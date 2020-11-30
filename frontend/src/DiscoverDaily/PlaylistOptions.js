@@ -22,15 +22,11 @@ const useStyles = makeStyles((theme) => ({
     width: 'max-content'
   },
   paper: {
-    width: 300,
-    height: 55,
+    width: '55%',
+    height: 90,
     overflow: 'none',
   },
 }));
-
-function not(a, b) {
-  return a.filter((value) => value !== b);
-}
 
 export default function DiscoverDailyPlaylistOptions() {
   const classes = useStyles();
@@ -48,6 +44,7 @@ export default function DiscoverDailyPlaylistOptions() {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   const [selectedSide, setSelectedSide] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(null);
   const [left, setLeft] = useState(["All Time Artist", "Medium Term Artist", "Short Term Artist", "All Time Track",  "Medium Term Track", "Short Term Track"]);
   const [right, setRight] = useState([]);
 
@@ -131,14 +128,12 @@ export default function DiscoverDailyPlaylistOptions() {
       const { user } = await DiscoverDailyHelper.getUser(spotifyUser.id);
       setUser(user.userId ? user : null);
       setLoading(false);
-
-      console.log('b')
-      console.log(user);
+      
       if (user.userId) {
         updatePlaylistOptions(user);
         await DiscoverDailyHelper.signupUser(spotifyUser, refresh_token);
       } else {
-        // sendToMain();
+        sendToMain();
       }
 
       return;
@@ -197,33 +192,36 @@ export default function DiscoverDailyPlaylistOptions() {
     );
   }
 
-  const select = (value, side) => {
+  const select = (value, side, index) => {
     setSelectedSide(side);
     setSelected(value);
-    console.log(value, side)
+    setSelectedIndex(index);
   }
 
   const handleSelectRight = () => {
-    console.log(right)
     setRight(right.concat(selected));
     setSelected(null);
     setSelectedSide(null);
+    setSelectedIndex(null);
   };
 
   const handleSelectLeft = () => {
-    setRight(not(right, selected));
+    const r = right;
+    r.splice(selectedIndex, 1);
+    setRight(r);
     setSelected(null);
     setSelectedSide(null);
+    setSelectedIndex(null);
   };
 
   const customList = (items, side) => (
     <Paper className={classes.paper}>
       <List dense component="div" role="list">
-        {items.map((value) => {
+        {items.map((value, index) => {
           const labelId = `transfer-list-item-${value}-label`;
 
           return (
-            <ListItem key={value} role="listitem" button onClick={() => { select(value, side); }} style={{ backgroundColor: selected === value ? "#4fe383" : ''}}>
+            <ListItem key={index} role="listitem" button onClick={() => { select(value, side, index); }} style={{ backgroundColor: selected === value && selectedSide === side && selectedIndex === index ? "#4fe383" : ''}}>
               <ListItemText id={labelId} primary={value} />
             </ListItem>
           );

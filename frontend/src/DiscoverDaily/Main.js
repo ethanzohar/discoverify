@@ -5,6 +5,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import SpotifyHelper from '../helpers/SpotifyHelper';
 import DiscoverDailyHelper from '../helpers/DiscoverDailyHelper';
 import { images } from './images';
+import github from '../images/github.png';
 
 import './discoverDaily.scss';
 class DiscoverDaily extends Component {
