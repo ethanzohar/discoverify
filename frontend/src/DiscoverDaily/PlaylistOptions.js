@@ -272,7 +272,7 @@ export default function DiscoverDailyPlaylistOptions() {
           <Col className="discoverDailyLeftColumn">
             {loading ? 
             (
-              <Row style={{ width: '90%', marginLeft: '4%' }}>
+              <Row className="playlistOptionsMainRow" style={{ width: '90%'}}>
                 <div style={{ width: 'max-content', margin: '0 auto' }}>
                   <CircularProgress style={{width: '10vw', height: '10vw', color: 'rgb(12, 38, 88)'}}/>
                 </div>
@@ -280,7 +280,7 @@ export default function DiscoverDailyPlaylistOptions() {
             ) : 
             (
               <Col style={{ width: '100%' }}>
-                <Row style={{ marginLeft: '4%' }}>
+                <Row className="playlistOptionsMainRow">
                   <h1 style={{ margin: '0' }}>Discover Weekly...</h1>
                   <h1 style={{ margin: '0' }}>But Daily</h1>
                 </Row>
