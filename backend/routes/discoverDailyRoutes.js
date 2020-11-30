@@ -117,6 +117,8 @@ router.get('/now', async function(req, res) {
 
 router.post('/subscribe', async function(req, res) {
     const { userId, refreshToken } = req.body;
+    
+    console.log(`Subscribing for user: ${userId}`);
 
     let user = await UserController.getUser(userId);
     if (user) {
@@ -132,12 +134,10 @@ router.post('/subscribe', async function(req, res) {
 
 router.post('/unsubscribe', async function(req, res) {
     const { userId, accessToken } = req.body;
-
-    console.log(`Trying to unsub user with ID ${userId}`)
-    
     if (!(await validate(userId, accessToken))) {
         return res.send({ success: false });
     }
+    console.log(`Unsubscribing user: ${userId}`);
 
     await UserController.deleteUser(userId);
     return res.send({ success: true });
@@ -148,6 +148,8 @@ router.post('/restorePlaylistOptions', async function(req, res) {
     if (!(await validate(userId, accessToken))) {
         return res.send({ success: false });
     }
+
+    console.log(`Restoring playlist options for user: ${userId}`);
 
     const user = await UserController.restorePlaylistOptions(userId);
 
@@ -160,8 +162,9 @@ router.post('/updatePlaylistOptions', async function(req, res) {
         return res.send({ success: false });
     }
 
+    console.log(`Updating playlist options for user: ${userId}`);
+
     const user = await UserController.updatePlaylistOptions(userId, options);
-    console.log(user);
     return res.send({ user });
 })
 
