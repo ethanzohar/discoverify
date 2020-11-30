@@ -49,10 +49,6 @@ class SpotifyHelper {
         });
     
         const resultJSON = await result.json();
-        
-        if (!resultJSON.items) {
-            console.log(resultJSON)
-        }
     
         return resultJSON.items.map(x => x.id);
     }
@@ -366,14 +362,14 @@ class SpotifyHelper {
 
         const playlistId = (await playlist).id;
 
-        // await this.updatePlaylistTracks(playlistId, await tracks, access_token);
+        await this.updatePlaylistTracks(playlistId, await tracks, access_token);
 
-        // user.lastUpdated = new Date();
-        // user.save();
+        user.lastUpdated = new Date();
+        user.save();
 
-        // if (playlistCover) {
-        //     await this.addPlaylistCover(playlistId, playlistCover, access_token);
-        // }
+        if (playlistCover) {
+            await this.addPlaylistCover(playlistId, playlistCover, access_token);
+        }
 
         console.log(`Playlist updated for user: ${user.userId}`);
     }
@@ -382,11 +378,11 @@ class SpotifyHelper {
         const users = await UserController.getAllUsers();
         console.log(`running ${users.length} jobs`);
         const playlistCover = 'images/playlistCover.jpeg';
-        await Promise.all(users.map(user => this.updatePlaylist(user, null)));
+        // await Promise.all(users.map(user => this.updatePlaylist(user, null)));
 
-        // for (let i = 0; i < users.length; i += 1) {
-        //     await this.updatePlaylist(users[i], null);
-        // }
+        for (let i = 0; i < users.length; i += 1) {
+            await this.updatePlaylist(users[i], null);
+        }
 
         console.log(`${users.length} jobs complete`);
     }
