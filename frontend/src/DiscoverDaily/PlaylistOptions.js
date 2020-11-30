@@ -22,14 +22,32 @@ const useStyles = makeStyles((theme) => ({
     width: 'max-content'
   },
   paper: {
-    width: '55%',
-    height: 90,
+    width: 300,
+    height: 55,
     overflow: 'none',
   },
 }));
 
 export default function DiscoverDailyPlaylistOptions() {
   const classes = useStyles();
+
+  const seedToString = {
+    'ST': 'Short Term Track',
+    'MT': 'Medium Term Track',
+    'AT': 'All Time Track',
+    'SA': 'Short Term Artist',
+    'MA': 'Medium Term Artist',
+    'AA': 'All Time Artist',
+  }
+
+  const StringToSeed = {
+    'Short Term Track': 'ST',
+    'Medium Term Track': 'MT',
+    'All Time Track': 'AT',
+    'Short Term Artist': 'SA',
+    'Medium Term Artist': 'MA',
+    'All Time Artist': 'AA',
+  }
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -45,8 +63,8 @@ export default function DiscoverDailyPlaylistOptions() {
   const [selected, setSelected] = useState(null);
   const [selectedSide, setSelectedSide] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(null);
-  const [left, setLeft] = useState(["All Time Artist", "Medium Term Artist", "Short Term Artist", "All Time Track",  "Medium Term Track", "Short Term Track"]);
-  const [right, setRight] = useState([]);
+  const [seeds, setSeeds] = useState(['AA', 'MA', 'SA', 'AT', 'MT', 'ST']);
+  const [chosenSeeds, setChosenSeeds] = useState([]);
 
   const optionRef = useRef(options);
 
@@ -60,6 +78,7 @@ export default function DiscoverDailyPlaylistOptions() {
 
   const updatePlaylistOptions = async (usr) => {
     if (usr.playlistOptions) {
+      setChosenSeeds(usr.playlistOptions.seeds);
       setAcousticness(usr.playlistOptions.acousticness);
       setDanceability(usr.playlistOptions.danceability);
       setEnergy(usr.playlistOptions.energy);
@@ -68,6 +87,7 @@ export default function DiscoverDailyPlaylistOptions() {
       setValence(usr.playlistOptions.valence);
 
       optionRef.current = {
+        seeds: usr.playlistOptions.seeds,
         acousticness: usr.playlistOptions.acousticness,
         danceability: usr.playlistOptions.danceability,
         energy: usr.playlistOptions.energy,
@@ -157,6 +177,20 @@ export default function DiscoverDailyPlaylistOptions() {
       await getUserState();
     }
 
+    function handleResize() {
+      if (window.innerWidth <= 1000) {
+        setSeeds(['AA', 'AT', 'MA', 'MT', 'SA', 'ST']);
+      } else {
+        setSeeds(['AA', 'MA', 'SA', 'AT', 'MT', 'ST']);
+      }
+    }
+
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+    
+    // Call handler right away so state gets updated with initial window size
+    handleResize();
+
     init();
   }, []);
 
@@ -199,16 +233,16 @@ export default function DiscoverDailyPlaylistOptions() {
   }
 
   const handleSelectRight = () => {
-    setRight(right.concat(selected));
+    optionRef.current.seeds.push(selected);
+    setChosenSeeds(optionRef.current.seeds);
     setSelected(null);
     setSelectedSide(null);
     setSelectedIndex(null);
   };
 
   const handleSelectLeft = () => {
-    const r = right;
-    r.splice(selectedIndex, 1);
-    setRight(r);
+    optionRef.current.seeds.splice(selectedIndex, 1);
+    setChosenSeeds(optionRef.current.seeds);
     setSelected(null);
     setSelectedSide(null);
     setSelectedIndex(null);
@@ -222,7 +256,7 @@ export default function DiscoverDailyPlaylistOptions() {
 
           return (
             <ListItem key={index} role="listitem" button onClick={() => { select(value, side, index); }} style={{ backgroundColor: selected === value && selectedSide === side && selectedIndex === index ? "#4fe383" : ''}}>
-              <ListItemText id={labelId} primary={value} />
+              <ListItemText id={labelId} primary={seedToString[value]} />
             </ListItem>
           );
         })}
@@ -253,31 +287,33 @@ export default function DiscoverDailyPlaylistOptions() {
                 <Row className="playlistOptionList" style={{ width: '100%', margin: '0 1%', maxHeight: '75vh', overflowY: 'auto', overflowX: 'hidden', padding: '0 8% 0 4%' }}>
                   <h3 className="spotifySliderHeader">Recommendation Seeds</h3>
                   <h5 className="spotifySliderDescription">These are your top tracks and artists taken from different time periods in your listening history. All time would encompass your entire listening history, medium term would include the past 6 months, and short term includes the past 4 weeks. Select anywhere between 1 and 5 options to influence your playlist.</h5>
-                  <Grid container spacing={2} justify="center" alignItems="center" className={classes.root}>
-                    <Grid item>{customList(left, 'left')}</Grid>
-                      <Grid item>
-                        <Grid container direction="column" alignItems="center">
-                          <button
-                            className="seedButton"
-                            size="small"
-                            onClick={handleSelectRight}
-                            disabled={!selected || selectedSide !== 'left' || right.length >= 5}
-                            aria-label="move selected right"
-                          >
-                            &gt;
-                          </button>
-                          <button
-                            className="seedButton"
-                            size="small"
-                            onClick={handleSelectLeft}
-                            disabled={!selected || selectedSide !== 'right' || right.length <= 1}
-                            aria-label="move selected left"
-                          >
-                            &lt;
-                          </button>
-                        </Grid>
+                  <Grid id="seedGrid" container spacing={2} justify="center" alignItems="center" className={classes.root}>
+                    <Grid item id="seedsLeft">{customList(seeds, 'left')}</Grid>
+                    <Grid item id="seedButtons">
+                      <Grid container direction="column" alignItems="center">
+                        <button
+                          id="seedButton1"
+                          className="seedButton"
+                          size="small"
+                          onClick={handleSelectRight}
+                          disabled={!selected || selectedSide !== 'left' || chosenSeeds.length >= 5}
+                          aria-label="move selected right"
+                        >
+                          &gt;
+                        </button>
+                        <button
+                          id="seedButton2"
+                          className="seedButton"
+                          size="small"
+                          onClick={handleSelectLeft}
+                          disabled={!selected || selectedSide !== 'right' || chosenSeeds.length <= 1}
+                          aria-label="move selected left"
+                        >
+                          &lt;
+                        </button>
                       </Grid>
-                    <Grid item>{customList(right, 'right')}</Grid>
+                    </Grid>
+                    <Grid item id="seedsRight">{customList(chosenSeeds, 'right')}</Grid>
                   </Grid>
                   <h3 className="spotifySliderHeader">Acousticness</h3>
                   <h5 className="spotifySliderDescription">A confidence measure of whether the track is acoustic.</h5>

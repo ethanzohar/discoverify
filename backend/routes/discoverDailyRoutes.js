@@ -26,6 +26,22 @@ router.get('/', function (req, res) {
     return res.send('You hit playlist gen');
 })
 
+router.post('/migration', async function (req, res) {
+    const { userId, refreshToken } = req.body;
+    if (!isAdmin(userId, refreshToken)) {
+        return res.status(403).send('Invalid credentials');
+    }
+
+    const users = await UserController.getAllUsers();
+    
+    for (let i = 0; i < users.length; i += 1) {
+        users[i].playlistOptions.seeds = ['ST', 'ST', 'MT', 'MT', 'MT'];
+        await users[i].save();
+    }
+
+    return res.send('Migration complete');
+});
+
 router.post('/force', async function (req, res) {
     const { userId, refreshToken } = req.body;
     if (!isAdmin(userId, refreshToken)) {
@@ -36,7 +52,6 @@ router.post('/force', async function (req, res) {
     SpotifyHelper.updatePlaylists(users);
     return res.send('Playlist Generation has been started');
 });
-
 
 
 router.post('/force/:target', async function (req, res) {
@@ -158,7 +173,6 @@ router.post('/updatePlaylistOptions', async function(req, res) {
     }
 
     const user = await UserController.updatePlaylistOptions(userId, options);
-    console.log(user);
     return res.send({ user });
 })
 

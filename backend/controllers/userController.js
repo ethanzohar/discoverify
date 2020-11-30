@@ -27,6 +27,7 @@ class UserController {
     const user = await this.getUser(userId);
 
     user.playlistOptions = {
+      seeds: ['ST', 'ST', 'MT', 'MT', 'MT'],
       acousticness: [0, 100],
       danceability: [0, 100],
       energy: [0, 100],

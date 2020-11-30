@@ -7,6 +7,7 @@ const userSchema = new Schema({
     playlistId: { type: String, unique: true },
     lastUpdated: { type: Date },
     playlistOptions: {
+        seeds: { type: [String], default: ['ST', 'ST', 'MT', 'MT', 'MT']},
         acousticness: { type: [Number, Number], default: [0, 100] },
         danceability: { type: [Number, Number], default: [0, 100] },
         energy: { type: [Number, Number], default: [0, 100] },

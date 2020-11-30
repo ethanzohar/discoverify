@@ -325,9 +325,6 @@ $spotifyGreen: #1DB954;
 
 .MuiButtonBase-root.MuiListItem-root.MuiListItem-dense.MuiListItem-gutters.MuiListItem-button {
     padding: 0 !important;
-}
-
-.MuiListItem-root {
     width: 33% !important;
     margin: 1% 0 !important;
     float: left;
@@ -336,10 +333,6 @@ $spotifyGreen: #1DB954;
 .MuiList-padding {
     padding: 0 !important;
 }
-
-// .MuiPaper-root .makeStyles-paper-2 .MuiPaper-elevation1 .MuiPaper-rounded {
-//     width: 60% !important;
-// }
 
 .seedButton {
     background-color: white;
@@ -353,4 +346,71 @@ $spotifyGreen: #1DB954;
 
 .seedButton:disabled {
     background-color: rgb(230, 230, 230);
+}
+
+@media only screen and (max-width: 1000px) {
+    .MuiButtonBase-root.MuiListItem-root.MuiListItem-dense.MuiListItem-gutters.MuiListItem-button {
+        width: 50% !important;
+    }
+
+    .makeStyles-paper-2 {
+        width: 200px !important;
+        height: 75px !important;
+    }
+
+    #seedGrid {
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media only screen and (max-width: 550px) {
+    .MuiButtonBase-root.MuiListItem-root.MuiListItem-dense.MuiListItem-gutters.MuiListItem-button {
+        width: 33.3% !important;
+    }
+
+    .makeStyles-paper-2 {
+        width: 80% !important;
+        height: 55px !important;
+        display: inline-block;
+        margin: 0 10%;
+    }
+
+    #seedsLeft, #seedsRight{
+        width: 100% !important;
+        margin: 0 auto;
+    }
+
+    #seedsLeft {
+        padding-bottom: 0 !important;
+    }
+
+    #seedButtons {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        width: 100% !important;
+    }
+
+    #seedsRight {
+        padding-top: 0 !important;
+    }
+
+    #seedGrid {
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+    }
+
+    #seedButtons div {
+        display: inline-block !important;
+        width: 30% !important;
+    }
+
+    #seedButton2 {
+        float: left !important;
+    }
+
+    .seedButton {
+        margin: 2% 10% !important;
+    }
 }
