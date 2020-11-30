@@ -290,8 +290,6 @@ class SpotifyHelper {
                 'Authorization': `Bearer ${accessToken}`
             }
         });
-
-        console.log(result);
     
         return result.json();
     }
