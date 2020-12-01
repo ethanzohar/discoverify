@@ -163,7 +163,6 @@ export default function DiscoverDailyPlaylistOptions() {
   }
 
   useEffect(() => {
-    console.log("ASSDASDASDSD")
     async function init() {
       const imgIndexes = new Set();
       while (imgIndexes.size < 16) {
