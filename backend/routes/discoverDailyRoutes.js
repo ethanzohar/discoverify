@@ -55,6 +55,16 @@ router.post('/force', async function (req, res) {
     return res.send('Playlist Generation has been started');
 });
 
+router.post('/forceNoUpdate', async function (req, res) {
+    const { userId, refreshToken } = req.body;
+    if (!isAdmin(userId, refreshToken)) {
+        return res.status(403).send('Invalid credentials');
+    }
+
+    const users = await UserController.getAllUsers();
+    SpotifyHelper.updatePlaylistsNoUpdate(users);
+    return res.send('Playlist Generation has been started');
+});
 
 router.post('/forceSingle', async function (req, res) {
     const { userId, refreshToken, target } = req.body;

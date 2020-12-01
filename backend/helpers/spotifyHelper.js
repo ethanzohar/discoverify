@@ -409,6 +409,31 @@ class SpotifyHelper {
 
         console.log(`${users.length} jobs complete | ${new Date()}`);
     }
+
+    static async updatePlaylistsNoUpdate() {
+        const users = await UserController.getAllUsers();
+        console.log(`running ${users.length} jobs | ${new Date()}`);
+        const playlistCover = 'images/playlistCover.jpeg';
+        // await Promise.all(users.map(user => this.updatePlaylist(user, null)));
+
+        for (let i = 0; i < users.length; i += 1) {
+            try {
+                const user  = users[i];
+                console.log(`Running no update for user: ${user.userId}`);
+                const access_token = await this.getNewAccessToken(user.refreshToken);
+
+                const tracks = this.getAllTop(access_token)
+                    .then((allTop) => this.getSeeds(user, allTop))
+                    .then((seeds) => this.getTracks(user, seeds, access_token));
+
+                console.log(tracks);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
+        console.log(`${users.length} jobs complete | ${new Date()}`);
+    }
 }
 
 module.exports = SpotifyHelper;
