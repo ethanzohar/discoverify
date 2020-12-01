@@ -27,7 +27,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "oldDeploy": "git pull && npm install && npm run-script build && pm2 delete discoverify-frontend && pm2 serve build 8082 --name discoverify-frontend --spa",
-    "deploy": "git pull && npm install && npm run-script build && pm2 reload discoverify-frontend && pm2 serve build 8082 --name discoverify-frontend --spa"
+    "deploy": "git pull && npm install && npm run-script build && pm2 reload discoverify-frontend"
   },
   "eslintConfig": {
     "extends": "react-app"
