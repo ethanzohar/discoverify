@@ -432,7 +432,7 @@ class SpotifyHelper {
                     .then((allTop) => this.getSeeds(user, allTop))
                     .then((seeds) => this.getTracks(user, seeds, access_token));
 
-                console.log(tracks.length);
+                console.log(`${tracks.length} tracks found`);
 
                 let playlist = await this.getPlaylist(user.userId, user.playlistId, access_token);
                 const doesMyPlaylistExist = await this.doesMyPlaylistExists(user.playlistId, access_token);
