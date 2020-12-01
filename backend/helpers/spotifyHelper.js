@@ -144,14 +144,21 @@ class SpotifyHelper {
         }
     
         let url = 'https://api.spotify.com/v1/recommendations?limit=50';
-        url += `&seed_artists=${seeds.artists.join(',')}`;
-        url += `&seed_track=${seeds.tracks.join(',')}`;
-        url += `&min_acousticness=${usr.playlistOptions.acousticness[0]/100}&max_acousticness=${usr.playlistOptions.acousticness[1]/100}`
-        url += `&min_danceability=${usr.playlistOptions.danceability[0]/100}&max_danceability=${usr.playlistOptions.danceability[1]/100}`
-        url += `&min_energy=${usr.playlistOptions.energy[0]/100}&max_energy=${usr.playlistOptions.energy[1]/100}`
-        url += `&min_instrumentalness=${usr.playlistOptions.instrumentalness[0]/100}&max_instrumentalness=${usr.playlistOptions.instrumentalness[1]/100}`
-        url += `&min_popularity=${usr.playlistOptions.popularity[0]}&max_popularity=${usr.playlistOptions.popularity[1]}`
-        url += `&min_valence=${usr.playlistOptions.valence[0]/100}&max_valence=${usr.playlistOptions.valence[1]/100}`
+
+        if (seeds.artists.length > 0) {
+            url += `&seed_artists=${seeds.artists.join(',')}`;
+        }
+
+        if (seeds.tracks.length > 0) {
+            url += `&seed_tracks=${seeds.tracks.join(',')}`;
+        }
+
+        url += `&min_acousticness=${usr.playlistOptions.acousticness[0]/100}&max_acousticness=${usr.playlistOptions.acousticness[1]/100}`;
+        url += `&min_danceability=${usr.playlistOptions.danceability[0]/100}&max_danceability=${usr.playlistOptions.danceability[1]/100}`;
+        url += `&min_energy=${usr.playlistOptions.energy[0]/100}&max_energy=${usr.playlistOptions.energy[1]/100}`;
+        url += `&min_instrumentalness=${usr.playlistOptions.instrumentalness[0]/100}&max_instrumentalness=${usr.playlistOptions.instrumentalness[1]/100}`;
+        url += `&min_popularity=${usr.playlistOptions.popularity[0]}&max_popularity=${usr.playlistOptions.popularity[1]}`;
+        url += `&min_valence=${usr.playlistOptions.valence[0]/100}&max_valence=${usr.playlistOptions.valence[1]/100}`;
 
         const recommendations = await fetch(url, {
             Accepts: 'application/json',
