@@ -422,7 +422,7 @@ class SpotifyHelper {
                 console.log(`Running no update for user: ${user.userId}`);
                 const access_token = await this.getNewAccessToken(user.refreshToken);
 
-                const tracks = this.getAllTop(access_token)
+                const tracks = await this.getAllTop(access_token)
                     .then((allTop) => this.getSeeds(user, allTop))
                     .then((seeds) => this.getTracks(user, seeds, access_token));
 
