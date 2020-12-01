@@ -57,17 +57,11 @@ class SpotifyHelper {
         const allTimeArtists = await this.getTop('artists', 'long_term', access_token);
         const allTimeTracks = await this.getTop('tracks', 'long_term', access_token);
 
-        console.log('All time Length (artist, track)', allTimeArtists.length, allTimeTracks.length);
-
         const mediumTermArtists = await this.getTop('artists', 'medium_term', access_token);
         const mediumTermTracks = await this.getTop('tracks', 'medium_term', access_token);
 
-        console.log('Medium Term Length (artist, track)', mediumTermArtists.length, mediumTermTracks.length);
-
         const shortTermArtists = await this.getTop('artists', 'short_term', access_token);
         const shortTermTracks = await this.getTop('tracks', 'short_term', access_token);
-
-        console.log('Short term Length (artist, track)', shortTermArtists.length, shortTermTracks.length);
     
         return { allTime: { artists: allTimeArtists, tracks : allTimeTracks},
                  mediumTerm: { artists: mediumTermArtists, tracks : mediumTermTracks},
@@ -177,12 +171,6 @@ class SpotifyHelper {
         const responseJSON = await recommendations.json();
         const tracks = responseJSON.tracks;
 
-        if (!tracks || tracks.length < PLAYLIST_SIZE) {
-            console.log(tracks.length);
-            console.log(usr.playlistOptions);
-            console.log(seeds);
-        }
-
         if (!tracks || tracks.length === 0) {
             return [];
         }
@@ -236,10 +224,6 @@ class SpotifyHelper {
             
             const targetResponseJSON = await targetRecommendations.json();
             const targetTracks = targetResponseJSON.tracks;
-
-            if (!targetTracks || targetTracks.length < PLAYLIST_SIZE) {
-                console.log(targetTracks.length);
-            }
 
             const targetTrackIds = [];
             const targetUris = [];
@@ -449,9 +433,13 @@ class SpotifyHelper {
 
         if (!(await playlist) || !(await doesMyPlaylistExist)) {
             playlist = await this.createPlaylist(user.userId, access_token);
+            console.log('Had to create new playlist');
         }
 
         const playlistId = (await playlist).id;
+
+        console.log(`${(await tracks).length} tracks found`);
+        console.log("Playlist ID", playlistId);
 
         await this.updatePlaylistTracks(playlistId, await tracks, access_token);
 
@@ -463,6 +451,7 @@ class SpotifyHelper {
         }
 
         console.log(`Playlist updated for user: ${user.userId}`);
+        console.log(' ');
     }
 
     static async updatePlaylists() {
