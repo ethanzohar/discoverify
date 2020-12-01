@@ -57,11 +57,17 @@ class SpotifyHelper {
         const allTimeArtists = await this.getTop('artists', 'long_term', access_token);
         const allTimeTracks = await this.getTop('tracks', 'long_term', access_token);
 
+        console.log('All time Length (artist, track)', allTimeArtists.length, allTimeTracks.length);
+
         const mediumTermArtists = await this.getTop('artists', 'medium_term', access_token);
         const mediumTermTracks = await this.getTop('tracks', 'medium_term', access_token);
 
+        console.log('Medium Term Length (artist, track)', mediumTermArtists.length, mediumTermTracks.length);
+
         const shortTermArtists = await this.getTop('artists', 'short_term', access_token);
         const shortTermTracks = await this.getTop('tracks', 'short_term', access_token);
+
+        console.log('Short term Length (artist, track)', shortTermArtists.length, shortTermTracks.length);
     
         return { allTime: { artists: allTimeArtists, tracks : allTimeTracks},
                  mediumTerm: { artists: mediumTermArtists, tracks : mediumTermTracks},
@@ -171,10 +177,13 @@ class SpotifyHelper {
         const responseJSON = await recommendations.json();
         const tracks = responseJSON.tracks;
 
-        if (!tracks || tracks.length === 0) {
+        if (!tracks || tracks.length < PLAYLIST_SIZE) {
             console.log(responseJSON);
             console.log(usr.playlistOptions);
             console.log(seeds);
+        }
+
+        if (!tracks || tracks.length === 0) {
             return [];
         }
 
