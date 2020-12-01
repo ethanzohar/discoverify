@@ -56,13 +56,13 @@ router.post('/force', async function (req, res) {
 });
 
 
-router.post('/force/:target', async function (req, res) {
-    const { userId, refreshToken } = req.body;
+router.post('/forceSingle', async function (req, res) {
+    const { userId, refreshToken, target } = req.body;
     if (!isAdmin(userId, refreshToken)) {
         return res.status(403).send('Invalid credentials');
     }
 
-    const user = await UserController.getUser(req.params.target);
+    const user = await UserController.getUser(target);
 
     if (!user) {
         return res.status(403).send('User does not exist');
