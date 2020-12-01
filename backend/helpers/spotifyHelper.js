@@ -168,9 +168,15 @@ class SpotifyHelper {
             }
         });
         
-        const tracks = (await recommendations.json()).tracks;
+        const responseJSON = await recommendations.json();
+        const tracks = responseJSON.tracks;
 
-        if (!tracks || tracks.length === 0) return [];
+        if (!tracks || tracks.length === 0) {
+            console.log(responseJSON);
+            console.log(usr.playlistOptions);
+            console.log(seeds);
+            return [];
+        }
 
         const trackIds = [];
         const uris = [];
@@ -426,7 +432,19 @@ class SpotifyHelper {
                     .then((allTop) => this.getSeeds(user, allTop))
                     .then((seeds) => this.getTracks(user, seeds, access_token));
 
-                console.log(tracks);
+                console.log(tracks.length);
+
+                let playlist = await this.getPlaylist(user.userId, user.playlistId, access_token);
+                const doesMyPlaylistExist = await this.doesMyPlaylistExists(user.playlistId, access_token);
+
+                console.log("Playlist ID", playlist.id);
+                console.log("PLAYLIST EXISTS", doesMyPlaylistExist);
+        
+                if (!(await playlist) || !(await doesMyPlaylistExist)) {
+                    console.log('HAD TO CREATE NEW PLAYLIST');
+                }
+                
+                console.log(' ');
             } catch (e) {
                 console.log(e);
             }
