@@ -208,6 +208,63 @@ class SpotifyHelper {
             if (playlistUris.length >= PLAYLIST_SIZE) break;
         }
 
+        if (playlistUris.length < PLAYLIST_SIZE) {
+            let url = 'https://api.spotify.com/v1/recommendations?limit=50';
+
+            if (seeds.artists.length > 0) {
+                url += `&seed_artists=${seeds.artists.join(',')}`;
+            }
+
+            if (seeds.tracks.length > 0) {
+                url += `&seed_tracks=${seeds.tracks.join(',')}`;
+            }
+
+            url += `&target_acousticness=${Math.round((usr.playlistOptions.acousticness[0] + usr.playlistOptions.acousticness[1])/200)}`
+            url += `&target_danceability=${Math.round((usr.playlistOptions.danceability[0] + usr.playlistOptions.danceability[1])/200)}`
+            url += `&target_energy=${Math.round((usr.playlistOptions.energy[0] + usr.playlistOptions.energy[1])/200)}`
+            url += `&target_instrumentalness=${Math.round((usr.playlistOptions.instrumentalness[0] + usr.playlistOptions.instrumentalness[1])/200)}`
+            url += `&target_popularity=${Math.round((usr.playlistOptions.popularity[0] + usr.playlistOptions.popularity[1])/200)}`
+            url += `&target_valence=${Math.round((usr.playlistOptions.valence[0] + usr.playlistOptions.valence[1])/200)}`
+
+            const targetRecommendations = await fetch(url, {
+                Accepts: 'application/json',
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            });
+            
+            const targetResponseJSON = await targetRecommendations.json();
+            const targetTracks = targetResponseJSON.tracks;
+
+            if (!targetTracks || targetTracks.length < PLAYLIST_SIZE) {
+                console.log(targetTracks.length);
+            }
+
+            const targetTrackIds = [];
+            const targetUris = [];
+            for (let i = 0; i < targetTracks.length; i += 1) {
+                targetTrackIds.push(targetTracks[i].id);
+                targetUris.push(targetTracks[i].uri);
+            }
+
+            const targetLiked = await this.getLiked(targetTrackIds, accessToken);
+
+            for (let i = 0; i < targetLiked.length; i += 1) {
+                if (!targetLiked[i]) {
+                    if (!playlistUris.includes(targetUris[i])) {
+                        playlistUris.push(targetUris[i]);
+                    }
+                } else {
+                    if (!likedTracks.includes(targetUris[i])) {
+                        likedTracks.push(targetUris[i]);
+                    }
+                }
+
+                if (playlistUris.length >= PLAYLIST_SIZE) break;
+            }
+        }
+
         for (let i = 0; i < PLAYLIST_SIZE - playlistUris.length && i < likedTracks.length; i += 1) {
             playlistUris.push(likedTracks[i]);
         }
