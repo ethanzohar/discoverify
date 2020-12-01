@@ -178,7 +178,7 @@ class SpotifyHelper {
         const tracks = responseJSON.tracks;
 
         if (!tracks || tracks.length < PLAYLIST_SIZE) {
-            console.log(responseJSON);
+            console.log(tracks.length);
             console.log(usr.playlistOptions);
             console.log(seeds);
         }
