@@ -329,6 +329,11 @@ class SpotifyHelper {
 
     static async doesMyPlaylistExists(playlistId, accessToken) {
         let playlists = await this.getUserPlaylists(accessToken);
+
+        if (!playlists || !playlists.items) {
+            return false;
+        }
+
         let next = playlists.next;
         
         do {
