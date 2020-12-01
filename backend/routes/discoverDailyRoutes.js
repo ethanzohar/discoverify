@@ -175,6 +175,7 @@ router.post('/restorePlaylistOptions', async function(req, res) {
 
 router.post('/updatePlaylistOptions', async function(req, res) {
     const { userId, accessToken, options } = req.body;
+    console.log('WELP')
     if (!(await validate(userId, accessToken))) {
         return res.send({ success: false });
     }
