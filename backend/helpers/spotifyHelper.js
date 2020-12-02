@@ -207,12 +207,14 @@ class SpotifyHelper {
                 url += `&seed_tracks=${seeds.tracks.join(',')}`;
             }
 
-            url += `&target_acousticness=${Math.round((usr.playlistOptions.acousticness[0] + usr.playlistOptions.acousticness[1])/200)}`
-            url += `&target_danceability=${Math.round((usr.playlistOptions.danceability[0] + usr.playlistOptions.danceability[1])/200)}`
-            url += `&target_energy=${Math.round((usr.playlistOptions.energy[0] + usr.playlistOptions.energy[1])/200)}`
-            url += `&target_instrumentalness=${Math.round((usr.playlistOptions.instrumentalness[0] + usr.playlistOptions.instrumentalness[1])/200)}`
-            url += `&target_popularity=${Math.round((usr.playlistOptions.popularity[0] + usr.playlistOptions.popularity[1])/200)}`
-            url += `&target_valence=${Math.round((usr.playlistOptions.valence[0] + usr.playlistOptions.valence[1])/200)}`
+            url += `&target_acousticness=${(usr.playlistOptions.acousticness[0] + usr.playlistOptions.acousticness[1])/200}`;
+            url += `&target_danceability=${(usr.playlistOptions.danceability[0] + usr.playlistOptions.danceability[1])/200}`;
+            url += `&target_energy=${(usr.playlistOptions.energy[0] + usr.playlistOptions.energy[1])/200}`;
+            url += `&target_instrumentalness=${(usr.playlistOptions.instrumentalness[0] + usr.playlistOptions.instrumentalness[1])/200}`;
+            url += `&target_popularity=${Math.round((usr.playlistOptions.popularity[0] + usr.playlistOptions.popularity[1])/2)}`;
+            url += `&target_valence=${(usr.playlistOptions.valence[0] + usr.playlistOptions.valence[1])/200}`;
+
+            console.log(url);
 
             const targetRecommendations = await fetch(url, {
                 Accepts: 'application/json',
@@ -224,6 +226,7 @@ class SpotifyHelper {
             
             const targetResponseJSON = await targetRecommendations.json();
             const targetTracks = targetResponseJSON.tracks;
+            console.log(targetTracks.length);
 
             const targetTrackIds = [];
             const targetUris = [];
