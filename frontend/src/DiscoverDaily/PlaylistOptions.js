@@ -9,7 +9,6 @@ import MuiAlert from '@material-ui/lab/Alert';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import Paper from '@material-ui/core/Paper';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import Divider from '@material-ui/core/Divider';
@@ -179,7 +178,7 @@ export default function DiscoverDailyPlaylistOptions() {
       } else {
         setSeeds(['AA', 'MA', 'SA', 'AT', 'MT', 'ST']);
       }
-      
+
       setVerticalSeedArrows(window.innerWidth <= 550);
     }
 
