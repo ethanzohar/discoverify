@@ -98,7 +98,7 @@ class DiscoverDaily extends Component {
       const { user, now } = await DiscoverDailyHelper.getUser(spotifyUser.id);
       this.setState({ user : user, now, spotifyUser, refreshToken: refresh_token, loading: false });
 
-      if (user) await DiscoverDailyHelper.signupUser(spotifyUser, refresh_token);
+      if (user) await DiscoverDailyHelper.signupUser(spotifyUser.id, refresh_token);
       
       sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
       return;
