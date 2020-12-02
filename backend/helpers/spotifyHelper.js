@@ -169,11 +169,7 @@ class SpotifyHelper {
         });
         
         const responseJSON = await recommendations.json();
-        const tracks = responseJSON.tracks;
-
-        if (!tracks || tracks.length === 0) {
-            return [];
-        }
+        const tracks = responseJSON.tracks || [];
 
         const trackIds = [];
         const uris = [];
@@ -182,7 +178,7 @@ class SpotifyHelper {
             uris.push(tracks[i].uri);
         }
 
-        const liked = await this.getLiked(trackIds, accessToken);
+        const liked = tracks.length === 0 ? [] : await this.getLiked(trackIds, accessToken);
 
         const likedTracks = [];
         const playlistUris = [];
@@ -214,8 +210,6 @@ class SpotifyHelper {
             url += `&target_popularity=${Math.round((usr.playlistOptions.popularity[0] + usr.playlistOptions.popularity[1])/2)}`;
             url += `&target_valence=${(usr.playlistOptions.valence[0] + usr.playlistOptions.valence[1])/200}`;
 
-            console.log(url);
-
             const targetRecommendations = await fetch(url, {
                 Accepts: 'application/json',
                 method: 'GET',
@@ -225,8 +219,11 @@ class SpotifyHelper {
             });
             
             const targetResponseJSON = await targetRecommendations.json();
-            const targetTracks = targetResponseJSON.tracks;
-            console.log(targetTracks.length);
+            const targetTracks = targetResponseJSON.tracks || [];
+
+            if (targetTracks.length === 0) {
+                return [];
+            }
 
             const targetTrackIds = [];
             const targetUris = [];
