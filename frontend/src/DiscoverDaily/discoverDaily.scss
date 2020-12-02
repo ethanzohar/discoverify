@@ -227,6 +227,10 @@ $spotifyGreen: #1DB954;
     .playlistOptionsMainRow {
         margin-left: 0;
     }
+
+    .MuiCardHeader-root {
+        margin: 0 auto;
+    }
 }
 
 // 2x2
@@ -360,12 +364,22 @@ $spotifyGreen: #1DB954;
     background-color: rgb(230, 230, 230);
 }
 
+.seedList {
+    width: 300px;
+    height: 55px;
+}
+
+.MuiTypography-root.MuiCardHeader-subheader.MuiTypography-body1.MuiTypography-colorTextSecondary.MuiTypography-displayBlock {
+    margin: 0 0 0 2px !important;
+    font-size: 1.2rem;
+}
+
 @media only screen and (max-width: 1000px) {
     .MuiButtonBase-root.MuiListItem-root.MuiListItem-dense.MuiListItem-gutters.MuiListItem-button {
         width: 50% !important;
     }
 
-    .makeStyles-paper-2, .MuiPaper-root.jss2.MuiPaper-elevation1.MuiPaper-rounded {
+    .makeStyles-paper-2, .MuiPaper-root.jss2.MuiPaper-elevation1.MuiPaper-rounded, .seedList {
         width: 200px !important;
         height: 75px !important;
     }
@@ -381,7 +395,7 @@ $spotifyGreen: #1DB954;
         width: 33.3% !important;
     }
 
-    .makeStyles-paper-2, .MuiPaper-root.jss2.MuiPaper-elevation1.MuiPaper-rounded {
+    .makeStyles-paper-2, .MuiPaper-root.jss2.MuiPaper-elevation1.MuiPaper-rounded, .seedList {
         width: 90% !important;
         height: 55px !important;
         display: inline-block;

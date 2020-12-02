@@ -10,6 +10,9 @@ import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Paper from '@material-ui/core/Paper';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import Divider from '@material-ui/core/Divider';
 import ListItemText from '@material-ui/core/ListItemText';
 import SpotifyHelper from '../helpers/SpotifyHelper';
 import DiscoverDailyHelper from '../helpers/DiscoverDailyHelper';
@@ -21,9 +24,10 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: 'max-content'
   },
-  paper: {
-    width: 300,
-    height: 55,
+  cardHeader: {
+    width: 'max-content',
+    height: 'max-content',
+    padding: 10,
     overflow: 'none',
   },
 }));
@@ -38,15 +42,6 @@ export default function DiscoverDailyPlaylistOptions() {
     'SA': 'Short Term Artist',
     'MA': 'Medium Term Artist',
     'AA': 'All Time Artist',
-  }
-
-  const StringToSeed = {
-    'Short Term Track': 'ST',
-    'Medium Term Track': 'MT',
-    'All Time Track': 'AT',
-    'Short Term Artist': 'SA',
-    'Medium Term Artist': 'MA',
-    'All Time Artist': 'AA',
   }
 
   const [user, setUser] = useState(null);
@@ -65,6 +60,7 @@ export default function DiscoverDailyPlaylistOptions() {
   const [selectedIndex, setSelectedIndex] = useState(null);
   const [seeds, setSeeds] = useState(['AA', 'MA', 'SA', 'AT', 'MT', 'ST']);
   const [chosenSeeds, setChosenSeeds] = useState([]);
+  const [verticalSeedArrows, setVerticalSeedArrows] = useState(false);
 
   const optionRef = useRef(options);
 
@@ -183,6 +179,8 @@ export default function DiscoverDailyPlaylistOptions() {
       } else {
         setSeeds(['AA', 'MA', 'SA', 'AT', 'MT', 'ST']);
       }
+      
+      setVerticalSeedArrows(window.innerWidth <= 550);
     }
 
     // Add event listener
@@ -249,8 +247,20 @@ export default function DiscoverDailyPlaylistOptions() {
   };
 
   const customList = (items, side) => (
-    <Paper className={classes.paper}>
-      <List dense component="div" role="list">
+    <Card>
+      {side === 'left' ? 
+        <CardHeader 
+        className={classes.cardHeader}
+        title="Available Seeds"
+        style={{ padding: '19px 10px' }} />
+      :
+        <CardHeader 
+        className={classes.cardHeader}
+        title="Chosen Seeds"
+        subheader={`${chosenSeeds.length}/5 selected`}/>
+      }
+      <Divider />
+      <List dense component="div" role="list" className="seedList">
         {items.map((value, index) => {
           const labelId = `transfer-list-item-${value}-label`;
 
@@ -262,7 +272,7 @@ export default function DiscoverDailyPlaylistOptions() {
         })}
         <ListItem />
       </List>
-    </Paper>
+    </Card>
   );
 
   return (
@@ -299,7 +309,7 @@ export default function DiscoverDailyPlaylistOptions() {
                           disabled={!selected || selectedSide !== 'left' || chosenSeeds.length >= 5}
                           aria-label="move selected right"
                         >
-                          &gt;
+                          {verticalSeedArrows ? String.fromCharCode(9661) :String.fromCharCode(62)}
                         </button>
                         <button
                           id="seedButton2"
@@ -309,7 +319,7 @@ export default function DiscoverDailyPlaylistOptions() {
                           disabled={!selected || selectedSide !== 'right' || chosenSeeds.length <= 1}
                           aria-label="move selected left"
                         >
-                          &lt;
+                        {verticalSeedArrows ? String.fromCharCode(9651) : String.fromCharCode(60)}
                         </button>
                       </Grid>
                     </Grid>
