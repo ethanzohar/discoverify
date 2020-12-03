@@ -44,6 +44,11 @@ const DiscoverDailyLogin = () => {
           </Col>
         </Col>
       </Row>
+      <Row style={{ position: 'absolute', left: '15px', bottom: '0' }}>
+        <a href="https://github.com/ethanzohar/discoverify" target="_blank" rel="noopener noreferrer">
+          <img src={github} alt="github" width="10%" style={{ margin: '10px' }} />
+        </a>
+      </Row>
     </div>
   );
 }
