@@ -170,6 +170,7 @@ class SpotifyHelper {
         
         let responseJSON;
         try {
+            responseJSON = await recommendations.json();
         } catch (e) {
             console.log(recommendations);
             console.log(e);
