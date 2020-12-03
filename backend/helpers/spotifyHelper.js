@@ -168,7 +168,25 @@ class SpotifyHelper {
             }
         });
         
-        const responseJSON = await recommendations.json();
+        let responseJSON;
+        try {
+        } catch (e) {
+            console.log(recommendations);
+            console.log(e);
+
+            await new Promise(r => setTimeout(r, 1000));
+
+            const recommendations = await fetch(url, {
+                Accepts: 'application/json',
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            });
+
+            responseJSON = await recommendations.json();
+        }
+
         const tracks = responseJSON.tracks || [];
 
         const trackIds = [];
