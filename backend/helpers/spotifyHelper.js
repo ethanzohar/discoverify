@@ -482,21 +482,22 @@ class SpotifyHelper {
                 console.log(`Running no update for user: ${user.userId}`);
                 const access_token = await this.getNewAccessToken(user.refreshToken);
 
-                const tracks = await this.getAllTop(user, access_token)
+                const tracks = this.getAllTop(user, access_token)
                     .then((allTop) => this.getSeeds(user, allTop))
                     .then((seeds) => this.getTracks(user, seeds, access_token));
 
-                console.log(`${tracks.length} tracks found`);
-
-                let playlist = await this.getPlaylist(user.userId, user.playlistId, access_token);
-                const doesMyPlaylistExist = await this.doesMyPlaylistExists(user.playlistId, access_token);
-
-                console.log("Playlist ID", playlist.id);
-                console.log("PLAYLIST EXISTS", doesMyPlaylistExist);
+                let playlist = this.getPlaylist(user.userId, user.playlistId, access_token);
+                const doesMyPlaylistExist = this.doesMyPlaylistExists(user.playlistId, access_token);
         
                 if (!(await playlist) || !(await doesMyPlaylistExist)) {
                     console.log('HAD TO CREATE NEW PLAYLIST');
                 }
+
+                const playlistId = (await playlist).id;
+    
+                console.log(`${(await tracks).length} tracks found`);
+                console.log("Playlist ID", playlistId);
+                console.log("PLAYLIST EXISTS", await doesMyPlaylistExist);
                 
                 console.log(' ');
             } catch (e) {
