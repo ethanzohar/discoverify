@@ -53,15 +53,15 @@ class SpotifyHelper {
         return resultJSON.items.map(x => x.id);
     }
     
-    static async getAllTop(access_token) {
-        const allTimeArtists = await this.getTop('artists', 'long_term', access_token);
-        const allTimeTracks = await this.getTop('tracks', 'long_term', access_token);
+    static async getAllTop(user, access_token) {
+        const allTimeArtists = user.playlistOptions.seeds.includes('AA') ? await this.getTop('artists', 'long_term', access_token) : null;
+        const allTimeTracks = user.playlistOptions.seeds.includes('AT') ? await this.getTop('tracks', 'long_term', access_token) : null;
 
-        const mediumTermArtists = await this.getTop('artists', 'medium_term', access_token);
-        const mediumTermTracks = await this.getTop('tracks', 'medium_term', access_token);
+        const mediumTermArtists = user.playlistOptions.seeds.includes('MA') ? await this.getTop('artists', 'medium_term', access_token) : null;
+        const mediumTermTracks = user.playlistOptions.seeds.includes('MT') ? await this.getTop('tracks', 'medium_term', access_token) : null;
 
-        const shortTermArtists = await this.getTop('artists', 'short_term', access_token);
-        const shortTermTracks = await this.getTop('tracks', 'short_term', access_token);
+        const shortTermArtists = user.playlistOptions.seeds.includes('SA') ? await this.getTop('artists', 'short_term', access_token) : null;
+        const shortTermTracks = user.playlistOptions.seeds.includes('ST') ? await this.getTop('tracks', 'short_term', access_token) : null;
     
         return { allTime: { artists: allTimeArtists, tracks : allTimeTracks},
                  mediumTerm: { artists: mediumTermArtists, tracks : mediumTermTracks},
@@ -275,31 +275,6 @@ class SpotifyHelper {
         return playlistUris;
     }
     
-    static async clearPlaylist(playlistId, accessToken) {
-        const result = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
-            Accepts: 'application/json',
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${accessToken}`
-            }
-        })
-    
-        const resultJSON = await result.json();
-    
-        const tracksInPlaylist = resultJSON.tracks.items.map(x => { return { 'uri': x.track.uri }; });
-    
-        await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${accessToken}`
-            },
-            body: JSON.stringify({
-                'tracks': tracksInPlaylist
-            })
-        })
-    }
-    
     static async updatePlaylistTracks(playlistId, tracks, accessToken) {
         await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/tracks`, {
             method: 'PUT',
@@ -310,7 +285,7 @@ class SpotifyHelper {
             body: JSON.stringify({
                 'uris': tracks
             })
-        })
+        });
     }
 
     static async getPlaylist(userId, playlistId, accessToken) {
@@ -442,17 +417,17 @@ class SpotifyHelper {
         console.log(`Starting job for user: ${user.userId}`);
 
         try {
-            const access_token = await this.getNewAccessToken(user.refreshToken);
+            const accessToken = await this.getNewAccessToken(user.refreshToken);
 
-            const tracks = this.getAllTop(access_token)
+            const tracks = this.getAllTop(user, accessToken)
                 .then((allTop) => this.getSeeds(user, allTop))
-                .then((seeds) => this.getTracks(user, seeds, access_token));
+                .then((seeds) => this.getTracks(user, seeds, accessToken));
 
-            let playlist = this.getPlaylist(user.userId, user.playlistId, access_token);
-            const doesMyPlaylistExist = this.doesMyPlaylistExists(user.playlistId, access_token);
+            let playlist = this.getPlaylist(user.userId, user.playlistId, accessToken);
+            const doesMyPlaylistExist = this.doesMyPlaylistExists(user.playlistId, accessToken);
 
             if (!(await playlist) || !(await doesMyPlaylistExist)) {
-                playlist = await this.createPlaylist(user.userId, access_token);
+                playlist = await this.createPlaylist(user.userId, accessToken);
                 console.log('Had to create new playlist');
             }
 
@@ -461,13 +436,13 @@ class SpotifyHelper {
             console.log(`${(await tracks).length} tracks found`);
             console.log("Playlist ID", playlistId);
 
-            await this.updatePlaylistTracks(playlistId, await tracks, access_token);
+            this.updatePlaylistTracks(playlistId, await tracks, accessToken);
 
             user.lastUpdated = new Date();
             user.save();
 
             if (playlistCover) {
-                await this.addPlaylistCover(playlistId, playlistCover, access_token);
+                await this.addPlaylistCover(playlistId, playlistCover, accessToken);
             }
 
             console.log(`Playlist updated for user: ${user.userId}`);
@@ -507,7 +482,7 @@ class SpotifyHelper {
                 console.log(`Running no update for user: ${user.userId}`);
                 const access_token = await this.getNewAccessToken(user.refreshToken);
 
-                const tracks = await this.getAllTop(access_token)
+                const tracks = await this.getAllTop(user, access_token)
                     .then((allTop) => this.getSeeds(user, allTop))
                     .then((seeds) => this.getTracks(user, seeds, access_token));
 
