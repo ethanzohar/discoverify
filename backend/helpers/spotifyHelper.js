@@ -440,35 +440,40 @@ class SpotifyHelper {
     static async updatePlaylist(user, playlistCover) {
         console.log(`Starting job for user: ${user.userId}`);
 
-        const access_token = await this.getNewAccessToken(user.refreshToken);
+        try {
+            const access_token = await this.getNewAccessToken(user.refreshToken);
 
-        const tracks = this.getAllTop(access_token)
-            .then((allTop) => this.getSeeds(user, allTop))
-            .then((seeds) => this.getTracks(user, seeds, access_token));
+            const tracks = this.getAllTop(access_token)
+                .then((allTop) => this.getSeeds(user, allTop))
+                .then((seeds) => this.getTracks(user, seeds, access_token));
 
-        let playlist = this.getPlaylist(user.userId, user.playlistId, access_token);
-        const doesMyPlaylistExist = this.doesMyPlaylistExists(user.playlistId, access_token);
+            let playlist = this.getPlaylist(user.userId, user.playlistId, access_token);
+            const doesMyPlaylistExist = this.doesMyPlaylistExists(user.playlistId, access_token);
 
-        if (!(await playlist) || !(await doesMyPlaylistExist)) {
-            playlist = await this.createPlaylist(user.userId, access_token);
-            console.log('Had to create new playlist');
+            if (!(await playlist) || !(await doesMyPlaylistExist)) {
+                playlist = await this.createPlaylist(user.userId, access_token);
+                console.log('Had to create new playlist');
+            }
+
+            const playlistId = (await playlist).id;
+
+            console.log(`${(await tracks).length} tracks found`);
+            console.log("Playlist ID", playlistId);
+
+            await this.updatePlaylistTracks(playlistId, await tracks, access_token);
+
+            user.lastUpdated = new Date();
+            user.save();
+
+            if (playlistCover) {
+                await this.addPlaylistCover(playlistId, playlistCover, access_token);
+            }
+
+            console.log(`Playlist updated for user: ${user.userId}`);
+        } catch (e) {
+            console.log(e);
         }
 
-        const playlistId = (await playlist).id;
-
-        console.log(`${(await tracks).length} tracks found`);
-        console.log("Playlist ID", playlistId);
-
-        await this.updatePlaylistTracks(playlistId, await tracks, access_token);
-
-        user.lastUpdated = new Date();
-        user.save();
-
-        if (playlistCover) {
-            await this.addPlaylistCover(playlistId, playlistCover, access_token);
-        }
-
-        console.log(`Playlist updated for user: ${user.userId}`);
         console.log(' ');
     }
 
