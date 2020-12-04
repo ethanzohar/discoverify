@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     width: 'max-content',
     height: 'max-content',
     padding: 10,
-    overflow: 'none',
+    overflow: 'none'
   },
 }));
 
@@ -283,7 +283,7 @@ export default function DiscoverDailyPlaylistOptions() {
             (
               <Row className="playlistOptionsMainRow" style={{ width: '90%'}}>
                 <div style={{ width: 'max-content', margin: '0 auto' }}>
-                  <CircularProgress style={{width: '10vw', height: '10vw', color: 'rgb(12, 38, 88)'}}/>
+                  <CircularProgress className="loadingCircle" style={{ width: '10vw', height: '10vw' }}/>
                 </div>
               </Row>
             ) : 

@@ -3,7 +3,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import SpotifyHelper from '../helpers/SpotifyHelper';
 import { images } from './images';
-import github from '../images/github.png';
+import github from '../images/githubLight.png';
 
 import './discoverDaily.scss';
 
