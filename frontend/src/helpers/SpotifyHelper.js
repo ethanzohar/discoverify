@@ -21,8 +21,8 @@ class SpotifyHelper {
     url += '?response_type=code';
     url += '&client_id=' + encodeURIComponent(CLIENT_ID);
     url += '&scope=' + encodeURIComponent(scope);
-    url += '&redirect_uri=' + encodeURIComponent(redirect_uri);
     url += '&state=' + encodeURIComponent(this.generateRandomString(16));
+    url += '&redirect_uri=' + encodeURIComponent(redirect_uri);
 
     return url;
   }
