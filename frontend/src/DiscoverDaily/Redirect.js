@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { images } from './images';
+import github from '../images/github.png';
 
 class DiscoverDailyRedirect extends Component {
   UNSAFE_componentWillMount() {
