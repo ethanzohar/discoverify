@@ -134,7 +134,7 @@ export default function DiscoverDailyPlaylistOptions() {
     }
     
     if (code && code !== 'null') {
-      const { access_token, refresh_token } = await SpotifyHelper.getRefreshToken(code, 'https://discoverifymusic.com/redirect');
+      const { access_token, refresh_token } = await SpotifyHelper.getRefreshToken(code, window.location.origin + '/redirect');
       localStorage.setItem('discoverDaily_refreshToken', refresh_token ? refresh_token : null);
 
       if (!access_token) sendToLogin();
@@ -295,7 +295,7 @@ export default function DiscoverDailyPlaylistOptions() {
                 </Row>
                 <Row className="playlistOptionList" style={{ width: '100%', margin: '0 1%', maxHeight: '75vh', overflowY: 'auto', overflowX: 'hidden', padding: '0 8% 0 4%' }}>
                   <h3 className="spotifySliderHeader">Recommendation Seeds</h3>
-                  {/* <h5 className="spotifySliderDescription">These are your top tracks and artists taken from different time periods in your listening history. All time would encompass your entire listening history, medium term would include the past 6 months, and short term includes the past 4 weeks. Select anywhere between 1 and 5 options to influence your playlist.</h5> */}
+                  <h5 className="spotifySliderDescription">These are your top tracks and artists taken from different time periods in your listening history. All time would encompass your entire listening history, medium term would include the past 6 months, and short term includes the past 4 weeks. Select anywhere between 1 and 5 options to influence your playlist.</h5>
                   <Grid id="seedGrid" container spacing={2} justify="center" alignItems="center" className={classes.root}>
                     <Grid item id="seedsLeft">{customList(seeds, 'left')}</Grid>
                     <Grid item id="seedButtons">
@@ -325,7 +325,7 @@ export default function DiscoverDailyPlaylistOptions() {
                     <Grid item id="seedsRight">{customList(chosenSeeds, 'right')}</Grid>
                   </Grid>
                   <h3 className="spotifySliderHeader">Acousticness</h3>
-                  {/* <h5 className="spotifySliderDescription">A confidence measure of whether the track is acoustic.</h5> */}
+                  <h5 className="spotifySliderDescription">A confidence measure of whether the track is acoustic.</h5>
                   <Slider
                     className="spotifySlider"
                     ThumbComponent={SpotifySliderThumbComponent}
@@ -335,7 +335,7 @@ export default function DiscoverDailyPlaylistOptions() {
                     aria-labelledby="acousticness"
                   />
                   <h3 className="spotifySliderHeader">Danceability</h3>
-                  {/* <h5 className="spotifySliderDescription">Describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity.</h5> */}
+                  <h5 className="spotifySliderDescription">Describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity.</h5>
                   <Slider
                     className="spotifySlider"
                     ThumbComponent={SpotifySliderThumbComponent}
@@ -345,7 +345,7 @@ export default function DiscoverDailyPlaylistOptions() {
                     aria-labelledby="danceability"
                   />
                   <h3 className="spotifySliderHeader">Energy</h3>
-                  {/* <h5 className="spotifySliderDescription">Represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy.</h5> */}
+                  <h5 className="spotifySliderDescription">Represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy.</h5>
                   <Slider
                     className="spotifySlider"
                     ThumbComponent={SpotifySliderThumbComponent}
@@ -355,7 +355,7 @@ export default function DiscoverDailyPlaylistOptions() {
                     aria-labelledby="energy"
                   />
                   <h3 className="spotifySliderHeader">Instrumentalness</h3>
-                  {/* <h5 className="spotifySliderDescription">Predicts whether a track contains no vocals. Values above 50 are intended to represent instrumental tracks, but confidence is higher as the value approaches 100.</h5> */}
+                  <h5 className="spotifySliderDescription">Predicts whether a track contains no vocals. Values above 50 are intended to represent instrumental tracks, but confidence is higher as the value approaches 100.</h5>
                   <Slider
                     className="spotifySlider"
                     ThumbComponent={SpotifySliderThumbComponent}
@@ -365,7 +365,7 @@ export default function DiscoverDailyPlaylistOptions() {
                     aria-labelledby="instrumentalness"
                   />
                   <h3 className="spotifySliderHeader">Popularity</h3>
-                  {/* <h5 className="spotifySliderDescription">	The popularity of the track. The popularity is calculated by an algorithm and is based, in the most part, on the total number of plays the track has had and how recent those plays are.</h5> */}
+                  <h5 className="spotifySliderDescription">	The popularity of the track. The popularity is calculated by an algorithm and is based, in the most part, on the total number of plays the track has had and how recent those plays are.</h5>
                   <Slider
                     className="spotifySlider"
                     ThumbComponent={SpotifySliderThumbComponent}
@@ -374,8 +374,8 @@ export default function DiscoverDailyPlaylistOptions() {
                     valueLabelDisplay="auto"
                     aria-labelledby="popularity"
                   />
-                  <h3 className="spotifySliderHeader">Positivity</h3>
-                  {/* <h5 className="spotifySliderDescription">A measure describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).</h5> */}
+                  <h3 className="spotifySliderHeader">Valence</h3>
+                  <h5 className="spotifySliderDescription">A measure describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).</h5>
                   <Slider
                     className="spotifySlider"
                     ThumbComponent={SpotifySliderThumbComponent}
