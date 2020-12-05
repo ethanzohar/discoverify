@@ -5,7 +5,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import SpotifyHelper from '../helpers/SpotifyHelper';
 import DiscoverDailyHelper from '../helpers/DiscoverDailyHelper';
 import { images } from './images';
-import github from '../images/github.png';
+import github from '../images/githubLight.png';
 
 import './discoverDaily.scss';
 class DiscoverDaily extends Component {
@@ -146,20 +146,20 @@ class DiscoverDaily extends Component {
     if (this.state.loading) {
       leftColumnRow = <Row style={{ width: '90%', marginLeft: '4%' }}>
                         <div style={{ width: 'max-content', margin: '0 auto' }}>
-                          <CircularProgress style={{width: '10vw', height: '10vw', color: 'rgb(12, 38, 88)'}}/>
+                          <CircularProgress className="loadingCircle" style={{ width: '10vw', height: '10vw' }}/>
                         </div>
                       </Row>;
     } else if (this.state.user) {
       leftColumnRow = <Row style={{ width: '90%', marginLeft: '4%' }}>
                         <h1 style={{ margin: '0' }}>Discover Weekly...</h1>
                         <h1 style={{ margin: '0 0 3% 0' }}>But Daily</h1>
-                        <h3>{`Your playlist was updated ${this.state.lastUpdated} ${this.state.timeRange}${this.state.lastUpdated > 1 ? 's' : ''} ago`}</h3>
-                        <h3>A new playlist is on its way and will be ready for you tomorrow morning!</h3>
-                        <h3>If you don't want to get a daily playlist anymore you can click the button below to unsubscribe.</h3>
+                        <h3>{`Your playlist was last updated ${this.state.lastUpdated} ${this.state.timeRange}${this.state.lastUpdated > 1 ? 's' : ''} ago`}</h3>
+                        <h3>You can find you new playlist in Spotify under the title Discover Daily</h3>
+                        <h3>We will update the songs in your playlist every 24 hours!</h3>
                         <button className="btn btn-primary spotify-button" onClick={this.sendToOptions} style={{ marginBottom: '2%', marginRight: '2%' }}>Playlist Options</button>
                         <button className="btn btn-primary spotify-button spotify-red" onClick={this.unsubscribeUser} disabled={this.state.submitting} style={{ marginBottom: '2%' }}>Unsubscribe</button>
                         {this.state.submitting ? (
-                          <CircularProgress style={{marginLeft: '2%', width: '4%', height: '4%', color: 'rgb(12, 38, 88)'}}/>
+                          <CircularProgress className="loadingCircle" style={{ marginLeft: '2%', width: '4%', height: '4%' }}/>
                           ) :
                           null}
                       </Row>;
@@ -167,10 +167,10 @@ class DiscoverDaily extends Component {
       leftColumnRow = <Row style={{ width: '90%', marginLeft: '4%' }}>
                         <h1 style={{ margin: '0' }}>Discover Weekly...</h1>
                         <h1 style={{ margin: '0 0 3% 0' }}>But Daily</h1>
-                        <h3 >Click the button below to get a daily playlist with 30 songs that we've curated for you based on your listening history.</h3>
-                        <button className="btn btn-primary spotify-button" onClick={this.signupUser} disabled={this.state.submitting}  style={{ marginBottom: '2%' }}>Get your daily playlist</button>
+                        <h3 style={{ marginBottom: '2%' }}>Click the button below to get a daily playlist with 30 songs that we've curated for you based on your listening history.</h3>
+                        <button className="btn btn-primary spotify-button" onClick={this.signupUser} disabled={this.state.submitting}  style={{ marginBottom: '2%', marginTop: '0' }}>Get your daily playlist</button>
                         {this.state.submitting ? (
-                          <CircularProgress style={{marginLeft: '2%', width: '4%', height: '4%', color: 'rgb(12, 38, 88)'}}/>
+                          <CircularProgress className="loadingCircle" style={{ marginLeft: '2%', width: '4%', height: '4%' }}/>
                           ) :
                           null}
                       </Row>;
