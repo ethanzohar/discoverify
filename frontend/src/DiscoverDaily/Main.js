@@ -18,7 +18,7 @@ class DiscoverDaily extends Component {
       refreshToken: null,
       loading: true,
       imageIndexes: new Set(),
-      submitting: true,
+      submitting: false,
       now: null
     }
 
