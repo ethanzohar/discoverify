@@ -1,17 +1,26 @@
-$discoverDailyDark: rgba(174, 90, 109, 1);
-$discoverDailyLight: white;
+// $discoverDailyDark: rgba(174, 90, 109, 1);
+// $discoverDailyLight: white;
+// $discoverDailyPercentage: 25%;
+// $spotifyGreen: #1DB954;
+// $textColor: rgb(12, 38, 88);
+
+$backgroundColor: #121212;
 $discoverDailyPercentage: 25%;
 $spotifyGreen: #1DB954;
+$textColor:white;
+
+body {
+    background-color: $backgroundColor;
+}
 
 .DiscoverDailyMain {
-    background-color: white;
     width: 100vw;
     height: 100vh;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
     font-family: 'Gotham';
-    color: rgb(12, 38, 88);
+    color: $textColor;
     position: relative;
     // background-image: linear-gradient(to left, $discoverDailyLight, $discoverDailyPercentage, $discoverDailyDark);
 
@@ -28,6 +37,10 @@ $spotifyGreen: #1DB954;
         font-size: 2.5rem;
         margin-top: 1%;
     }
+}
+
+.loadingCircle {
+    color: $textColor !important;
 }
 
 .discoverDailyLeftColumn {
@@ -63,7 +76,7 @@ $spotifyGreen: #1DB954;
     background-color: #22dd63;
 }
 
-.spotify-button:active, .spotify-button:focus {
+.spotify-button:active, .spotify-button:focus, .spotify-button:disabled {
     background-color: #15843c;
 }
 
@@ -75,9 +88,10 @@ $spotifyGreen: #1DB954;
     background-color:#f01800;
 }
 
-.spotify-red:active, .spotify-red:focus {
+.spotify-red:active, .spotify-red:focus, .spotify-red:disabled {
     background-color: #cc1800;
 }
+
 .imageRow {
     width: max-content;
     margin: 0;
@@ -335,7 +349,7 @@ $spotifyGreen: #1DB954;
 
 .MuiTypography-root {
     margin: 0 auto !important;
-    color: rgb(12, 38, 88);
+    color: $textColor;
     font-family: 'Gotham' !important
 }
 
@@ -361,12 +375,20 @@ $spotifyGreen: #1DB954;
 }
 
 .seedButton:disabled {
-    background-color: rgb(230, 230, 230);
+    background-color: #333333;
 }
 
 .seedList {
     width: 300px;
     height: 55px;
+}
+
+.MuiCard-root {
+    background-color: #252525 !important;
+}
+
+.MuiCardHeader-subheader {
+    color: #bbb !important;
 }
 
 .MuiTypography-root.MuiCardHeader-subheader.MuiTypography-body1.MuiTypography-colorTextSecondary.MuiTypography-displayBlock {
