@@ -199,7 +199,7 @@ export default function DiscoverDailyPlaylistOptions() {
   }
   
   const onSliderChange = (newValue, setter, range) => {
-    if (Math.abs(newValue[0] - newValue[1]) >= 10) {
+    if (Math.abs(newValue[0] - newValue[1]) >= 20) {
       setter(newValue);
       optionRef.current[range] = newValue;
       setOptions(optionRef.current);
@@ -216,10 +216,12 @@ export default function DiscoverDailyPlaylistOptions() {
 
   const SpotifySliderThumbComponent = (props) => {
     return (
-      optionRef.current[props['aria-labelledby']] ? (
+      optionRef.current[props['aria-labelledby']] 
+      ? (
         <span {...props}>
           <span>{optionRef.current[props['aria-labelledby']][props['data-index']]}</span>
-        </span>) : null
+        </span>
+        ) : null
     );
   }
 
@@ -294,6 +296,66 @@ export default function DiscoverDailyPlaylistOptions() {
                   <h1 style={{ margin: '0' }}>But Daily</h1>
                 </Row>
                 <Row className="playlistOptionList" style={{ width: '100%', margin: '0 1%', maxHeight: '75vh', overflowY: 'auto', overflowX: 'hidden', padding: '0 8% 0 4%' }}>
+                  <h3 className="spotifySliderHeader">Acoustics</h3>
+                  <h5 className="spotifySliderDescription">A confidence measure of whether the track is acoustic.</h5>
+                  <Slider
+                    className="spotifySlider"
+                    ThumbComponent={SpotifySliderThumbComponent}
+                    value={acousticness}
+                    onChange={(e, v) => onSliderChange(v, setAcousticness, 'acousticness')}
+                    valueLabelDisplay="auto"
+                    aria-labelledby="acousticness"
+                  />
+                  <h3 className="spotifySliderHeader">Danceability</h3>
+                  <h5 className="spotifySliderDescription">Based on tempo, rhythm stability, beat strength, and overall regularity.</h5>
+                  <Slider
+                    className="spotifySlider"
+                    ThumbComponent={SpotifySliderThumbComponent}
+                    value={danceability}
+                    onChange={(e, v) => onSliderChange(v, setDanceability, 'danceability')}
+                    valueLabelDisplay="auto"
+                    aria-labelledby="danceability"
+                  />
+                  <h3 className="spotifySliderHeader">Energy</h3>
+                  <h5 className="spotifySliderDescription">Represents a perceptual measure of intensity and activity.</h5>
+                  <Slider
+                    className="spotifySlider"
+                    ThumbComponent={SpotifySliderThumbComponent}
+                    value={energy}
+                    onChange={(e, v) => onSliderChange(v, setEnergy, 'energy')}
+                    valueLabelDisplay="auto"
+                    aria-labelledby="energy"
+                  />
+                  <h3 className="spotifySliderHeader">Instrumentality</h3>
+                  <h5 className="spotifySliderDescription">Values above 50 represent instrumental tracks.</h5>
+                  <Slider
+                    className="spotifySlider"
+                    ThumbComponent={SpotifySliderThumbComponent}
+                    value={instrumentalness}
+                    onChange={(e, v) => onSliderChange(v, setInstrumentalness, 'instrumentalness')}
+                    valueLabelDisplay="auto"
+                    aria-labelledby="instrumentalness"
+                  />
+                  <h3 className="spotifySliderHeader">Popularity</h3>
+                  <h5 className="spotifySliderDescription">Based on the total number of plays the track has had and how recent those plays are.</h5>
+                  <Slider
+                    className="spotifySlider"
+                    ThumbComponent={SpotifySliderThumbComponent}
+                    value={popularity}
+                    onChange={(e, v) => onSliderChange(v, setPopularity, 'popularity')}
+                    valueLabelDisplay="auto"
+                    aria-labelledby="popularity"
+                  />
+                  <h3 className="spotifySliderHeader">Mood</h3>
+                  <h5 className="spotifySliderDescription">High values correspond to positivity and happiness, while low values correspond to negativity and sadness.</h5>
+                  <Slider
+                    className="spotifySlider"
+                    ThumbComponent={SpotifySliderThumbComponent}
+                    value={valence}
+                    onChange={(e, v) => onSliderChange(v, setValence, 'valence')}
+                    valueLabelDisplay="auto"
+                    aria-labelledby="valence"
+                  />
                   <h3 className="spotifySliderHeader">Recommendation Seeds</h3>
                   <h5 className="spotifySliderDescription">These are your top tracks and artists taken from different time periods in your listening history. All time would encompass your entire listening history, medium term would include the past 6 months, and short term includes the past 4 weeks. Select anywhere between 1 and 5 options to influence your playlist.</h5>
                   <Grid id="seedGrid" container spacing={2} justify="center" alignItems="center" className={classes.root}>
@@ -324,66 +386,6 @@ export default function DiscoverDailyPlaylistOptions() {
                     </Grid>
                     <Grid item id="seedsRight">{customList(chosenSeeds, 'right')}</Grid>
                   </Grid>
-                  <h3 className="spotifySliderHeader">Acousticness</h3>
-                  <h5 className="spotifySliderDescription">A confidence measure of whether the track is acoustic.</h5>
-                  <Slider
-                    className="spotifySlider"
-                    ThumbComponent={SpotifySliderThumbComponent}
-                    value={acousticness}
-                    onChange={(e, v) => onSliderChange(v, setAcousticness, 'acousticness')}
-                    valueLabelDisplay="auto"
-                    aria-labelledby="acousticness"
-                  />
-                  <h3 className="spotifySliderHeader">Danceability</h3>
-                  <h5 className="spotifySliderDescription">Describes how suitable a track is for dancing based on a combination of musical elements including tempo, rhythm stability, beat strength, and overall regularity.</h5>
-                  <Slider
-                    className="spotifySlider"
-                    ThumbComponent={SpotifySliderThumbComponent}
-                    value={danceability}
-                    onChange={(e, v) => onSliderChange(v, setDanceability, 'danceability')}
-                    valueLabelDisplay="auto"
-                    aria-labelledby="danceability"
-                  />
-                  <h3 className="spotifySliderHeader">Energy</h3>
-                  <h5 className="spotifySliderDescription">Represents a perceptual measure of intensity and activity. Typically, energetic tracks feel fast, loud, and noisy. Perceptual features contributing to this attribute include dynamic range, perceived loudness, timbre, onset rate, and general entropy.</h5>
-                  <Slider
-                    className="spotifySlider"
-                    ThumbComponent={SpotifySliderThumbComponent}
-                    value={energy}
-                    onChange={(e, v) => onSliderChange(v, setEnergy, 'energy')}
-                    valueLabelDisplay="auto"
-                    aria-labelledby="energy"
-                  />
-                  <h3 className="spotifySliderHeader">Instrumentalness</h3>
-                  <h5 className="spotifySliderDescription">Predicts whether a track contains no vocals. Values above 50 are intended to represent instrumental tracks, but confidence is higher as the value approaches 100.</h5>
-                  <Slider
-                    className="spotifySlider"
-                    ThumbComponent={SpotifySliderThumbComponent}
-                    value={instrumentalness}
-                    onChange={(e, v) => onSliderChange(v, setInstrumentalness, 'instrumentalness')}
-                    valueLabelDisplay="auto"
-                    aria-labelledby="instrumentalness"
-                  />
-                  <h3 className="spotifySliderHeader">Popularity</h3>
-                  <h5 className="spotifySliderDescription">	The popularity of the track. The popularity is calculated by an algorithm and is based, in the most part, on the total number of plays the track has had and how recent those plays are.</h5>
-                  <Slider
-                    className="spotifySlider"
-                    ThumbComponent={SpotifySliderThumbComponent}
-                    value={popularity}
-                    onChange={(e, v) => onSliderChange(v, setPopularity, 'popularity')}
-                    valueLabelDisplay="auto"
-                    aria-labelledby="popularity"
-                  />
-                  <h3 className="spotifySliderHeader">Valence</h3>
-                  <h5 className="spotifySliderDescription">A measure describing the musical positiveness conveyed by a track. Tracks with high valence sound more positive (e.g. happy, cheerful, euphoric), while tracks with low valence sound more negative (e.g. sad, depressed, angry).</h5>
-                  <Slider
-                    className="spotifySlider"
-                    ThumbComponent={SpotifySliderThumbComponent}
-                    value={valence}
-                    onChange={(e, v) => onSliderChange(v, setValence, 'valence')}
-                    valueLabelDisplay="auto"
-                    aria-labelledby="valence"
-                  />
                 </Row>
                 <Row style={{ margin: '1% 4%' }}>
                   <button className="btn btn-primary spotify-button" style={{ float: 'right', marginLeft: '1%' }} onClick={sendToMain}>Back</button>

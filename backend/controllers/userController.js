@@ -28,12 +28,12 @@ class UserController {
 
     user.playlistOptions = {
       seeds: ['ST', 'ST', 'MT', 'MT', 'MT'],
-      acousticness: [0, 100],
-      danceability: [0, 100],
-      energy: [0, 100],
-      instrumentalness: [0, 100],
+      acousticness: [10, 90],
+      danceability: [10, 90],
+      energy: [10, 90],
+      instrumentalness: [10, 90],
       popularity: [50, 100],
-      valence: [0, 100]
+      valence: [10, 90]
     }
 
     return user.save();
