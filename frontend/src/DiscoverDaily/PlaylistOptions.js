@@ -120,6 +120,22 @@ export default function DiscoverDailyPlaylistOptions() {
       setUser(parsedUser);
       updatePlaylistOptions(parsedUser);
       setLoading(false);
+
+      const spotifyUserFromStorage = sessionStorage.getItem(
+        'discoverDaily_spotifyUser'
+      );
+
+      if (!spotifyUserFromStorage || spotifyUserFromStorage === 'null') {
+        const accessToken = await SpotifyHelper.getAccessToken(
+          parsedUser.refreshToken
+        );
+        const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
+        sessionStorage.setItem(
+          'discoverDaily_spotifyUser',
+          JSON.stringify(spotifyUser)
+        );
+      }
+
       return;
     }
 
@@ -131,6 +147,10 @@ export default function DiscoverDailyPlaylistOptions() {
 
       if (accessToken) {
         const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
+        sessionStorage.setItem(
+          'discoverDaily_spotifyUser',
+          JSON.stringify(spotifyUser)
+        );
 
         const usr = (await DiscoverDailyHelper.getUser(spotifyUser.id)).user;
         if (usr.userId) {
@@ -158,6 +178,10 @@ export default function DiscoverDailyPlaylistOptions() {
       if (!access_token) sendToLogin();
 
       const spotifyUser = await SpotifyHelper.getUserInfo(access_token);
+      sessionStorage.setItem(
+        'discoverDaily_spotifyUser',
+        JSON.stringify(spotifyUser)
+      );
       const usr = (await DiscoverDailyHelper.getUser(spotifyUser.id)).user;
       setUser(usr.userId ? usr : null);
       setLoading(false);

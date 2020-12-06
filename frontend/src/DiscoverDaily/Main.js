@@ -60,10 +60,13 @@ class DiscoverDaily extends Component {
       'discoverDaily_spotifyUser'
     );
 
-    if (user && user !== 'null') {
+    if (
+      user &&
+      user !== 'null' &&
+      spotifyUserFromStorage &&
+      spotifyUserFromStorage !== 'null'
+    ) {
       const { now } = await DiscoverDailyHelper.getNow();
-      console.log('already had');
-      console.log(JSON.parse(user));
       this.setState({
         user: JSON.parse(user),
         spotifyUser: JSON.parse(spotifyUserFromStorage),
@@ -82,14 +85,15 @@ class DiscoverDaily extends Component {
 
       if (accessToken) {
         const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
+        sessionStorage.setItem(
+          'discoverDaily_spotifyUser',
+          JSON.stringify(spotifyUser)
+        );
         this.setState({ spotifyUser });
 
         const getUser = await DiscoverDailyHelper.getUser(spotifyUser.id);
         const usr = getUser.user;
         const { now } = getUser;
-
-        console.log('refreshToken');
-        console.log(usr);
         if (usr) this.setState({ user: usr, now });
 
         this.setState({ loading: false });
@@ -112,12 +116,13 @@ class DiscoverDaily extends Component {
       if (!access_token) this.sendToLogin();
 
       const spotifyUser = await SpotifyHelper.getUserInfo(access_token);
+      sessionStorage.setItem(
+        'discoverDaily_spotifyUser',
+        JSON.stringify(spotifyUser)
+      );
       const getUser = await DiscoverDailyHelper.getUser(spotifyUser.id);
       const usr = getUser.user;
       const { now } = getUser;
-
-      console.log('code');
-      console.log(usr);
       this.setState({
         user: usr,
         now,
@@ -126,8 +131,9 @@ class DiscoverDaily extends Component {
         loading: false,
       });
 
-      if (user)
+      if (user) {
         await DiscoverDailyHelper.signupUser(spotifyUser.id, refresh_token);
+      }
 
       sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
       return;
@@ -182,7 +188,7 @@ class DiscoverDaily extends Component {
     this.setState({ submitting: true });
     const { success } = await DiscoverDailyHelper.unsubscribeUser(
       this.state.user.userId,
-      this.state.refreshToken
+      this.state.user.refreshToken
     );
     if (success) {
       this.setState({ user: null });
