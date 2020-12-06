@@ -1,9 +1,14 @@
+/* eslint-disable react/button-has-type */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/prop-types */
+/* eslint-disable react/jsx-props-no-spreading */
+/* eslint-disable camelcase */
 import React, { useEffect, useState, useRef } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { makeStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Slider from "@material-ui/core/Slider";
+import Slider from '@material-ui/core/Slider';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 import Grid from '@material-ui/core/Grid';
@@ -19,15 +24,16 @@ import { images } from './images';
 
 import './discoverDaily.scss';
 
+// eslint-disable-next-line no-unused-vars
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: 'max-content'
+    width: 'max-content',
   },
   cardHeader: {
     width: 'max-content',
     height: 'max-content',
     padding: 10,
-    overflow: 'none'
+    overflow: 'none',
   },
 }));
 
@@ -35,13 +41,13 @@ export default function DiscoverDailyPlaylistOptions() {
   const classes = useStyles();
 
   const seedToString = {
-    'ST': 'Short Term Track',
-    'MT': 'Medium Term Track',
-    'AT': 'All Time Track',
-    'SA': 'Short Term Artist',
-    'MA': 'Medium Term Artist',
-    'AA': 'All Time Artist',
-  }
+    ST: 'Short Term Track',
+    MT: 'Medium Term Track',
+    AT: 'All Time Track',
+    SA: 'Short Term Artist',
+    MA: 'Medium Term Artist',
+    AA: 'All Time Artist',
+  };
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -64,12 +70,12 @@ export default function DiscoverDailyPlaylistOptions() {
   const optionRef = useRef(options);
 
   const sendToLogin = () => {
-    window.location = window.location.origin + '/login';
-  }
+    window.location = `${window.location.origin}/login`;
+  };
 
   const sendToMain = () => {
     window.location = window.location.origin;
-  }
+  };
 
   const updatePlaylistOptions = async (usr) => {
     if (usr.playlistOptions) {
@@ -88,23 +94,29 @@ export default function DiscoverDailyPlaylistOptions() {
         energy: usr.playlistOptions.energy,
         instrumentalness: usr.playlistOptions.instrumentalness,
         popularity: usr.playlistOptions.popularity,
-        valence: usr.playlistOptions.valence
-      }
+        valence: usr.playlistOptions.valence,
+      };
 
       setOptions(optionRef.current);
     } else {
-      const restoredUser = await DiscoverDailyHelper.restorePlaylistOptions(usr.userId, usr.refreshToken);
+      const restoredUser = await DiscoverDailyHelper.restorePlaylistOptions(
+        usr.userId,
+        usr.refreshToken
+      );
       setUser(restoredUser);
-      updatePlaylistOptions(restoredUser)
-      sessionStorage.setItem('discoverDaily_user', JSON.stringify(restoredUser));
+      updatePlaylistOptions(restoredUser);
+      sessionStorage.setItem(
+        'discoverDaily_user',
+        JSON.stringify(restoredUser)
+      );
     }
-  }
+  };
 
   const getUserState = async () => {
-    const user = sessionStorage.getItem('discoverDaily_user');
+    const userFromSessionStorage = sessionStorage.getItem('discoverDaily_user');
 
-    if (user && user !== 'null') {
-      const parsedUser = JSON.parse(user);
+    if (userFromSessionStorage && userFromSessionStorage !== 'null') {
+      const parsedUser = JSON.parse(userFromSessionStorage);
       setUser(parsedUser);
       updatePlaylistOptions(parsedUser);
       setLoading(false);
@@ -116,14 +128,14 @@ export default function DiscoverDailyPlaylistOptions() {
 
     if (refreshToken && refreshToken !== 'null') {
       const accessToken = await SpotifyHelper.getAccessToken(refreshToken);
-      
+
       if (accessToken) {
         const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
 
-        const { user } = await DiscoverDailyHelper.getUser(spotifyUser.id);
-        if (user.userId) {
-          setUser(user);
-          updatePlaylistOptions(user);
+        const usr = (await DiscoverDailyHelper.getUser(spotifyUser.id)).user;
+        if (usr.userId) {
+          setUser(usr);
+          updatePlaylistOptions(usr);
           setLoading(false);
         } else {
           sendToMain();
@@ -132,20 +144,26 @@ export default function DiscoverDailyPlaylistOptions() {
         return;
       }
     }
-    
+
     if (code && code !== 'null') {
-      const { access_token, refresh_token } = await SpotifyHelper.getRefreshToken(code, window.location.origin + '/redirect');
-      localStorage.setItem('discoverDaily_refreshToken', refresh_token ? refresh_token : null);
+      const {
+        access_token,
+        refresh_token,
+      } = await SpotifyHelper.getRefreshToken(
+        code,
+        'https://discoverifymusic.com/redirect'
+      );
+      localStorage.setItem('discoverDaily_refreshToken', refresh_token || null);
 
       if (!access_token) sendToLogin();
-      
+
       const spotifyUser = await SpotifyHelper.getUserInfo(access_token);
-      const { user } = await DiscoverDailyHelper.getUser(spotifyUser.id);
-      setUser(user.userId ? user : null);
+      const usr = (await DiscoverDailyHelper.getUser(spotifyUser.id)).user;
+      setUser(usr.userId ? usr : null);
       setLoading(false);
-      
-      if (user.userId) {
-        updatePlaylistOptions(user);
+
+      if (usr.userId) {
+        updatePlaylistOptions(usr);
         await DiscoverDailyHelper.signupUser(spotifyUser, refresh_token);
       } else {
         sendToMain();
@@ -155,14 +173,14 @@ export default function DiscoverDailyPlaylistOptions() {
     }
 
     sendToLogin();
-  }
+  };
 
   useEffect(() => {
     async function init() {
       const imgIndexes = new Set();
       while (imgIndexes.size < 16) {
         const randomNum = Math.floor(Math.random() * images.length);
-        if (!imgIndexes.has(randomNum)){
+        if (!imgIndexes.has(randomNum)) {
           imgIndexes.add(randomNum);
         }
       }
@@ -183,53 +201,59 @@ export default function DiscoverDailyPlaylistOptions() {
     }
 
     // Add event listener
-    window.addEventListener("resize", handleResize);
-    
+    window.addEventListener('resize', handleResize);
+
     // Call handler right away so state gets updated with initial window size
     handleResize();
 
     init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const restoreDefaults = async () => {
-    const usr = await DiscoverDailyHelper.restorePlaylistOptions(user.userId, user.refreshToken);
+    const usr = await DiscoverDailyHelper.restorePlaylistOptions(
+      user.userId,
+      user.refreshToken
+    );
     setUser(usr);
-    updatePlaylistOptions(usr)
+    updatePlaylistOptions(usr);
     sessionStorage.setItem('discoverDaily_user', JSON.stringify(usr));
-  }
-  
+  };
+
   const onSliderChange = (newValue, setter, range) => {
     if (Math.abs(newValue[0] - newValue[1]) >= 20) {
       setter(newValue);
       optionRef.current[range] = newValue;
       setOptions(optionRef.current);
     }
-  }
+  };
 
   const sendUpdatePlaylistOptions = async () => {
-    const usr = await DiscoverDailyHelper.updatePlaylistOptions(optionRef.current, user.userId, user.refreshToken);
+    const usr = await DiscoverDailyHelper.updatePlaylistOptions(
+      optionRef.current,
+      user.userId,
+      user.refreshToken
+    );
     setUser(usr);
-    updatePlaylistOptions(usr)
+    updatePlaylistOptions(usr);
     sessionStorage.setItem('discoverDaily_user', JSON.stringify(usr));
     setSnackbarOpen(true);
-  }
+  };
 
-  const SpotifySliderThumbComponent = (props) => {
-    return (
-      optionRef.current[props['aria-labelledby']] 
-      ? (
-        <span {...props}>
-          <span>{optionRef.current[props['aria-labelledby']][props['data-index']]}</span>
+  const SpotifySliderThumbComponent = (props) =>
+    optionRef.current[props['aria-labelledby']] ? (
+      <span {...props}>
+        <span>
+          {optionRef.current[props['aria-labelledby']][props['data-index']]}
         </span>
-        ) : null
-    );
-  }
+      </span>
+    ) : null;
 
   const select = (value, side, index) => {
     setSelectedSide(side);
     setSelected(value);
     setSelectedIndex(index);
-  }
+  };
 
   const handleSelectRight = () => {
     optionRef.current.seeds.push(selected);
@@ -249,24 +273,41 @@ export default function DiscoverDailyPlaylistOptions() {
 
   const customList = (items, side) => (
     <Card>
-      {side === 'left' ? 
-        <CardHeader 
-        className={classes.cardHeader}
-        title="Available Seeds"
-        style={{ padding: '19px 10px' }} />
-      :
-        <CardHeader 
-        className={classes.cardHeader}
-        title="Chosen Seeds"
-        subheader={`${chosenSeeds.length}/5 selected`}/>
-      }
+      {side === 'left' ? (
+        <CardHeader
+          className={classes.cardHeader}
+          title="Available Seeds"
+          style={{ padding: '19px 10px' }}
+        />
+      ) : (
+        <CardHeader
+          className={classes.cardHeader}
+          title="Chosen Seeds"
+          subheader={`${chosenSeeds.length}/5 selected`}
+        />
+      )}
       <Divider />
       <List dense component="div" role="list" className="seedList">
         {items.map((value, index) => {
           const labelId = `transfer-list-item-${value}-label`;
 
           return (
-            <ListItem key={index} role="listitem" button onClick={() => { select(value, side, index); }} style={{ backgroundColor: selected === value && selectedSide === side && selectedIndex === index ? "#4fe383" : ''}}>
+            <ListItem
+              key={index}
+              role="listitem"
+              button
+              onClick={() => {
+                select(value, side, index);
+              }}
+              style={{
+                backgroundColor:
+                  selected === value &&
+                  selectedSide === side &&
+                  selectedIndex === index
+                    ? '#4fe383'
+                    : '',
+              }}
+            >
               <ListItemText id={labelId} primary={seedToString[value]} />
             </ListItem>
           );
@@ -278,46 +319,68 @@ export default function DiscoverDailyPlaylistOptions() {
 
   return (
     <div className="DiscoverDailyMain">
-      <Row style={{width: '100%', margin: '0'}}>
-        <Col style={{width: '100%', margin: '0'}}>
+      <Row style={{ width: '100%', margin: '0' }}>
+        <Col style={{ width: '100%', margin: '0' }}>
           <Col className="discoverDailyLeftColumn">
-            {loading ? 
-            (
-              <Row className="playlistOptionsMainRow" style={{ width: '90%'}}>
+            {loading ? (
+              <Row className="playlistOptionsMainRow" style={{ width: '90%' }}>
                 <div style={{ width: 'max-content', margin: '0 auto' }}>
-                  <CircularProgress className="loadingCircle" style={{ width: '10vw', height: '10vw' }}/>
+                  <CircularProgress
+                    className="loadingCircle"
+                    style={{ width: '10vw', height: '10vw' }}
+                  />
                 </div>
               </Row>
-            ) : 
-            (
+            ) : (
               <Col style={{ width: '100%' }}>
                 <Row className="playlistOptionsMainRow">
                   <h1 style={{ margin: '0' }}>Discover Weekly...</h1>
                   <h1 style={{ margin: '0' }}>But Daily</h1>
                 </Row>
-                <Row className="playlistOptionList" style={{ width: '100%', margin: '0 1%', maxHeight: '75vh', overflowY: 'auto', overflowX: 'hidden', padding: '0 8% 0 4%' }}>
+                <Row
+                  className="playlistOptionList"
+                  style={{
+                    width: '100%',
+                    margin: '0 1%',
+                    maxHeight: '75vh',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                    padding: '0 8% 0 4%',
+                  }}
+                >
                   <h3 className="spotifySliderHeader">Acoustics</h3>
-                  <h5 className="spotifySliderDescription">A confidence measure of whether the track is acoustic.</h5>
+                  <h5 className="spotifySliderDescription">
+                    A confidence measure of whether the track is acoustic.
+                  </h5>
                   <Slider
                     className="spotifySlider"
                     ThumbComponent={SpotifySliderThumbComponent}
                     value={acousticness}
-                    onChange={(e, v) => onSliderChange(v, setAcousticness, 'acousticness')}
+                    onChange={(e, v) =>
+                      onSliderChange(v, setAcousticness, 'acousticness')
+                    }
                     valueLabelDisplay="auto"
                     aria-labelledby="acousticness"
                   />
                   <h3 className="spotifySliderHeader">Danceability</h3>
-                  <h5 className="spotifySliderDescription">Based on tempo, rhythm stability, beat strength, and overall regularity.</h5>
+                  <h5 className="spotifySliderDescription">
+                    Based on tempo, rhythm stability, beat strength, and overall
+                    regularity.
+                  </h5>
                   <Slider
                     className="spotifySlider"
                     ThumbComponent={SpotifySliderThumbComponent}
                     value={danceability}
-                    onChange={(e, v) => onSliderChange(v, setDanceability, 'danceability')}
+                    onChange={(e, v) =>
+                      onSliderChange(v, setDanceability, 'danceability')
+                    }
                     valueLabelDisplay="auto"
                     aria-labelledby="danceability"
                   />
                   <h3 className="spotifySliderHeader">Energy</h3>
-                  <h5 className="spotifySliderDescription">Represents a perceptual measure of intensity and activity.</h5>
+                  <h5 className="spotifySliderDescription">
+                    Represents a perceptual measure of intensity and activity.
+                  </h5>
                   <Slider
                     className="spotifySlider"
                     ThumbComponent={SpotifySliderThumbComponent}
@@ -327,39 +390,69 @@ export default function DiscoverDailyPlaylistOptions() {
                     aria-labelledby="energy"
                   />
                   <h3 className="spotifySliderHeader">Instrumentality</h3>
-                  <h5 className="spotifySliderDescription">Values above 50 represent instrumental tracks.</h5>
+                  <h5 className="spotifySliderDescription">
+                    Values above 50 represent instrumental tracks.
+                  </h5>
                   <Slider
                     className="spotifySlider"
                     ThumbComponent={SpotifySliderThumbComponent}
                     value={instrumentalness}
-                    onChange={(e, v) => onSliderChange(v, setInstrumentalness, 'instrumentalness')}
+                    onChange={(e, v) =>
+                      onSliderChange(v, setInstrumentalness, 'instrumentalness')
+                    }
                     valueLabelDisplay="auto"
                     aria-labelledby="instrumentalness"
                   />
                   <h3 className="spotifySliderHeader">Popularity</h3>
-                  <h5 className="spotifySliderDescription">Based on the total number of plays the track has had and how recent those plays are.</h5>
+                  <h5 className="spotifySliderDescription">
+                    Based on the total number of plays the track has had and how
+                    recent those plays are.
+                  </h5>
                   <Slider
                     className="spotifySlider"
                     ThumbComponent={SpotifySliderThumbComponent}
                     value={popularity}
-                    onChange={(e, v) => onSliderChange(v, setPopularity, 'popularity')}
+                    onChange={(e, v) =>
+                      onSliderChange(v, setPopularity, 'popularity')
+                    }
                     valueLabelDisplay="auto"
                     aria-labelledby="popularity"
                   />
                   <h3 className="spotifySliderHeader">Mood</h3>
-                  <h5 className="spotifySliderDescription">High values correspond to positivity and happiness, while low values correspond to negativity and sadness.</h5>
+                  <h5 className="spotifySliderDescription">
+                    High values correspond to positivity and happiness, while
+                    low values correspond to negativity and sadness.
+                  </h5>
                   <Slider
                     className="spotifySlider"
                     ThumbComponent={SpotifySliderThumbComponent}
                     value={valence}
-                    onChange={(e, v) => onSliderChange(v, setValence, 'valence')}
+                    onChange={(e, v) =>
+                      onSliderChange(v, setValence, 'valence')
+                    }
                     valueLabelDisplay="auto"
                     aria-labelledby="valence"
                   />
                   <h3 className="spotifySliderHeader">Recommendation Seeds</h3>
-                  <h5 className="spotifySliderDescription">These are your top tracks and artists taken from different time periods in your listening history. All time would encompass your entire listening history, medium term would include the past 6 months, and short term includes the past 4 weeks. Select anywhere between 1 and 5 options to influence your playlist.</h5>
-                  <Grid id="seedGrid" container spacing={2} justify="center" alignItems="center" className={classes.root}>
-                    <Grid item id="seedsLeft">{customList(seeds, 'left')}</Grid>
+                  <h5 className="spotifySliderDescription">
+                    These are your top tracks and artists taken from different
+                    time periods in your listening history. All time would
+                    encompass your entire listening history, medium term would
+                    include the past 6 months, and short term includes the past
+                    4 weeks. Select anywhere between 1 and 5 options to
+                    influence your playlist.
+                  </h5>
+                  <Grid
+                    id="seedGrid"
+                    container
+                    spacing={2}
+                    justify="center"
+                    alignItems="center"
+                    className={classes.root}
+                  >
+                    <Grid item id="seedsLeft">
+                      {customList(seeds, 'left')}
+                    </Grid>
                     <Grid item id="seedButtons">
                       <Grid container direction="column" alignItems="center">
                         <button
@@ -367,65 +460,109 @@ export default function DiscoverDailyPlaylistOptions() {
                           className="seedButton"
                           size="small"
                           onClick={handleSelectRight}
-                          disabled={!selected || selectedSide !== 'left' || chosenSeeds.length >= 5}
+                          disabled={
+                            !selected ||
+                            selectedSide !== 'left' ||
+                            chosenSeeds.length >= 5
+                          }
                           aria-label="move selected right"
                         >
-                          {verticalSeedArrows ? String.fromCharCode(9661) :String.fromCharCode(62)}
+                          {verticalSeedArrows
+                            ? String.fromCharCode(9661)
+                            : String.fromCharCode(62)}
                         </button>
                         <button
                           id="seedButton2"
                           className="seedButton"
                           size="small"
                           onClick={handleSelectLeft}
-                          disabled={!selected || selectedSide !== 'right' || chosenSeeds.length <= 1}
+                          disabled={
+                            !selected ||
+                            selectedSide !== 'right' ||
+                            chosenSeeds.length <= 1
+                          }
                           aria-label="move selected left"
                         >
-                        {verticalSeedArrows ? String.fromCharCode(9651) : String.fromCharCode(60)}
+                          {verticalSeedArrows
+                            ? String.fromCharCode(9651)
+                            : String.fromCharCode(60)}
                         </button>
                       </Grid>
                     </Grid>
-                    <Grid item id="seedsRight">{customList(chosenSeeds, 'right')}</Grid>
+                    <Grid item id="seedsRight">
+                      {customList(chosenSeeds, 'right')}
+                    </Grid>
                   </Grid>
                 </Row>
                 <Row style={{ margin: '1% 4%' }}>
-                  <button className="btn btn-primary spotify-button" style={{ float: 'right', marginLeft: '1%' }} onClick={sendToMain}>Back</button>
-                  <button className="btn btn-primary spotify-button" style={{ float: 'right', marginLeft: '1%' }} onClick={sendUpdatePlaylistOptions}>Save</button>
-                  <button className="btn btn-primary spotify-button" onClick={restoreDefaults}>Restore Defaults</button>
+                  <button
+                    className="btn btn-primary spotify-button"
+                    style={{ float: 'right', marginLeft: '1%' }}
+                    onClick={sendToMain}
+                  >
+                    Back
+                  </button>
+                  <button
+                    className="btn btn-primary spotify-button"
+                    style={{ float: 'right', marginLeft: '1%' }}
+                    onClick={sendUpdatePlaylistOptions}
+                  >
+                    Save
+                  </button>
+                  <button
+                    className="btn btn-primary spotify-button"
+                    onClick={restoreDefaults}
+                  >
+                    Restore Defaults
+                  </button>
                 </Row>
-                <Snackbar open={snackbarOpen}
-                          onClose={() => { setSnackbarOpen(false); }}
-                          autoHideDuration={3000} 
-                          anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'center',
-                          }}>
-                  <MuiAlert elevation={6} variant="filled" onClose={() => { setSnackbarOpen(false); }} severity="success" style={{ fontSize: '1.5rem' }}>
-                    Your playlist preferences have been saved! These settings will now be used for all future playlists.
+                <Snackbar
+                  open={snackbarOpen}
+                  onClose={() => {
+                    setSnackbarOpen(false);
+                  }}
+                  autoHideDuration={3000}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                  }}
+                >
+                  <MuiAlert
+                    elevation={6}
+                    variant="filled"
+                    onClose={() => {
+                      setSnackbarOpen(false);
+                    }}
+                    severity="success"
+                    style={{ fontSize: '1.5rem' }}
+                  >
+                    Your playlist preferences have been saved! These settings
+                    will now be used for all future playlists.
                   </MuiAlert>
                 </Snackbar>
               </Col>
             )}
           </Col>
-          <Col className='discoverDailyRightColumn'>
-          {[0,4,8,12].map((x, index) => (
-            <Row key={index} className={`imageRow imageRow${index}`}>
-              <Col className={`imageCol imageCol${0}`}>
-                <img src={images[imageIndexes[x]]} alt="albumImage"></img>
-              </Col>
-              <Col className={`imageCol imageCol${1}`}>
-                <img src={images[imageIndexes[x+1]]} alt="albumImage"></img>
-              </Col>
-              <Col className={`imageCol imageCol${2}`}>
-                <img src={images[imageIndexes[x+2]]} alt="albumImage"></img>
-              </Col>
-              <Col className={`imageCol imageCol${3}`}>
-                <img src={images[imageIndexes[x+3]]} alt="albumImage"></img>
-              </Col>
-            </Row>
-          ))}
-        </Col>
+          <Col className="discoverDailyRightColumn">
+            {[0, 4, 8, 12].map((x, index) => (
+              <Row key={index} className={`imageRow imageRow${index}`}>
+                <Col className={`imageCol imageCol${0}`}>
+                  <img src={images[imageIndexes[x]]} alt="albumImage" />
+                </Col>
+                <Col className={`imageCol imageCol${1}`}>
+                  <img src={images[imageIndexes[x + 1]]} alt="albumImage" />
+                </Col>
+                <Col className={`imageCol imageCol${2}`}>
+                  <img src={images[imageIndexes[x + 2]]} alt="albumImage" />
+                </Col>
+                <Col className={`imageCol imageCol${3}`}>
+                  <img src={images[imageIndexes[x + 3]]} alt="albumImage" />
+                </Col>
+              </Row>
+            ))}
+          </Col>
         </Col>
       </Row>
-  </div>
+    </div>
   );
 }
