@@ -8,10 +8,15 @@ class DiscoverDailyRedirect extends Component {
   UNSAFE_componentWillMount() {
     const paramQuery = new URLSearchParams(this.props.location.search);
 
-    sessionStorage.setItem('discoverDaily_code', paramQuery.get('code'));
+    const code = paramQuery.get('code');
+    const error = paramQuery.get('error');
 
-    window.location = window.location.origin;
-  }
+    if (code && !error) {
+      sessionStorage.setItem('discoverDaily_code', paramQuery.get('code'));
+      window.location = window.location.origin;
+    } else {
+      window.location = window.location.origin + '/login';
+    }
 
   render() {
     return (

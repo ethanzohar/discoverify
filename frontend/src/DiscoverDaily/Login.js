@@ -9,7 +9,7 @@ import './discoverDaily.scss';
 
 const DiscoverDailyLogin = () => {  
   const sendLoginRedirect = () => {
-      window.location = SpotifyHelper.getOAuthCodeUrl(window.location.origin + '/redirect');
+      window.location = SpotifyHelper.getOAuthCodeUrl('https://discoverifymusic.com/redirect');
   }
 
   return (
