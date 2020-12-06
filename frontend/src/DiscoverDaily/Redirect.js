@@ -17,6 +17,7 @@ class DiscoverDailyRedirect extends Component {
     } else {
       window.location = window.location.origin + '/login';
     }
+  }
 
   render() {
     return (

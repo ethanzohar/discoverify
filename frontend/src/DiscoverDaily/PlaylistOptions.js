@@ -129,8 +129,6 @@ export default function DiscoverDailyPlaylistOptions() {
           sendToMain();
         }
 
-        console.log('a')
-
         return;
       }
     }
