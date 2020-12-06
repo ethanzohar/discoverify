@@ -24,6 +24,10 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: npm ci project
+      run: npm ci
+    - name: lint
+      run: npm run lint
     - name: npm ci
       working-directory: ./frontend
       run: npm ci
