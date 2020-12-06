@@ -1,0 +1,6 @@
+{
+    "extends": [
+        "wesbos"
+    ],
+    "root": true
+}

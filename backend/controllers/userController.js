@@ -33,8 +33,8 @@ class UserController {
       energy: [10, 90],
       instrumentalness: [10, 90],
       popularity: [50, 100],
-      valence: [10, 90]
-    }
+      valence: [10, 90],
+    };
 
     return user.save();
   }

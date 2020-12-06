@@ -24,9 +24,13 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: npm ci project
+      run: npm ci
     - name: npm ci
       working-directory: ./frontend
       run: npm ci
     - name: build
       working-directory: ./frontend
+      env:
+        SKIP_PREFLIGHT_CHECK: true
       run: npm run build --if-present
