@@ -150,7 +150,12 @@ class DiscoverDaily extends Component {
     const now = new Date(this.state.now);
     const lastUpdated = new Date(this.state.user.lastUpdated);
 
-    console.log(lastUpdated, now);
+    console.log(now, lastUpdated);
+    console.log(now.getTime(), lastUpdated.getTime());
+    console.log(now.getTime() - lastUpdated.getTime());
+    console.log((now.getTime() - lastUpdated.getTime()) / 1000, 'seconds');
+    console.log((now.getTime() - lastUpdated.getTime()) / 60000, 'minutes');
+    console.log((now.getTime() - lastUpdated.getTime()) / 3600000, 'hours');
 
     let timeDif = (now.getTime() - lastUpdated.getTime()) / 1000;
 
