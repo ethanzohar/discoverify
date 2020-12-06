@@ -6,6 +6,7 @@
         "lint": "eslint ."
     },
     "devDependencies": {
+        "eslint": "^7.15.0",
         "eslint-config-airbnb": "^18.2.0",
         "eslint-config-prettier": "^6.11.0",
         "eslint-config-wesbos": "^1.0.1",
