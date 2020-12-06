@@ -35,4 +35,4 @@ jobs:
         SKIP_PREFLIGHT_CHECK: true
       run: npm run build --if-present
     - name: lint
-      run: npm run lint
+      run: eslint .
