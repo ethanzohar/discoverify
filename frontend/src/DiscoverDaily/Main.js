@@ -62,6 +62,9 @@ class DiscoverDaily extends Component {
 
     if (user && user !== 'null') {
       const { now } = await DiscoverDailyHelper.getNow();
+      console.log('already had');
+      console.log(JSON.parse(user));
+      console.log(now);
       this.setState({
         user: JSON.parse(user),
         spotifyUser: JSON.parse(spotifyUserFromStorage),
@@ -85,6 +88,10 @@ class DiscoverDaily extends Component {
         const getUser = await DiscoverDailyHelper.getUser(spotifyUser.id);
         const usr = getUser.user;
         const { now } = getUser;
+
+        console.log('refreshToken');
+        console.log(usr);
+        console.log(now);
         if (usr) this.setState({ user: usr, now });
 
         this.setState({ loading: false });
@@ -110,6 +117,10 @@ class DiscoverDaily extends Component {
       const getUser = await DiscoverDailyHelper.getUser(spotifyUser.id);
       const usr = getUser.user;
       const { now } = getUser;
+
+      console.log('code');
+      console.log(usr);
+      console.log(now);
       this.setState({
         user: usr,
         now,
@@ -138,6 +149,9 @@ class DiscoverDaily extends Component {
 
     const now = new Date(this.state.now);
     const lastUpdated = new Date(this.state.user.lastUpdated);
+
+    console.log(lastUpdated, now);
+
     let timeDif = (now.getTime() - lastUpdated.getTime()) / 1000;
 
     if (timeDif >= 60) {
