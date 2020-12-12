@@ -168,15 +168,20 @@ class DiscoverDaily extends Component {
     this.setState({ lastUpdated: Math.round(timeDif), timeRange });
   }
 
+  // async signupUser() {
+  //   this.setState({ submitting: true });
+  //   const { user, now } = await DiscoverDailyHelper.signupUser(
+  //     this.state.spotifyUser.id,
+  //     this.state.refreshToken
+  //   );
+  //   this.setState({ user, now, submitting: false });
+  //   sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
+  //   this.updateTime();
+  // }
+
+  // eslint-disable-next-line class-methods-use-this
   async signupUser() {
-    this.setState({ submitting: true });
-    const { user, now } = await DiscoverDailyHelper.signupUser(
-      this.state.spotifyUser.id,
-      this.state.refreshToken
-    );
-    this.setState({ user, now, submitting: false });
-    sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
-    this.updateTime();
+    window.location = `${window.location.origin}/setup`;
   }
 
   // eslint-disable-next-line class-methods-use-this
