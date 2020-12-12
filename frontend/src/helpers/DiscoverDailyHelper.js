@@ -3,7 +3,7 @@ import SpotifyHelper from './SpotifyHelper';
 require('dotenv').config();
 
 class DiscoverDailyHelper {
-  static async signupUser(userId, refreshToken) {
+  static async signupUser(userId, refreshToken, options) {
     const response = await fetch('/api/discover-daily/subscribe', {
       method: 'POST',
       headers: {
@@ -13,6 +13,7 @@ class DiscoverDailyHelper {
       body: JSON.stringify({
         userId,
         refreshToken,
+        options,
       }),
     });
 

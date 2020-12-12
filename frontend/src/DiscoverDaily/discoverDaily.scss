@@ -295,7 +295,7 @@ body {
 }
 
 .spotifySliderHeader {
-    margin-bottom: 4px !important;
+    margin: 4px 0 !important;
 }
 
 .spotifySliderDescription {
@@ -489,7 +489,7 @@ body {
     align-items: center;
     justify-content: center;
     transition: transform 33ms cubic-bezier(.3,0,0,1),-webkit-transform 33ms cubic-bezier(.3,0,0,1);
-    margin: auto !important;
+    margin: 52vh auto 0 auto !important;
     text-decoration: none;
     outline: none !important;
     z-index: 2;

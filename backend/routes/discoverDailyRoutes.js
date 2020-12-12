@@ -146,7 +146,7 @@ router.get('/now', async function (req, res) {
 });
 
 router.post('/subscribe', async function (req, res) {
-  const { userId, refreshToken } = req.body;
+  const { userId, refreshToken, options } = req.body;
 
   console.log(`Subscribing for user: ${userId}`);
 
@@ -154,7 +154,7 @@ router.post('/subscribe', async function (req, res) {
   if (user) {
     user.refreshToken = refreshToken;
   } else {
-    user = await UserController.createUser(userId, refreshToken);
+    user = await UserController.createUser(userId, refreshToken, options);
   }
 
   await SpotifyHelper.updatePlaylist(user, null);

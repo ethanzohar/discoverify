@@ -6,6 +6,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Slider from '@material-ui/core/Slider';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import DiscoverDailyHelper from '../helpers/DiscoverDailyHelper';
 import SpotifyHelper from '../helpers/SpotifyHelper';
 
@@ -26,7 +27,6 @@ export default function DiscoverDailySetup() {
 
   useEffect(() => {
     optionRef.current = {
-      seeds: [],
       acousticness: [10, 90],
       danceability: [10, 90],
       energy: [10, 90],
@@ -39,7 +39,6 @@ export default function DiscoverDailySetup() {
   }, []);
 
   const arrowClicked = (increment) => {
-    console.log(increment);
     const currentDiv = document.getElementById(`setupInput${curInput}`);
     const nextDiv = document.getElementById(
       `setupInput${curInput + increment}`
@@ -96,7 +95,7 @@ export default function DiscoverDailySetup() {
     const refreshTkn = localStorage.getItem('discoverDaily_refreshToken');
     setRefreshToken(refreshTkn);
 
-    if (refreshToken && refreshToken !== 'null') {
+    if (refreshTkn && refreshTkn !== 'null') {
       const accessToken = await SpotifyHelper.getAccessToken(refreshTkn);
 
       if (accessToken) {
@@ -123,7 +122,7 @@ export default function DiscoverDailySetup() {
         refresh_token,
       } = await SpotifyHelper.getRefreshToken(
         code,
-        'https://discoverifymusic.com/redirect'
+        `${window.location.origin}/redirect`
       );
       localStorage.setItem('discoverDaily_refreshToken', refresh_token || null);
       setRefreshToken(refresh_token);
@@ -135,6 +134,7 @@ export default function DiscoverDailySetup() {
         'discoverDaily_spotifyUser',
         JSON.stringify(spotifyUsr)
       );
+
       setSpotifyUser(spotifyUsr);
 
       const usr = (await DiscoverDailyHelper.getUser(spotifyUsr.id)).user;
@@ -142,6 +142,8 @@ export default function DiscoverDailySetup() {
         sendToMain();
       }
     }
+
+    sendToLogin();
   };
 
   useEffect(() => {
@@ -155,9 +157,13 @@ export default function DiscoverDailySetup() {
 
   const signupUser = async () => {
     setSubmitting(true);
+
+    document.getElementById('buttonLoadingCircle').style.display = '';
+
     const { user } = await DiscoverDailyHelper.signupUser(
       spotifyUser.id,
-      refreshToken
+      refreshToken,
+      optionRef.current
     );
     setSubmitting(false);
     sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
@@ -172,10 +178,10 @@ export default function DiscoverDailySetup() {
           {curInput > 0 ? (
             <button
               className="setupPageArrowButton"
+              disabled={submitting}
               onClick={() => {
                 arrowClicked(-1);
               }}
-              disabled={submitting}
             >
               <svg
                 height="25"
@@ -206,9 +212,18 @@ export default function DiscoverDailySetup() {
               position: 'relative',
               width: '100%',
               margin: 'auto 0',
-              height: '200px',
+              height: '500px',
             }}
           >
+            <div id="setupHeader">
+              <h1>Customize your Playlist</h1>
+              <h3 style={{ paddingLeft: '3px' }}>
+                Choose what types of songs get put in your playlist!
+              </h3>
+              <h3 style={{ paddingLeft: '3px' }}>
+                You can always change these options later on.
+              </h3>
+            </div>
             <div
               id="setupInput0"
               className="setupAnimationDiv setupAnimationClass"
@@ -344,20 +359,35 @@ export default function DiscoverDailySetup() {
             <button
               className="btn btn-primary spotify-button setupAnimationClass"
               onClick={signupUser}
+              disabled={submitting}
               style={{
                 left: '100vw',
-                top: '200px',
+                top: '400px',
               }}
               id="signupButton"
             >
               Get your daily playlist
             </button>
+            <CircularProgress
+              className="loadingCircle"
+              id="buttonLoadingCircle"
+              style={{
+                marginLeft: '2%',
+                width: '4%',
+                top: '415px',
+                left: '350px',
+                display: 'none',
+                position: 'absolute',
+                height: '',
+              }}
+            />
           </Row>
         </Col>
         {curInput < 5 ? (
           <Col className="setupPageSideColumn">
             <button
               className="setupPageArrowButton"
+              disabled={submitting}
               onClick={() => {
                 arrowClicked(1);
               }}

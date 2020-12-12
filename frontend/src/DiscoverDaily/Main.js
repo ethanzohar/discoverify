@@ -33,8 +33,8 @@ class DiscoverDaily extends Component {
       }
     }
 
-    this.signupUser = this.signupUser.bind(this);
     this.unsubscribeUser = this.unsubscribeUser.bind(this);
+    this.sendToLogin = this.sendToLogin.bind(this);
   }
 
   // eslint-disable-next-line camelcase
@@ -109,7 +109,7 @@ class DiscoverDaily extends Component {
         refresh_token,
       } = await SpotifyHelper.getRefreshToken(
         code,
-        'https://discoverifymusic.com/redirect'
+        `${window.location.origin}/redirect`
       );
       localStorage.setItem('discoverDaily_refreshToken', refresh_token || null);
 
@@ -147,6 +147,11 @@ class DiscoverDaily extends Component {
     window.location = `${window.location.origin}/login`;
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  sendToSetup() {
+    window.location = `${window.location.origin}/setup`;
+  }
+
   updateTime() {
     let timeRange = 'second';
 
@@ -166,22 +171,6 @@ class DiscoverDaily extends Component {
     }
 
     this.setState({ lastUpdated: Math.round(timeDif), timeRange });
-  }
-
-  // async signupUser() {
-  //   this.setState({ submitting: true });
-  //   const { user, now } = await DiscoverDailyHelper.signupUser(
-  //     this.state.spotifyUser.id,
-  //     this.state.refreshToken
-  //   );
-  //   this.setState({ user, now, submitting: false });
-  //   sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
-  //   this.updateTime();
-  // }
-
-  // eslint-disable-next-line class-methods-use-this
-  async signupUser() {
-    window.location = `${window.location.origin}/setup`;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -264,7 +253,7 @@ class DiscoverDaily extends Component {
           </h3>
           <button
             className="btn btn-primary spotify-button"
-            onClick={this.signupUser}
+            onClick={this.sendToSetup}
             disabled={this.state.submitting}
             style={{ marginBottom: '2%', marginTop: '0' }}
           >

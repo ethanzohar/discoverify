@@ -171,7 +171,7 @@ export default function DiscoverDailyPlaylistOptions() {
         refresh_token,
       } = await SpotifyHelper.getRefreshToken(
         code,
-        'https://discoverifymusic.com/redirect'
+        `${window.location.origin}/redirect`
       );
       localStorage.setItem('discoverDaily_refreshToken', refresh_token || null);
 
