@@ -73,23 +73,23 @@ body {
 }
 
 .spotify-button:hover {
-    background-color: #22dd63;
+    background-color: #22dd63 !important;
 }
 
 .spotify-button:active, .spotify-button:focus, .spotify-button:disabled {
-    background-color: #15843c;
+    background-color: #15843c !important;
 }
 
 .spotify-red {
-    background-color: #ff3419;
+    background-color: #ff3419 !important;
 }
 
 .spotify-red:hover {
-    background-color:#f01800;
+    background-color:#f01800 !important;
 }
 
 .spotify-red:active, .spotify-red:focus, .spotify-red:disabled {
-    background-color: #cc1800;
+    background-color: #cc1800 !important;
 }
 
 .imageRow {
@@ -509,4 +509,69 @@ body {
 
 .MuiSlider-thumb.MuiSlider-thumbColorPrimary {
     pointer-events: none;
+}
+
+.setupMainColumn {
+    width: 80%;
+    height: 100%;
+    margin: 0;
+    float: left;
+    display: flex;
+}
+
+.setupMainRow {
+    position: relative;
+    width: 100%;
+    margin: auto 0;
+    height: 450px;
+}
+
+#signupButton {
+    left: 100vw;
+    top: 400px;
+}
+
+// Setup flow buttons on top and bottom
+@media only screen and (max-width: 900px) {
+    .setupPageSideColumn {
+        width: 100vw;
+        height: 15%;
+    }
+
+    .setupPageArrowButton {
+        margin: auto !important;
+    }
+
+    .setupMainColumn {
+        height: 70%;
+        width: 90%;
+        margin-left: 5%;
+    }
+
+    .setupAnimationDiv {
+        width: 100%;
+    }
+
+    #setupHeader {
+        h1 {
+            font-size: 4rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+        }
+    }
+
+    .setupAnimationDiv h3 {
+        font-size: 1.5rem;
+    }
+
+    .setupMainRow {
+        height: 70%;
+        margin: 0;
+    }
+
+    #signupButton {
+        top: 57vh;
+    }
 }

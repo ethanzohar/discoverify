@@ -19,7 +19,6 @@ class DiscoverDaily extends Component {
     this.state = {
       user: null,
       spotifyUser: null,
-      refreshToken: null,
       loading: true,
       imageIndexes: new Set(),
       submitting: false,
@@ -80,7 +79,6 @@ class DiscoverDaily extends Component {
     const refreshToken = localStorage.getItem('discoverDaily_refreshToken');
 
     if (refreshToken && refreshToken !== 'null') {
-      this.setState({ refreshToken });
       const accessToken = await SpotifyHelper.getAccessToken(refreshToken);
 
       if (accessToken) {
@@ -127,7 +125,6 @@ class DiscoverDaily extends Component {
         user: usr,
         now,
         spotifyUser,
-        refreshToken: refresh_token,
         loading: false,
       });
 

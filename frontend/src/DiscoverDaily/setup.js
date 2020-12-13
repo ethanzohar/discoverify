@@ -198,29 +198,14 @@ export default function DiscoverDailySetup() {
             </button>
           ) : null}
         </Col>
-        <Col
-          style={{
-            width: '80%',
-            height: '100%',
-            margin: '0',
-            float: 'left',
-            display: 'flex',
-          }}
-        >
-          <Row
-            style={{
-              position: 'relative',
-              width: '100%',
-              margin: 'auto 0',
-              height: '500px',
-            }}
-          >
+        <Col className="setupMainColumn">
+          <Row className="setupMainRow">
             <div id="setupHeader">
               <h1>Customize your Playlist</h1>
-              <h3 style={{ paddingLeft: '3px' }}>
+              <h3 style={{ paddingLeft: '3px', margin: '20px 0' }}>
                 Choose what types of songs get put in your playlist!
               </h3>
-              <h3 style={{ paddingLeft: '3px' }}>
+              <h3 style={{ paddingLeft: '3px', margin: '20px 0' }}>
                 You can always change these options later on.
               </h3>
             </div>
@@ -360,10 +345,6 @@ export default function DiscoverDailySetup() {
               className="btn btn-primary spotify-button setupAnimationClass"
               onClick={signupUser}
               disabled={submitting}
-              style={{
-                left: '100vw',
-                top: '400px',
-              }}
               id="signupButton"
             >
               Get your daily playlist
