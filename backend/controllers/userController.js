@@ -9,8 +9,8 @@ class UserController {
     return UserModel.find();
   }
 
-  static async createUser(userId, refreshToken) {
-    return UserModel.create({ userId, refreshToken });
+  static async createUser(userId, refreshToken, playlistOptions) {
+    return UserModel.create({ userId, refreshToken, playlistOptions });
   }
 
   static async deleteUser(userId) {

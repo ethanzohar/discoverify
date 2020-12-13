@@ -5,6 +5,7 @@ import DiscoverDaily from './DiscoverDaily/Main';
 import DiscoverDailyRedirect from './DiscoverDaily/Redirect';
 import DiscoverDailyLogin from './DiscoverDaily/Login';
 import DiscoverDailyPlaylistOptions from './DiscoverDaily/PlaylistOptions';
+import DiscoverDailySetup from './DiscoverDaily/Setup';
 import './index.css';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <Route exact path="/setup" component={DiscoverDailySetup} />
       <Route exact path="/options" component={DiscoverDailyPlaylistOptions} />
       <Route exact path="/redirect" component={DiscoverDailyRedirect} />
       <Route exact path="/login" component={DiscoverDailyLogin} />

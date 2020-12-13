@@ -155,7 +155,7 @@ export default function DiscoverDailyPlaylistOptions() {
         );
 
         const usr = (await DiscoverDailyHelper.getUser(spotifyUser.id)).user;
-        if (usr.userId) {
+        if (usr && usr.userId) {
           setUser(usr);
           updatePlaylistOptions(usr);
           setLoading(false);
@@ -173,7 +173,7 @@ export default function DiscoverDailyPlaylistOptions() {
         refresh_token,
       } = await DiscoverDailyHelper.getRefreshToken(
         code,
-        'https://discoverifymusic.com/redirect'
+        `${window.location.origin}/redirect`
       );
       localStorage.setItem('discoverDaily_refreshToken', refresh_token || null);
 
@@ -188,7 +188,7 @@ export default function DiscoverDailyPlaylistOptions() {
       setUser(usr.userId ? usr : null);
       setLoading(false);
 
-      if (usr.userId) {
+      if (usr && usr.userId) {
         updatePlaylistOptions(usr);
         await DiscoverDailyHelper.signupUser(spotifyUser, refresh_token);
       } else {
