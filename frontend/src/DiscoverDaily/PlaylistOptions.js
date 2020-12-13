@@ -126,7 +126,7 @@ export default function DiscoverDailyPlaylistOptions() {
       );
 
       if (!spotifyUserFromStorage || spotifyUserFromStorage === 'null') {
-        const accessToken = await SpotifyHelper.getAccessToken(
+        const accessToken = await DiscoverDailyHelper.getAccessToken(
           parsedUser.refreshToken
         );
         const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
@@ -143,7 +143,9 @@ export default function DiscoverDailyPlaylistOptions() {
     const refreshToken = localStorage.getItem('discoverDaily_refreshToken');
 
     if (refreshToken && refreshToken !== 'null') {
-      const accessToken = await SpotifyHelper.getAccessToken(refreshToken);
+      const accessToken = await DiscoverDailyHelper.getAccessToken(
+        refreshToken
+      );
 
       if (accessToken) {
         const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
@@ -169,7 +171,7 @@ export default function DiscoverDailyPlaylistOptions() {
       const {
         access_token,
         refresh_token,
-      } = await SpotifyHelper.getRefreshToken(
+      } = await DiscoverDailyHelper.getRefreshToken(
         code,
         `${window.location.origin}/redirect`
       );

@@ -198,4 +198,20 @@ router.post('/updatePlaylistOptions', async function (req, res) {
   return res.send({ user });
 });
 
+router.post('/refreshToken', async function (req, res) {
+  const { code, redirectUri } = req.body;
+  // eslint-disable-next-line camelcase
+  const { access_token, refresh_token } = await SpotifyHelper.getRefreshToken(
+    code,
+    redirectUri
+  );
+  return res.status(200).send({ access_token, refresh_token });
+});
+
+router.post('/accessToken', async function (req, res) {
+  const { refreshToken } = req.body;
+  const accessToken = await SpotifyHelper.getNewAccessToken(refreshToken);
+  return res.status(200).send({ accessToken });
+});
+
 module.exports = router;

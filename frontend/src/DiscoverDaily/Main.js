@@ -79,7 +79,9 @@ class DiscoverDaily extends Component {
     const refreshToken = localStorage.getItem('discoverDaily_refreshToken');
 
     if (refreshToken && refreshToken !== 'null') {
-      const accessToken = await SpotifyHelper.getAccessToken(refreshToken);
+      const accessToken = await DiscoverDailyHelper.getAccessToken(
+        refreshToken
+      );
 
       if (accessToken) {
         const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
@@ -105,7 +107,7 @@ class DiscoverDaily extends Component {
       const {
         access_token,
         refresh_token,
-      } = await SpotifyHelper.getRefreshToken(
+      } = await DiscoverDailyHelper.getRefreshToken(
         code,
         `${window.location.origin}/redirect`
       );

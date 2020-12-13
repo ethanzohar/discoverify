@@ -1,7 +1,3 @@
-import SpotifyHelper from './SpotifyHelper';
-
-require('dotenv').config();
-
 class DiscoverDailyHelper {
   static async signupUser(userId, refreshToken, options) {
     const response = await fetch('/api/discover-daily/subscribe', {
@@ -21,7 +17,7 @@ class DiscoverDailyHelper {
   }
 
   static async unsubscribeUser(userId, refreshToken) {
-    const accessToken = await SpotifyHelper.getAccessToken(refreshToken);
+    const accessToken = await DiscoverDailyHelper.getAccessToken(refreshToken);
 
     const response = await fetch('/api/discover-daily/unsubscribe', {
       method: 'POST',
@@ -39,7 +35,7 @@ class DiscoverDailyHelper {
   }
 
   static async restorePlaylistOptions(userId, refreshToken) {
-    const accessToken = await SpotifyHelper.getAccessToken(refreshToken);
+    const accessToken = await DiscoverDailyHelper.getAccessToken(refreshToken);
 
     const response = await fetch('/api/discover-daily/restorePlaylistOptions', {
       method: 'POST',
@@ -57,7 +53,7 @@ class DiscoverDailyHelper {
   }
 
   static async updatePlaylistOptions(options, userId, refreshToken) {
-    const accessToken = await SpotifyHelper.getAccessToken(refreshToken);
+    const accessToken = await DiscoverDailyHelper.getAccessToken(refreshToken);
 
     const response = await fetch('/api/discover-daily/updatePlaylistOptions', {
       method: 'POST',
@@ -98,7 +94,7 @@ class DiscoverDailyHelper {
   }
 
   static async getAlbums(refreshToken) {
-    const accessToken = await SpotifyHelper.getAccessToken(refreshToken);
+    const accessToken = await DiscoverDailyHelper.getAccessToken(refreshToken);
 
     const albums = [];
     let next = `https://api.spotify.com/v1/me/tracks?limit=50`;
@@ -122,6 +118,37 @@ class DiscoverDailyHelper {
 
     // const albums = j.items.map((x) => x.track.album.images[0].url);
     return [...new Set(albums)];
+  }
+
+  static async getAccessToken(refreshToken) {
+    const response = await fetch('/api/discover-daily/accessToken', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        refreshToken,
+      }),
+    });
+
+    return (await response.json()).accessToken;
+  }
+
+  static async getRefreshToken(code, redirectUri) {
+    const response = await fetch('/api/discover-daily/refreshToken', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        code,
+        redirectUri,
+      }),
+    });
+
+    return response.json();
   }
 }
 
