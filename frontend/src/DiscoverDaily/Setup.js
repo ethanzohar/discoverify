@@ -96,7 +96,7 @@ export default function DiscoverDailySetup() {
     setRefreshToken(refreshTkn);
 
     if (refreshTkn && refreshTkn !== 'null') {
-      const accessToken = await SpotifyHelper.getAccessToken(refreshTkn);
+      const accessToken = await DiscoverDailyHelper.getAccessToken(refreshTkn);
 
       if (accessToken) {
         const spotifyUsr = await SpotifyHelper.getUserInfo(accessToken);
@@ -120,7 +120,7 @@ export default function DiscoverDailySetup() {
       const {
         access_token,
         refresh_token,
-      } = await SpotifyHelper.getRefreshToken(
+      } = await DiscoverDailyHelper.getRefreshToken(
         code,
         `${window.location.origin}/redirect`
       );
