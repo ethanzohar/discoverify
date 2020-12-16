@@ -13,8 +13,7 @@ mongoose.connect('mongodb://localhost:27017/playlist-generator', {
 const a = async () => {
   console.log('Starting job2');
   const users = await UserController.getAllUsers();
-  console.log(users);
-  console.log(users.length);
+  SpotifyHelper.updatePlaylists(users);
 };
 
 const { connection } = mongoose;
