@@ -99,7 +99,7 @@ class DiscoverDailyHelper {
     const albums = [];
     let next = `https://api.spotify.com/v1/me/tracks?limit=50`;
 
-    for (let i = 0; i < 10; i += 1) {
+    while (next) {
       const response = await fetch(next, {
         Accepts: 'application/json',
         method: 'GET',
@@ -109,15 +109,35 @@ class DiscoverDailyHelper {
       });
 
       const j = await response.json();
+      console.log(`got ${j.items.length} items`);
       j.items.forEach((x) => {
         albums.push(x.track.album.images[0].url);
       });
 
       next = j.next;
     }
+    // for (let i = 0; i < 10; i += 1) {
+    //   const response = await fetch(next, {
+    //     Accepts: 'application/json',
+    //     method: 'GET',
+    //     headers: {
+    //       Authorization: `Bearer ${accessToken}`,
+    //     },
+    //   });
 
-    // const albums = j.items.map((x) => x.track.album.images[0].url);
-    return [...new Set(albums)];
+    //   const j = await response.json();
+    //   j.items.forEach((x) => {
+    //     albums.push(x.track.album.images[0].url);
+    //   });
+
+    //   next = j.next;
+    // }
+
+    const set = [...new Set(albums)];
+
+    for (let i = 0; i < set.length; i += 1) {
+      console.log(`"${set[i]}",`);
+    }
   }
 
   static async getAccessToken(refreshToken) {
