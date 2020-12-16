@@ -1,12 +1,9 @@
-// const { CronJob } = require('cron');
 const express = require('express');
 const http = require('http');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
 
-// const UserController = require('./controllers/userController');
-// const SpotifyHelper = require('./helpers/spotifyHelper');
 const discoverDailyRouter = require('./routes/discoverDailyRoutes');
 
 const app = express();
@@ -51,16 +48,3 @@ connection.on('connected', () => {
 connection.on('error', () => {
   console.log('MongoDB Connection Error');
 });
-
-// const job = new CronJob(
-//   '00 00 00 * * *',
-//   async function () {
-//     console.log('Starting job');
-//     const users = await UserController.getAllUsers();
-//     SpotifyHelper.updatePlaylists(users);
-//   },
-//   null,
-//   true,
-//   'America/Toronto'
-// );
-// job.start();
