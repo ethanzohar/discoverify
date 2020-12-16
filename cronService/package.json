@@ -8,7 +8,9 @@
     },
     "dependencies": {
         "cron": "^1.8.2",
-        "mongoose": "^5.10.13"
+        "dotenv": "^8.2.0",
+        "mongoose": "^5.10.13",
+        "node-fetch": "^2.6.1"
     },
     "devDependencies": {
         "nodemon": "^2.0.6"

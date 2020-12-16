@@ -1,9 +1,8 @@
 const { CronJob } = require('cron');
 const mongoose = require('mongoose');
 
-const UserController = require('../backend/controllers/userController');
-const SpotifyHelper = require('../backend/helpers/spotifyHelper');
-const UserModel = require('../backend/models/userSchema');
+const UserController = require('./controllers/userController');
+const SpotifyHelper = require('./helpers/spotifyHelper');
 
 mongoose.connect('mongodb://localhost:27017/playlist-generator', {
   useNewUrlParser: true,
@@ -13,7 +12,7 @@ mongoose.connect('mongodb://localhost:27017/playlist-generator', {
 
 const a = async () => {
   console.log('Starting job2');
-  const users = await UserModel.find();
+  const users = await UserController.getAllUsers();
   console.log(users);
   console.log(users.length);
 };
