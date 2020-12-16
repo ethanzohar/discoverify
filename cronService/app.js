@@ -10,19 +10,10 @@ mongoose.connect('mongodb://localhost:27017/playlist-generator', {
   useUnifiedTopology: true,
 });
 
-const a = async () => {
-  console.log('Starting job2');
-  // const users = await UserController.getAllUsers();
-  const users = [await UserController.getUser('hanujan-ca')];
-  SpotifyHelper.updatePlaylists(users);
-};
-
 const { connection } = mongoose;
 
 connection.on('connected', () => {
   console.log('MongoDB database connected');
-
-  a();
 });
 
 connection.on('error', () => {

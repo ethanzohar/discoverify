@@ -408,9 +408,9 @@ class SpotifyHelper {
     return resultJSON.owner.id === userId ? resultJSON : null;
   }
 
-  static async createPlaylist(userId, accessToken) {
+  static async createPlaylist(user, accessToken) {
     const response = await fetch(
-      `https://api.spotify.com/v1/users/${userId}/playlists`,
+      `https://api.spotify.com/v1/users/${user.userId}/playlists`,
       {
         method: 'POST',
         headers: {
@@ -427,7 +427,6 @@ class SpotifyHelper {
 
     const responseJSON = await response.json();
 
-    const user = await UserController.getUser(userId);
     user.playlistId = responseJSON.id;
     user.save();
 
@@ -547,7 +546,7 @@ class SpotifyHelper {
       );
 
       if (!(await playlist) || !(await doesMyPlaylistExist)) {
-        playlist = await this.createPlaylist(user.userId, accessToken);
+        playlist = await this.createPlaylist(user, accessToken);
         console.log('Had to create new playlist');
       }
 
