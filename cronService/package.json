@@ -1,0 +1,15 @@
+{
+    "name": "discoverify-cronService",
+    "version": "1.0.0",
+    "scripts": {
+        "start": "nodemon app.js",
+        "deploy": "git pull && npm install && pm2 reload discoverify-cronService"
+    },
+    "dependencies": {
+        "cron": "^1.8.2",
+        "mongoose": "^5.10.13"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.6"
+    }
+}
