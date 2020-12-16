@@ -32,3 +32,12 @@ const job = new CronJob(
   'America/Toronto'
 );
 job.start();
+
+const a = async () => {
+  console.log('Starting job2');
+  const users = await UserController.getAllUsers();
+  console.log(users);
+  console.log(users.length);
+};
+
+a();
