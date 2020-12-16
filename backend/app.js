@@ -1,11 +1,12 @@
-const { CronJob } = require('cron');
+// const { CronJob } = require('cron');
 const express = require('express');
 const http = require('http');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const path = require('path');
 
-const UserController = require('./controllers/userController');
-const SpotifyHelper = require('./helpers/spotifyHelper');
+// const UserController = require('./controllers/userController');
+// const SpotifyHelper = require('./helpers/spotifyHelper');
 const discoverDailyRouter = require('./routes/discoverDailyRoutes');
 
 const app = express();
@@ -28,8 +29,11 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/api/discover-daily', discoverDailyRouter);
 
-app.get('/', (req, res) => {
-  res.send('Wow, you hit the server');
+const frontend = path.resolve(`${__dirname}../../frontend/build/index.html`);
+app.use(express.static(path.resolve(`${__dirname}/../frontend/build`)));
+
+app.get('*', (req, res) => {
+  res.sendFile(frontend);
 });
 
 mongoose.connect('mongodb://localhost:27017/playlist-generator', {
@@ -48,15 +52,15 @@ connection.on('error', () => {
   console.log('MongoDB Connection Error');
 });
 
-const job = new CronJob(
-  '00 00 00 * * *',
-  async function () {
-    console.log('Starting job');
-    const users = await UserController.getAllUsers();
-    SpotifyHelper.updatePlaylists(users);
-  },
-  null,
-  true,
-  'America/Toronto'
-);
-job.start();
+// const job = new CronJob(
+//   '00 00 00 * * *',
+//   async function () {
+//     console.log('Starting job');
+//     const users = await UserController.getAllUsers();
+//     SpotifyHelper.updatePlaylists(users);
+//   },
+//   null,
+//   true,
+//   'America/Toronto'
+// );
+// job.start();

@@ -2,7 +2,7 @@
     "name": "discoverify",
     "version": "1.0.0",
     "scripts": {
-        "deploy": "git pull && cd backend && npm run-script deploy && cd ../frontend && npm run-script deploy",
+        "deploy": "git pull && cd frontend && npm run-script deploy && cd ../backend && npm run-script deploy && cd ../cronService && npm run-script deploy",
         "lint": "eslint ."
     },
     "devDependencies": {
