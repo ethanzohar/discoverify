@@ -86,7 +86,12 @@ class SpotifyHelper {
 
     const resultJSON = await result.json();
 
-    return resultJSON.items.map((x) => x.id);
+    try {
+      return resultJSON.items.map((x) => x.id);
+    } catch (e) {
+      console.log(e.message);
+      console.log(resultJSON);
+    }
   }
 
   // eslint-disable-next-line camelcase
@@ -405,7 +410,12 @@ class SpotifyHelper {
 
     const resultJSON = await result.json();
 
-    return resultJSON.owner.id === userId ? resultJSON : null;
+    try {
+      return resultJSON.owner.id === userId ? resultJSON : null;
+    } catch (e) {
+      console.log(e.message);
+      console.log(resultJSON);
+    }
   }
 
   static async createPlaylist(userId, accessToken) {
