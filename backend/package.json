@@ -3,7 +3,8 @@
     "version": "1.0.0",
     "scripts": {
         "start": "nodemon app.js",
-        "deploy": "git pull && npm install && pm2 reload discoverify-backend"
+        "deploy": "git pull && npm install && pm2 reload discoverify-backend",
+        "logs": "pm2 logs discoverify-backend --lines 500"
     },
     "dependencies": {
         "body-parser": "^1.19.0",
