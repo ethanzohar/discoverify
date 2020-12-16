@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 const UserController = require('../backend/controllers/userController');
 const SpotifyHelper = require('../backend/helpers/spotifyHelper');
+const UserModel = require('../backend/models/userSchema');
 
 mongoose.connect('mongodb://localhost:27017/playlist-generator', {
   useNewUrlParser: true,
@@ -12,7 +13,7 @@ mongoose.connect('mongodb://localhost:27017/playlist-generator', {
 
 const a = async () => {
   console.log('Starting job2');
-  const users = await UserController.getAllUsers();
+  const users = await UserModel.find();
   console.log(users);
   console.log(users.length);
 };
