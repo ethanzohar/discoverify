@@ -11,7 +11,7 @@ import './discoverDaily.scss';
 const DiscoverDailyLogin = () => {
   const sendLoginRedirect = () => {
     window.location = SpotifyHelper.getOAuthCodeUrl(
-      `${window.location.origin}/redirect`
+      process.env.REACT_APP_REDIRECT_URI
     );
   };
 

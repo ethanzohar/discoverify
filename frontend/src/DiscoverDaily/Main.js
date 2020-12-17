@@ -109,7 +109,7 @@ class DiscoverDaily extends Component {
         refresh_token,
       } = await DiscoverDailyHelper.getRefreshToken(
         code,
-        `${window.location.origin}/redirect`
+        process.env.REACT_APP_REDIRECT_URI
       );
       localStorage.setItem('discoverDaily_refreshToken', refresh_token || null);
 
