@@ -117,8 +117,14 @@ router.post('/displayNames', async function (req, res) {
 
   const names = {};
   for (let i = 0; i < users.length; i += 1) {
-    const user = await SpotifyHelper.getUser(users[i]);
-    names[user.id] = user.display_name;
+    if (users[i].displayName) {
+      names[users[i].userId] = users[i].displayName;
+    } else {
+      const user = await SpotifyHelper.getUser(users[i]);
+      names[user.id] = user.display_name;
+      users[i].displayName = user.display_name;
+      users[i].save();
+    }
   }
 
   return res.send(names);
