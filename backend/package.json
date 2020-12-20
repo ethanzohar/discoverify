@@ -3,12 +3,15 @@
     "version": "1.0.0",
     "scripts": {
         "start": "nodemon app.js",
-        "deploy": "git pull && npm install && pm2 reload discoverify-backend",
-        "logs": "pm2 logs discoverify-backend --lines 500"
+        "startCron": "nodemon cronService.js",
+        "deploy": "git pull && npm install && pm2 reload discoverify-backend && pm2 reload discoverify-cronService",
+        "logs-backend": "pm2 logs discoverify-backend --lines 500",
+        "logs-cron": "pm2 logs discoverify-cronService --lines 500"
     },
     "dependencies": {
         "body-parser": "^1.19.0",
         "dotenv": "^8.2.0",
+        "cron": "^1.8.2",
         "express": "^4.17.1",
         "fs": "0.0.1-security",
         "mongoose": "^5.10.13",
