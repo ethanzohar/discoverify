@@ -37,7 +37,7 @@ router.post('/migration', async function (req, res) {
   console.log(`Running ${users.length} migrations`);
   for (let i = 0; i < users.length; i += 1) {
     console.log(`${i + 1}. Running migration for user: ${users[i].userId}`);
-    users[i].playlistOptions.seeds = ['ST', 'ST', 'MT', 'MT', 'MT'];
+    users[i].displayName = undefined;
     await users[i].save();
   }
 
@@ -107,7 +107,7 @@ router.post('/users', async function (req, res) {
   return res.send({ users });
 });
 
-router.post('/displayNames', async function (req, res) {
+router.post('/userIds', async function (req, res) {
   const { userId, refreshToken } = req.body;
   if (!isAdmin(userId, refreshToken)) {
     return res.status(403).send('Invalid credentials');
@@ -115,19 +115,7 @@ router.post('/displayNames', async function (req, res) {
 
   const users = await UserController.getAllUsers();
 
-  const names = {};
-  for (let i = 0; i < users.length; i += 1) {
-    if (users[i].displayName) {
-      names[users[i].userId] = users[i].displayName;
-    } else {
-      const user = await SpotifyHelper.getUser(users[i]);
-      names[user.id] = user.display_name;
-      users[i].displayName = user.display_name;
-      users[i].save();
-    }
-  }
-
-  return res.send(names);
+  return res.send(users.map((u) => u.userId));
 });
 
 router.get('/getUser/:userId', async function (req, res) {

@@ -6,7 +6,6 @@ const userSchema = new Schema({
   userId: { type: String, required: true, unique: true },
   refreshToken: { type: String, required: true, unique: true },
   playlistId: { type: String },
-  displayName: { type: String },
   lastUpdated: { type: Date },
   playlistOptions: {
     seeds: { type: [String], default: ['ST', 'ST', 'MT', 'MT', 'MT'] },
