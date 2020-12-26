@@ -37,7 +37,7 @@ router.post('/migration', async function (req, res) {
   console.log(`Running ${users.length} migrations`);
   for (let i = 0; i < users.length; i += 1) {
     console.log(`${i + 1}. Running migration for user: ${users[i].userId}`);
-    users[i].displayName = undefined;
+    // operation goes here
     await users[i].save();
   }
 
