@@ -10,6 +10,7 @@
 
 # production
 /build
+/deployedBuild
 
 # /src/keys.js
 .env

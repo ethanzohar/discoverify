@@ -26,8 +26,10 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/api/discover-daily', discoverDailyRouter);
 
-const frontend = path.resolve(`${__dirname}../../frontend/build/index.html`);
-app.use(express.static(path.resolve(`${__dirname}/../frontend/build`)));
+const frontend = path.resolve(
+  `${__dirname}../../frontend/deployedBuild/index.html`
+);
+app.use(express.static(path.resolve(`${__dirname}/../frontend/deployedBuild`)));
 
 app.get('*', (req, res) => {
   res.sendFile(frontend);
