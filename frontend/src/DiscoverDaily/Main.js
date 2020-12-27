@@ -307,6 +307,19 @@ class DiscoverDaily extends Component {
               style={{ margin: '10px' }}
             />
           </a>
+          <a
+            href="https://www.producthunt.com/posts/discoverify?utm_source=badge-featured&utm_medium=badge&utm_souce=badge-discoverify"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=279119&theme=light"
+              alt="Discoverify - Spotify's Discover Weekly... But Daily | Product Hunt"
+              style={{ width: '250px', height: '54px' }}
+              width="250"
+              height="54"
+            />
+          </a>
         </Row>
       </div>
     );
