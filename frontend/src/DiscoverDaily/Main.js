@@ -214,7 +214,7 @@ class DiscoverDaily extends Component {
             this.state.timeRange
           }${this.state.lastUpdated > 1 ? 's' : ''} ago`}</h3>
           <h3>
-            You can find you new playlist in Spotify under the title Discover
+            You can find your new playlist in Spotify under the title Discover
             Daily
           </h3>
           <h3>We will update the songs in your playlist every 24 hours!</h3>
