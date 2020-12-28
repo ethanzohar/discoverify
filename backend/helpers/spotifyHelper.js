@@ -73,20 +73,37 @@ class SpotifyHelper {
   }
 
   static async getTop(type, range, accessToken) {
-    const result = await fetch(
-      `https://api.spotify.com/v1/me/top/${type}?limit=20&time_range=${range}`,
-      {
-        Accepts: 'application/json',
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
+    try {
+      const result = await fetch(
+        `https://api.spotify.com/v1/me/top/${type}?limit=20&time_range=${range}`,
+        {
+          Accepts: 'application/json',
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
 
-    const resultJSON = await result.json();
+      const resultJSON = await result.json();
 
-    return resultJSON.items.map((x) => x.id);
+      return resultJSON.items.map((x) => x.id);
+    } catch (e) {
+      const result = await fetch(
+        `https://api.spotify.com/v1/me/top/${type}?limit=20&time_range=${range}`,
+        {
+          Accepts: 'application/json',
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      const resultJSON = await result.json();
+
+      return resultJSON.items.map((x) => x.id);
+    }
   }
 
   // eslint-disable-next-line camelcase
