@@ -570,7 +570,6 @@ class SpotifyHelper {
       const playlistId = (await playlist).id;
 
       console.log(`${(await tracks).length} tracks found`);
-      console.log('Playlist ID', playlistId);
 
       this.updatePlaylistTracks(playlistId, await tracks, accessToken);
 
@@ -597,6 +596,7 @@ class SpotifyHelper {
 
     for (let i = 0; i < users.length; i += 1) {
       try {
+        console.log(`${i + 1}/${users.length}`);
         await this.updatePlaylist(users[i], null);
       } catch (e) {
         console.log(e);
