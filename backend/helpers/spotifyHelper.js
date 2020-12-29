@@ -267,7 +267,7 @@ class SpotifyHelper {
       responseJSON = await recommendations.json();
     } catch (e) {
       // eslint-disable-next-line no-use-before-define
-      console.log(recommendations);
+      console.log(responseJSON);
       console.log(e);
 
       await new Promise((r) => setTimeout(r, 1000));
@@ -409,20 +409,41 @@ class SpotifyHelper {
   static async getPlaylist(userId, playlistId, accessToken) {
     if (!playlistId) return null;
 
-    const result = await fetch(
-      `https://api.spotify.com/v1/playlists/${playlistId}`,
-      {
-        Accepts: 'application/json',
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
+    let resultJSON;
+    try {
+      const result = await fetch(
+        `https://api.spotify.com/v1/playlists/${playlistId}`,
+        {
+          Accepts: 'application/json',
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
 
-    const resultJSON = await result.json();
+      resultJSON = await result.json();
 
-    return resultJSON.owner.id === userId ? resultJSON : null;
+      return resultJSON.owner.id === userId ? resultJSON : null;
+    } catch (e) {
+      console.log(resultJSON);
+      console.log(e);
+
+      const result = await fetch(
+        `https://api.spotify.com/v1/playlists/${playlistId}`,
+        {
+          Accepts: 'application/json',
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      resultJSON = await result.json();
+
+      return resultJSON.owner.id === userId ? resultJSON : null;
+    }
   }
 
   static async createPlaylist(user, accessToken) {
