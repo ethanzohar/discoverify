@@ -1,6 +1,7 @@
 const bodyparser = require('body-parser');
 const express = require('express');
 
+const CryptoJS = require('crypto-js');
 const UserController = require('../controllers/userController');
 const SpotifyHelper = require('../helpers/spotifyHelper');
 
@@ -10,13 +11,16 @@ const app = express();
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
+const { ADMIN_USERID } = process.env;
+const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET;
+
 async function validate(userId, accessToken) {
   const user = await SpotifyHelper.getMe(accessToken);
   return user.id === userId;
 }
 
 async function isAdmin(userId, refreshToken) {
-  if (userId !== '56qvpj5zn6okifdhfoaae6vwc') return false;
+  if (userId !== ADMIN_USERID) return false;
 
   const accessToken = await SpotifyHelper.getNewAccessToken(refreshToken);
   return validate(userId, accessToken);
@@ -37,7 +41,14 @@ router.post('/migration', async function (req, res) {
   console.log(`Running ${users.length} migrations`);
   for (let i = 0; i < users.length; i += 1) {
     console.log(`${i + 1}. Running migration for user: ${users[i].userId}`);
-    // operation goes here
+
+    // Place migration here
+    users[i].userId = CryptoJS.AES.encrypt(
+      users[i].userId,
+      CryptoJS.enc.Base64.parse(CLIENT_SECRET),
+      { mode: CryptoJS.mode.ECB }
+    ).toString();
+
     await users[i].save();
   }
 
@@ -97,33 +108,12 @@ router.post('/count', async function (req, res) {
   return res.send(`Total users: ${users.length}`);
 });
 
-router.post('/users', async function (req, res) {
-  const { userId, refreshToken } = req.body;
-  if (!isAdmin(userId, refreshToken)) {
-    return res.status(403).send('Invalid credentials');
-  }
-
-  const users = await UserController.getAllUsers();
-  return res.send({ users });
-});
-
-router.post('/userIds', async function (req, res) {
-  const { userId, refreshToken } = req.body;
-  if (!isAdmin(userId, refreshToken)) {
-    return res.status(403).send('Invalid credentials');
-  }
-
-  const users = await UserController.getAllUsers();
-
-  return res.send(users.map((u) => u.userId));
-});
-
 router.get('/getUser/:userId', async function (req, res) {
   const user = await UserController.getUser(req.params.userId);
   if (user && user.userId) {
     return res.status(200).send({
       user: {
-        userId: user.userId,
+        userId: req.params.userId,
         playlistId: user.playlistId,
         lastUpdated: user.lastUpdated,
         refreshToken: user.refreshToken,
@@ -132,6 +122,7 @@ router.get('/getUser/:userId', async function (req, res) {
       now: new Date(),
     });
   }
+
   return res.status(200).send({ success: false });
 });
 
@@ -149,11 +140,13 @@ router.post('/subscribe', async function (req, res) {
     user.refreshToken = refreshToken;
   } else {
     user = await UserController.createUser(userId, refreshToken, options);
+    await SpotifyHelper.updatePlaylist(user, null);
   }
 
-  await SpotifyHelper.updatePlaylist(user, null);
+  const returnUser = user.toObject();
+  returnUser.userId = userId;
 
-  return res.send({ user, now: new Date() });
+  return res.send({ user: returnUser, now: new Date() });
 });
 
 router.post('/unsubscribe', async function (req, res) {
@@ -177,7 +170,10 @@ router.post('/restorePlaylistOptions', async function (req, res) {
 
   const user = await UserController.restorePlaylistOptions(userId);
 
-  return res.send({ user });
+  const returnUser = user.toObject();
+  returnUser.userId = userId;
+
+  return res.send({ user: returnUser });
 });
 
 router.post('/updatePlaylistOptions', async function (req, res) {
@@ -189,7 +185,11 @@ router.post('/updatePlaylistOptions', async function (req, res) {
   console.log(`Updating playlist options for user: ${userId}`);
 
   const user = await UserController.updatePlaylistOptions(userId, options);
-  return res.send({ user });
+
+  const returnUser = user.toObject();
+  returnUser.userId = userId;
+
+  return res.send({ user: returnUser });
 });
 
 router.post('/refreshToken', async function (req, res) {

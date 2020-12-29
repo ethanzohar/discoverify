@@ -1,8 +1,15 @@
+const CryptoJS = require('crypto-js');
 const UserModel = require('../models/userSchema');
 
 class UserController {
   static async getUser(userId) {
-    return UserModel.findOne({ userId });
+    return UserModel.findOne({
+      userId: CryptoJS.AES.encrypt(
+        userId,
+        CryptoJS.enc.Base64.parse(process.env.SPOTIFY_API_CLIENT_SECRET),
+        { mode: CryptoJS.mode.ECB }
+      ).toString(),
+    });
   }
 
   static async getAllUsers() {
@@ -10,11 +17,25 @@ class UserController {
   }
 
   static async createUser(userId, refreshToken, playlistOptions) {
-    return UserModel.create({ userId, refreshToken, playlistOptions });
+    return UserModel.create({
+      userId: CryptoJS.AES.encrypt(
+        userId,
+        CryptoJS.enc.Base64.parse(process.env.SPOTIFY_API_CLIENT_SECRET),
+        { mode: CryptoJS.mode.ECB }
+      ).toString(),
+      refreshToken,
+      playlistOptions,
+    });
   }
 
   static async deleteUser(userId) {
-    return UserModel.deleteOne({ userId });
+    return UserModel.deleteOne({
+      userId: CryptoJS.AES.encrypt(
+        userId,
+        CryptoJS.enc.Base64.parse(process.env.SPOTIFY_API_CLIENT_SECRET),
+        { mode: CryptoJS.mode.ECB }
+      ).toString(),
+    });
   }
 
   static async setUserPlaylistId(userId, playListId) {
