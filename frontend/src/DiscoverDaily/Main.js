@@ -130,7 +130,7 @@ class DiscoverDaily extends Component {
         loading: false,
       });
 
-      if (user) {
+      if (usr) {
         await DiscoverDailyHelper.signupUser(spotifyUser.id, refresh_token);
       }
 
