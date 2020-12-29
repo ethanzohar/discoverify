@@ -614,10 +614,23 @@ class SpotifyHelper {
     // const playlistCover = 'images/playlistCover.jpeg';
     // await Promise.all(users.map(user => this.updatePlaylist(user, null)));
 
+    const failures = [];
     for (let i = 0; i < users.length; i += 1) {
       try {
         console.log(`${i + 1}/${users.length}`);
         await this.updatePlaylist(users[i], null);
+      } catch (e) {
+        console.log(e);
+        failures.push(users[i]);
+      }
+    }
+
+    console.log();
+    console.log(`running ${failures.length} failure jobs | ${new Date()}`);
+    for (let i = 0; i < failures.length; i += 1) {
+      try {
+        console.log(`${i + 1}/${failures.length}`);
+        await this.updatePlaylist(failures[i], null);
       } catch (e) {
         console.log(e);
       }
