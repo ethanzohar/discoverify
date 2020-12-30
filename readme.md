@@ -14,5 +14,5 @@ You can tweak your playlist&apos;s settings to get the exact type of recommendat
 
 ### Achievements
 - \#3 Product of the day with 232 upvotes
-- 1000+ signed up users
-- Features in more than 3 articles
+- 2000+ signed up users
+- Featured in more than 3 articles
