@@ -313,7 +313,7 @@ class DiscoverDaily extends Component {
             rel="noopener noreferrer"
           >
             <img
-              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=279119&theme=light"
+              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=279119&theme=dark"
               alt="Discoverify - Spotify's Discover Weekly... But Daily | Product Hunt"
               style={{ width: '250px', height: '54px' }}
               width="250"
