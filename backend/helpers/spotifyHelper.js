@@ -220,7 +220,7 @@ class SpotifyHelper {
     return result.json();
   }
 
-  static async getTracks(user, userId, seeds, accessToken) {
+  static async getTracks(user, userId, tracksInPlaylist, seeds, accessToken) {
     const PLAYLIST_SIZE = 30;
     let usr = user;
 
@@ -296,19 +296,24 @@ class SpotifyHelper {
     const liked =
       tracks.length === 0 ? [] : await this.getLiked(trackIds, accessToken);
 
-    const likedTracks = [];
-    const playlistUris = [];
+    const likedTracks = new Set();
+    const alreadyInPlaylist = new Set();
+    const playlistUris = new Set();
     for (let i = 0; i < liked.length; i += 1) {
       if (!liked[i]) {
-        playlistUris.push(uris[i]);
+        playlistUris.add(uris[i]);
       } else {
-        likedTracks.push(uris[i]);
+        likedTracks.add(uris[i]);
       }
 
-      if (playlistUris.length >= PLAYLIST_SIZE) break;
+      if (tracksInPlaylist.has(trackIds[i])) {
+        alreadyInPlaylist.add(uris[i]);
+      }
+
+      if (playlistUris.size >= PLAYLIST_SIZE) break;
     }
 
-    if (playlistUris.length < PLAYLIST_SIZE) {
+    if (playlistUris.size < PLAYLIST_SIZE) {
       url = 'https://api.spotify.com/v1/recommendations?limit=50';
 
       if (seeds.artists.length > 0) {
@@ -372,26 +377,34 @@ class SpotifyHelper {
 
       for (let i = 0; i < targetLiked.length; i += 1) {
         if (!targetLiked[i]) {
-          if (!playlistUris.includes(targetUris[i])) {
-            playlistUris.push(targetUris[i]);
-          }
-        } else if (!likedTracks.includes(targetUris[i])) {
-          likedTracks.push(targetUris[i]);
+          playlistUris.add(targetUris[i]);
+        } else {
+          likedTracks.add(targetUris[i]);
         }
 
-        if (playlistUris.length >= PLAYLIST_SIZE) break;
+        if (tracksInPlaylist.has(targetTrackIds[i])) {
+          alreadyInPlaylist.add(targetUris[i]);
+        }
+
+        if (playlistUris.size >= PLAYLIST_SIZE) break;
       }
     }
 
-    for (
-      let i = 0;
-      i < PLAYLIST_SIZE - playlistUris.length && i < likedTracks.length;
-      i += 1
-    ) {
-      playlistUris.push(likedTracks[i]);
+    for (const track of alreadyInPlaylist) {
+      if (playlistUris.size >= PLAYLIST_SIZE) break;
+
+      if (!likedTracks.has(track)) {
+        playlistUris.add(track);
+      }
     }
 
-    return playlistUris;
+    for (const track of likedTracks) {
+      if (playlistUris.size >= PLAYLIST_SIZE) break;
+
+      playlistUris.add(track);
+    }
+
+    return Array.from(playlistUris);
   }
 
   static async updatePlaylistTracks(playlistId, tracks, accessToken) {
@@ -560,9 +573,10 @@ class SpotifyHelper {
     try {
       const accessToken = await this.getNewAccessToken(user.refreshToken);
 
-      const tracks = this.getAllTop(user.playlistOptions, accessToken)
-        .then((allTop) => this.getSeeds(user.playlistOptions, allTop))
-        .then((seeds) => this.getTracks(user, userId, seeds, accessToken));
+      const seeds = this.getAllTop(
+        user.playlistOptions,
+        accessToken
+      ).then((allTop) => this.getSeeds(user.playlistOptions, allTop));
 
       let playlist = this.getPlaylist(userId, user.playlistId, accessToken);
 
@@ -577,10 +591,21 @@ class SpotifyHelper {
       }
 
       const playlistId = (await playlist).id;
+      const tracksAlreadyInPlaylist = new Set(
+        (await playlist).tracks.items.map((x) => x.track.id)
+      );
 
-      console.log(`${(await tracks).length} tracks found`);
+      const tracks = await this.getTracks(
+        user,
+        userId,
+        tracksAlreadyInPlaylist,
+        await seeds,
+        accessToken
+      );
 
-      this.updatePlaylistTracks(playlistId, await tracks, accessToken);
+      console.log(`${tracks.length} tracks found`);
+
+      this.updatePlaylistTracks(playlistId, tracks, accessToken);
 
       user.lastUpdated = new Date();
       user.save();
@@ -649,9 +674,10 @@ class SpotifyHelper {
 
         const accessToken = await this.getNewAccessToken(user.refreshToken);
 
-        const tracks = this.getAllTop(user.playlistOptions, accessToken)
-          .then((allTop) => this.getSeeds(user.playlistOptions, allTop))
-          .then((seeds) => this.getTracks(user, userId, seeds, accessToken));
+        const seeds = this.getAllTop(
+          user.playlistOptions,
+          accessToken
+        ).then((allTop) => this.getSeeds(user.playlistOptions, allTop));
 
         const playlist = this.getPlaylist(userId, user.playlistId, accessToken);
 
@@ -665,8 +691,19 @@ class SpotifyHelper {
         }
 
         const playlistId = (await playlist).id;
+        const tracksAlreadyInPlaylist = new Set(
+          (await playlist).tracks.items.map((x) => x.track.id)
+        );
 
-        console.log(`${(await tracks).length} tracks found`);
+        const tracks = await this.getTracks(
+          user,
+          userId,
+          tracksAlreadyInPlaylist,
+          await seeds,
+          accessToken
+        );
+
+        console.log(`${tracks.length} tracks found`);
         console.log('Playlist ID', playlistId);
         console.log('PLAYLIST EXISTS', await doesMyPlaylistExist);
 
