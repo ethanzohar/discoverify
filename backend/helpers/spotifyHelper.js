@@ -220,6 +220,66 @@ class SpotifyHelper {
     return result.json();
   }
 
+  static getRecommendationUrls(user, seeds) {
+    let baseUrl = 'https://api.spotify.com/v1/recommendations?limit=50';
+
+    if (seeds.artists.length > 0) {
+      baseUrl += `&seed_artists=${seeds.artists.join(',')}`;
+    }
+
+    if (seeds.tracks.length > 0) {
+      baseUrl += `&seed_tracks=${seeds.tracks.join(',')}`;
+    }
+
+    let minMaxUrl = baseUrl;
+    minMaxUrl += `&min_acousticness=${
+      user.playlistOptions.acousticness[0] / 100
+    }&max_acousticness=${user.playlistOptions.acousticness[1] / 100}`;
+    minMaxUrl += `&min_danceability=${
+      user.playlistOptions.danceability[0] / 100
+    }&max_danceability=${user.playlistOptions.danceability[1] / 100}`;
+    minMaxUrl += `&min_energy=${
+      user.playlistOptions.energy[0] / 100
+    }&max_energy=${user.playlistOptions.energy[1] / 100}`;
+    minMaxUrl += `&min_instrumentalness=${
+      user.playlistOptions.instrumentalness[0] / 100
+    }&max_instrumentalness=${user.playlistOptions.instrumentalness[1] / 100}`;
+    minMaxUrl += `&min_popularity=${user.playlistOptions.popularity[0]}&max_popularity=${user.playlistOptions.popularity[1]}`;
+    minMaxUrl += `&min_valence=${
+      user.playlistOptions.valence[0] / 100
+    }&max_valence=${user.playlistOptions.valence[1] / 100}`;
+
+    let targetUrl = baseUrl;
+    targetUrl += `&target_acousticness=${
+      (user.playlistOptions.acousticness[0] +
+        user.playlistOptions.acousticness[1]) /
+      200
+    }`;
+    targetUrl += `&target_danceability=${
+      (user.playlistOptions.danceability[0] +
+        user.playlistOptions.danceability[1]) /
+      200
+    }`;
+    targetUrl += `&target_energy=${
+      (user.playlistOptions.energy[0] + user.playlistOptions.energy[1]) / 200
+    }`;
+    targetUrl += `&target_instrumentalness=${
+      (user.playlistOptions.instrumentalness[0] +
+        user.playlistOptions.instrumentalness[1]) /
+      200
+    }`;
+    targetUrl += `&target_popularity=${Math.round(
+      (user.playlistOptions.popularity[0] +
+        user.playlistOptions.popularity[1]) /
+        2
+    )}`;
+    targetUrl += `&target_valence=${
+      (user.playlistOptions.valence[0] + user.playlistOptions.valence[1]) / 200
+    }`;
+
+    return { minMaxUrl, targetUrl };
+  }
+
   static async getTracks(user, userId, tracksInPlaylist, seeds, accessToken) {
     const PLAYLIST_SIZE = 30;
     let usr = user;
@@ -228,34 +288,9 @@ class SpotifyHelper {
       usr = await UserController.restorePlaylistOptions(userId);
     }
 
-    let url = 'https://api.spotify.com/v1/recommendations?limit=50';
+    const { minMaxUrl, targetUrl } = this.getRecommendationUrls(usr, seeds);
 
-    if (seeds.artists.length > 0) {
-      url += `&seed_artists=${seeds.artists.join(',')}`;
-    }
-
-    if (seeds.tracks.length > 0) {
-      url += `&seed_tracks=${seeds.tracks.join(',')}`;
-    }
-
-    url += `&min_acousticness=${
-      usr.playlistOptions.acousticness[0] / 100
-    }&max_acousticness=${usr.playlistOptions.acousticness[1] / 100}`;
-    url += `&min_danceability=${
-      usr.playlistOptions.danceability[0] / 100
-    }&max_danceability=${usr.playlistOptions.danceability[1] / 100}`;
-    url += `&min_energy=${usr.playlistOptions.energy[0] / 100}&max_energy=${
-      usr.playlistOptions.energy[1] / 100
-    }`;
-    url += `&min_instrumentalness=${
-      usr.playlistOptions.instrumentalness[0] / 100
-    }&max_instrumentalness=${usr.playlistOptions.instrumentalness[1] / 100}`;
-    url += `&min_popularity=${usr.playlistOptions.popularity[0]}&max_popularity=${usr.playlistOptions.popularity[1]}`;
-    url += `&min_valence=${usr.playlistOptions.valence[0] / 100}&max_valence=${
-      usr.playlistOptions.valence[1] / 100
-    }`;
-
-    let recommendations = await fetch(url, {
+    let recommendations = await fetch(minMaxUrl, {
       Accepts: 'application/json',
       method: 'GET',
       headers: {
@@ -273,7 +308,7 @@ class SpotifyHelper {
 
       await new Promise((r) => setTimeout(r, 1000));
 
-      recommendations = await fetch(url, {
+      recommendations = await fetch(minMaxUrl, {
         Accepts: 'application/json',
         method: 'GET',
         headers: {
@@ -314,44 +349,7 @@ class SpotifyHelper {
     }
 
     if (playlistUris.size < PLAYLIST_SIZE) {
-      url = 'https://api.spotify.com/v1/recommendations?limit=50';
-
-      if (seeds.artists.length > 0) {
-        url += `&seed_artists=${seeds.artists.join(',')}`;
-      }
-
-      if (seeds.tracks.length > 0) {
-        url += `&seed_tracks=${seeds.tracks.join(',')}`;
-      }
-
-      url += `&target_acousticness=${
-        (usr.playlistOptions.acousticness[0] +
-          usr.playlistOptions.acousticness[1]) /
-        200
-      }`;
-      url += `&target_danceability=${
-        (usr.playlistOptions.danceability[0] +
-          usr.playlistOptions.danceability[1]) /
-        200
-      }`;
-      url += `&target_energy=${
-        (usr.playlistOptions.energy[0] + usr.playlistOptions.energy[1]) / 200
-      }`;
-      url += `&target_instrumentalness=${
-        (usr.playlistOptions.instrumentalness[0] +
-          usr.playlistOptions.instrumentalness[1]) /
-        200
-      }`;
-      url += `&target_popularity=${Math.round(
-        (usr.playlistOptions.popularity[0] +
-          usr.playlistOptions.popularity[1]) /
-          2
-      )}`;
-      url += `&target_valence=${
-        (usr.playlistOptions.valence[0] + usr.playlistOptions.valence[1]) / 200
-      }`;
-
-      const targetRecommendations = await fetch(url, {
+      const targetRecommendations = await fetch(targetUrl, {
         Accepts: 'application/json',
         method: 'GET',
         headers: {
