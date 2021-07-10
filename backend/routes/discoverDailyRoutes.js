@@ -105,6 +105,7 @@ router.post('/forceUnsubscribeUser', async function (req, res) {
   }
 
   const user = await UserController.getUser(target);
+  console.log(user);
 
   if (!user) {
     return res.status(403).send('User does not exist');
