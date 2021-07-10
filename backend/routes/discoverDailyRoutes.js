@@ -98,6 +98,22 @@ router.post('/forceSingle', async function (req, res) {
   return res.send(`Playlist updated for user: ${target}`);
 });
 
+router.post('/forceUnsubscribeUser', async function (req, res) {
+  const { userId, refreshToken, target } = req.body;
+  if (!isAdmin(userId, refreshToken)) {
+    return res.status(403).send('Invalid credentials');
+  }
+
+  const user = await UserController.getUser(target);
+
+  if (!user) {
+    return res.status(403).send('User does not exist');
+  }
+
+  const deleteStatus = await UserController.deleteUser(userId);
+  return res.send(deleteStatus);
+});
+
 router.post('/count', async function (req, res) {
   const { userId, refreshToken } = req.body;
   if (!isAdmin(userId, refreshToken)) {
