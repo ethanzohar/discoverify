@@ -13,6 +13,6 @@ You can tweak your playlist&apos;s settings to get the exact type of recommendat
 `Product Hunt` : https://www.producthunt.com/posts/discoverify
 
 ### Achievements
-- \#3 Product of the day with 378 upvotes
-- 2000+ signed up users
+- \#3 Product of the day with 400+ upvotes
+- 4000+ signed up users
 - Featured in more than 3 articles
