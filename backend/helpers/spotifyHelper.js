@@ -40,6 +40,14 @@ class SpotifyHelper {
     });
 
     const resultJSON = await result.json();
+
+    if (
+      resultJSON.error &&
+      resultJSON.error.message === 'Invalid access token'
+    ) {
+      throw new Error({ deleteUser: true });
+    }
+
     return resultJSON.access_token;
   }
 
@@ -615,6 +623,12 @@ class SpotifyHelper {
       console.log(`Playlist updated for user: ${user.userId}`);
     } catch (e) {
       console.log(e);
+
+      if (e.deleteUser) {
+        console.log(`Deleting User: ${userId}`);
+        await UserController.deleteUser(userId);
+        return;
+      }
     }
 
     console.log(' ');
