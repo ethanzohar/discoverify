@@ -40,18 +40,8 @@ class SpotifyHelper {
     });
 
     const resultJSON = await result.json();
-    console.log(resultJSON);
-    console.log(resultJSON.error);
-    console.log(resultJSON.error.message);
-    console.log(
-      !!resultJSON.error,
-      resultJSON.error.message === 'Invalid access token'
-    );
 
-    if (
-      resultJSON.error &&
-      resultJSON.error.message === 'Invalid access token'
-    ) {
+    if (resultJSON.error === 'invalid_grant') {
       throw new Error({ deleteUser: true });
     }
 
