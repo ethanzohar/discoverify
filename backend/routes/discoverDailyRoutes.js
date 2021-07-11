@@ -137,13 +137,21 @@ router.post('/cleanCorrupted', async function (req, res) {
   for (let i = 0; i < users.length; i += 1) {
     const user = users[i];
 
+    const userIdToDelete = CryptoJS.AES.decrypt(
+      user.userId,
+      CryptoJS.enc.Base64.parse(CLIENT_SECRET),
+      {
+        mode: CryptoJS.mode.ECB,
+      }
+    ).toString(CryptoJS.enc.Utf8);
+
     if ((now - user.lastUpdated) / 36e5 >= 48) {
       try {
         await SpotifyHelper.getNewAccessToken(user.refreshToken);
       } catch (e) {
         if (e.deleteUser) {
-          console.log(`Deleting User: ${user.userId}`);
-          // await UserController.deleteUser(user.userId);
+          console.log(`Deleting User: ${userIdToDelete}`);
+          await UserController.deleteUser(userIdToDelete);
           deletedCount += 1;
         }
       }
