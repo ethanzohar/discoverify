@@ -124,6 +124,35 @@ router.post('/count', async function (req, res) {
   return res.send(`Total users: ${users.length}`);
 });
 
+router.post('/cleanCorrupted', async function (req, res) {
+  const { userId, refreshToken } = req.body;
+  if (!isAdmin(userId, refreshToken)) {
+    return res.status(403).send('Invalid credentials');
+  }
+
+  const users = await UserController.getAllUsers();
+  const now = new Date();
+  let deletedCount = 0;
+
+  for (let i = 0; i < users.length; i += 1) {
+    const user = users[i];
+
+    if ((now - user.lastUpdated) / 36e5 >= 48) {
+      try {
+        await SpotifyHelper.getNewAccessToken(user.refreshToken);
+      } catch (e) {
+        if (e.deleteUser) {
+          console.log(`Deleting User: ${user.userId}`);
+          // await UserController.deleteUser(user.userId);
+          deletedCount += 1;
+        }
+      }
+    }
+  }
+
+  return res.send(`Total users deleted: ${deletedCount}`);
+});
+
 router.get('/getUser/:userId', async function (req, res) {
   const user = await UserController.getUser(req.params.userId);
   if (user && user.userId) {
