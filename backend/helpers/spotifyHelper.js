@@ -11,7 +11,7 @@ const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET;
 
 const PLAYLIST_NAME = 'Discover Daily';
 const PLAYLIST_DESCRIPTION =
-  "If you would like to support Discoverify, consider visiting patreon.com/discoverify (COMPLETELY OPTIONAL)\nDaily music, curated for you based on your listening history. If you don't want to get this daily playlist anymore, you can unsubscribe at https://discoverifymusic.com";
+  "If you would like to support Discoverify, consider visiting patreon.com/discoverify (COMPLETELY OPTIONAL). Daily music, curated for you based on your listening history. If you don't want to get this daily playlist anymore, you can unsubscribe at https://discoverifymusic.com";
 
 function SpotifyAPIException(deleteUser) {
   this.deleteUser = deleteUser;

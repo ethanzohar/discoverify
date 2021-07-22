@@ -263,8 +263,10 @@ router.post('/accessToken', async function (req, res) {
   } catch (e) {
     if (e.deleteUser) {
       const user = await UserController.getUserByRefreshToken(refreshToken);
-      console.log(`Deleting User: ${user.userId}`);
-      await UserController.deleteUser(user.userId);
+      if (user) {
+        console.log(`Deleting User: ${user.userId}`);
+        await UserController.deleteUser(user.userId);
+      }
       return res.status(500).send({ deletedUser: true });
     }
   }
