@@ -292,33 +292,18 @@ class DiscoverDaily extends Component {
             <Col className="discoverDailyLeftColumn">{leftColumnRow}</Col>
             <Col className="discoverDailyRightColumn">
               {[0, 4, 8, 12].map((x, index) => (
-                <Row
-                  className={`imageRow imageRow${index}`}
-                  key={`row${index}`}
-                >
+                <Row key={index} className={`imageRow imageRow${index}`}>
                   <Col className={`imageCol imageCol${0}`} key={`col${x}`}>
-                    <img
-                      src={images[Math.floor(Math.random() * images.length)]}
-                      alt="albumImage"
-                    />
+                    <img src={images[imageIndexes[x]]} alt="albumImage" />
                   </Col>
                   <Col className={`imageCol imageCol${1}`} key={`col${x + 1}`}>
-                    <img
-                      src={images[Math.floor(Math.random() * images.length)]}
-                      alt="albumImage"
-                    />
+                    <img src={images[imageIndexes[x + 1]]} alt="albumImage" />
                   </Col>
                   <Col className={`imageCol imageCol${2}`} key={`col${x + 2}`}>
-                    <img
-                      src={images[Math.floor(Math.random() * images.length)]}
-                      alt="albumImage"
-                    />
+                    <img src={images[imageIndexes[x + 2]]} alt="albumImage" />
                   </Col>
                   <Col className={`imageCol imageCol${3}`} key={`col${x + 3}`}>
-                    <img
-                      src={images[Math.floor(Math.random() * images.length)]}
-                      alt="albumImage"
-                    />
+                    <img src={images[imageIndexes[x + 3]]} alt="albumImage" />
                   </Col>
                 </Row>
               ))}
