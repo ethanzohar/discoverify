@@ -257,8 +257,17 @@ router.post('/refreshToken', async function (req, res) {
 
 router.post('/accessToken', async function (req, res) {
   const { refreshToken } = req.body;
-  const accessToken = await SpotifyHelper.getNewAccessToken(refreshToken);
-  return res.status(200).send({ accessToken });
+  try {
+    const accessToken = await SpotifyHelper.getNewAccessToken(refreshToken);
+    return res.status(200).send({ accessToken });
+  } catch (e) {
+    if (e.deleteUser) {
+      const user = await UserController.getUserByRefreshToken(refreshToken);
+      console.log(`Deleting User: ${user.userId}`);
+      await UserController.deleteUser(user.userId);
+      return res.status(500).send({ deletedUser: true });
+    }
+  }
 });
 
 module.exports = router;

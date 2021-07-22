@@ -12,6 +12,10 @@ class UserController {
     });
   }
 
+  static async getUserByRefreshToken(refreshToken) {
+    return UserModel.findOne({ refreshToken });
+  }
+
   static async getAllUsers() {
     return UserModel.find();
   }

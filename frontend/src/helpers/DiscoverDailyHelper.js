@@ -1,3 +1,6 @@
+function DiscoverifyAPIException(deletedUser) {
+  this.deletedUser = deletedUser;
+}
 class DiscoverDailyHelper {
   static async signupUser(userId, refreshToken, options) {
     const response = await fetch('/api/discover-daily/subscribe', {
@@ -152,7 +155,13 @@ class DiscoverDailyHelper {
       }),
     });
 
-    return (await response.json()).accessToken;
+    const responseJSON = await response.json();
+
+    if (response.status === 500) {
+      throw new DiscoverifyAPIException(responseJSON.deletedUser);
+    }
+
+    return responseJSON.accessToken;
   }
 
   static async getRefreshToken(code, redirectUri) {

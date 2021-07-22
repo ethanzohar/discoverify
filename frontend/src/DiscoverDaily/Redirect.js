@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { images } from './images';
 import github from '../images/githubLight.png';
+import patreon from '../images/patreon.png';
 
 class DiscoverDailyRedirect extends Component {
   // eslint-disable-next-line camelcase
@@ -47,26 +48,29 @@ class DiscoverDailyRedirect extends Component {
             </Col>
             <Col className="discoverDailyRightColumn">
               {[0, 4, 8, 12].map((x, index) => (
-                <Row className={`imageRow imageRow${index}`}>
-                  <Col className={`imageCol imageCol${0}`}>
+                <Row
+                  className={`imageRow imageRow${index}`}
+                  key={`row${index}`}
+                >
+                  <Col className={`imageCol imageCol${0}`} key={`col${x}`}>
                     <img
                       src={images[Math.floor(Math.random() * images.length)]}
                       alt="albumImage"
                     />
                   </Col>
-                  <Col className={`imageCol imageCol${1}`}>
+                  <Col className={`imageCol imageCol${1}`} key={`col${x + 1}`}>
                     <img
                       src={images[Math.floor(Math.random() * images.length)]}
                       alt="albumImage"
                     />
                   </Col>
-                  <Col className={`imageCol imageCol${2}`}>
+                  <Col className={`imageCol imageCol${2}`} key={`col${x + 2}`}>
                     <img
                       src={images[Math.floor(Math.random() * images.length)]}
                       alt="albumImage"
                     />
                   </Col>
-                  <Col className={`imageCol imageCol${3}`}>
+                  <Col className={`imageCol imageCol${3}`} key={`col${x + 3}`}>
                     <img
                       src={images[Math.floor(Math.random() * images.length)]}
                       alt="albumImage"
@@ -86,7 +90,19 @@ class DiscoverDailyRedirect extends Component {
             <img
               src={github}
               alt="github"
-              width="10%"
+              width="5%"
+              style={{ margin: '10px' }}
+            />
+          </a>
+          <a
+            href="https://www.patreon.com/discoverify"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src={patreon}
+              alt="patreon"
+              width="5%"
               style={{ margin: '10px' }}
             />
           </a>

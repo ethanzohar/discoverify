@@ -99,16 +99,23 @@ export default function DiscoverDailyPlaylistOptions() {
 
       setOptions(optionRef.current);
     } else {
-      const restoredUser = await DiscoverDailyHelper.restorePlaylistOptions(
-        usr.userId,
-        usr.refreshToken
-      );
-      setUser(restoredUser);
-      updatePlaylistOptions(restoredUser);
-      sessionStorage.setItem(
-        'discoverDaily_user',
-        JSON.stringify(restoredUser)
-      );
+      try {
+        const restoredUser = await DiscoverDailyHelper.restorePlaylistOptions(
+          usr.userId,
+          usr.refreshToken
+        );
+        setUser(restoredUser);
+        updatePlaylistOptions(restoredUser);
+        sessionStorage.setItem(
+          'discoverDaily_user',
+          JSON.stringify(restoredUser)
+        );
+      } catch (e) {
+        if (e.deletedUser) {
+          window.location = `${window.location.origin}/login`;
+          sessionStorage.clear();
+        }
+      }
     }
   };
 
@@ -126,14 +133,21 @@ export default function DiscoverDailyPlaylistOptions() {
       );
 
       if (!spotifyUserFromStorage || spotifyUserFromStorage === 'null') {
-        const accessToken = await DiscoverDailyHelper.getAccessToken(
-          parsedUser.refreshToken
-        );
-        const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
-        sessionStorage.setItem(
-          'discoverDaily_spotifyUser',
-          JSON.stringify(spotifyUser)
-        );
+        try {
+          const accessToken = await DiscoverDailyHelper.getAccessToken(
+            parsedUser.refreshToken
+          );
+          const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
+          sessionStorage.setItem(
+            'discoverDaily_spotifyUser',
+            JSON.stringify(spotifyUser)
+          );
+        } catch (e) {
+          if (e.deletedUser) {
+            window.location = `${window.location.origin}/login`;
+            sessionStorage.clear();
+          }
+        }
       }
 
       return;
@@ -143,27 +157,34 @@ export default function DiscoverDailyPlaylistOptions() {
     const refreshToken = localStorage.getItem('discoverDaily_refreshToken');
 
     if (refreshToken && refreshToken !== 'null') {
-      const accessToken = await DiscoverDailyHelper.getAccessToken(
-        refreshToken
-      );
-
-      if (accessToken) {
-        const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
-        sessionStorage.setItem(
-          'discoverDaily_spotifyUser',
-          JSON.stringify(spotifyUser)
+      try {
+        const accessToken = await DiscoverDailyHelper.getAccessToken(
+          refreshToken
         );
 
-        const usr = (await DiscoverDailyHelper.getUser(spotifyUser.id)).user;
-        if (usr && usr.userId) {
-          setUser(usr);
-          updatePlaylistOptions(usr);
-          setLoading(false);
-        } else {
-          sendToMain();
-        }
+        if (accessToken) {
+          const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
+          sessionStorage.setItem(
+            'discoverDaily_spotifyUser',
+            JSON.stringify(spotifyUser)
+          );
 
-        return;
+          const usr = (await DiscoverDailyHelper.getUser(spotifyUser.id)).user;
+          if (usr && usr.userId) {
+            setUser(usr);
+            updatePlaylistOptions(usr);
+            setLoading(false);
+          } else {
+            sendToMain();
+          }
+
+          return;
+        }
+      } catch (e) {
+        if (e.deletedUser) {
+          window.location = `${window.location.origin}/login`;
+          sessionStorage.clear();
+        }
       }
     }
 
@@ -237,13 +258,20 @@ export default function DiscoverDailyPlaylistOptions() {
   }, []);
 
   const restoreDefaults = async () => {
-    const usr = await DiscoverDailyHelper.restorePlaylistOptions(
-      user.userId,
-      user.refreshToken
-    );
-    setUser(usr);
-    updatePlaylistOptions(usr);
-    sessionStorage.setItem('discoverDaily_user', JSON.stringify(usr));
+    try {
+      const usr = await DiscoverDailyHelper.restorePlaylistOptions(
+        user.userId,
+        user.refreshToken
+      );
+      setUser(usr);
+      updatePlaylistOptions(usr);
+      sessionStorage.setItem('discoverDaily_user', JSON.stringify(usr));
+    } catch (e) {
+      if (e.deletedUser) {
+        window.location = `${window.location.origin}/login`;
+        sessionStorage.clear();
+      }
+    }
   };
 
   const onSliderChange = (newValue, setter, range) => {
@@ -255,15 +283,22 @@ export default function DiscoverDailyPlaylistOptions() {
   };
 
   const sendUpdatePlaylistOptions = async () => {
-    const usr = await DiscoverDailyHelper.updatePlaylistOptions(
-      optionRef.current,
-      user.userId,
-      user.refreshToken
-    );
-    setUser(usr);
-    updatePlaylistOptions(usr);
-    sessionStorage.setItem('discoverDaily_user', JSON.stringify(usr));
-    setSnackbarOpen(true);
+    try {
+      const usr = await DiscoverDailyHelper.updatePlaylistOptions(
+        optionRef.current,
+        user.userId,
+        user.refreshToken
+      );
+      setUser(usr);
+      updatePlaylistOptions(usr);
+      sessionStorage.setItem('discoverDaily_user', JSON.stringify(usr));
+      setSnackbarOpen(true);
+    } catch (e) {
+      if (e.deletedUser) {
+        window.location = `${window.location.origin}/login`;
+        sessionStorage.clear();
+      }
+    }
   };
 
   const SpotifySliderThumbComponent = (props) =>
@@ -571,18 +606,30 @@ export default function DiscoverDailyPlaylistOptions() {
           </Col>
           <Col className="discoverDailyRightColumn">
             {[0, 4, 8, 12].map((x, index) => (
-              <Row key={index} className={`imageRow imageRow${index}`}>
-                <Col className={`imageCol imageCol${0}`}>
-                  <img src={images[imageIndexes[x]]} alt="albumImage" />
+              <Row className={`imageRow imageRow${index}`} key={`row${index}`}>
+                <Col className={`imageCol imageCol${0}`} key={`col${x}`}>
+                  <img
+                    src={images[Math.floor(Math.random() * images.length)]}
+                    alt="albumImage"
+                  />
                 </Col>
-                <Col className={`imageCol imageCol${1}`}>
-                  <img src={images[imageIndexes[x + 1]]} alt="albumImage" />
+                <Col className={`imageCol imageCol${1}`} key={`col${x + 1}`}>
+                  <img
+                    src={images[Math.floor(Math.random() * images.length)]}
+                    alt="albumImage"
+                  />
                 </Col>
-                <Col className={`imageCol imageCol${2}`}>
-                  <img src={images[imageIndexes[x + 2]]} alt="albumImage" />
+                <Col className={`imageCol imageCol${2}`} key={`col${x + 2}`}>
+                  <img
+                    src={images[Math.floor(Math.random() * images.length)]}
+                    alt="albumImage"
+                  />
                 </Col>
-                <Col className={`imageCol imageCol${3}`}>
-                  <img src={images[imageIndexes[x + 3]]} alt="albumImage" />
+                <Col className={`imageCol imageCol${3}`} key={`col${x + 3}`}>
+                  <img
+                    src={images[Math.floor(Math.random() * images.length)]}
+                    alt="albumImage"
+                  />
                 </Col>
               </Row>
             ))}

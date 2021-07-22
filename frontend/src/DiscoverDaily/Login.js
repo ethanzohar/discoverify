@@ -5,6 +5,7 @@ import Col from 'react-bootstrap/Col';
 import SpotifyHelper from '../helpers/SpotifyHelper';
 import { images } from './images';
 import github from '../images/githubLight.png';
+import patreon from '../images/patreon.png';
 
 import './discoverDaily.scss';
 
@@ -41,26 +42,26 @@ const DiscoverDailyLogin = () => {
           </Col>
           <Col className="discoverDailyRightColumn">
             {[0, 4, 8, 12].map((x, index) => (
-              <Row className={`imageRow imageRow${index}`}>
-                <Col className={`imageCol imageCol${0}`}>
+              <Row className={`imageRow imageRow${index}`} key={`row${index}`}>
+                <Col className={`imageCol imageCol${0}`} key={`col${x}`}>
                   <img
                     src={images[Math.floor(Math.random() * images.length)]}
                     alt="albumImage"
                   />
                 </Col>
-                <Col className={`imageCol imageCol${1}`}>
+                <Col className={`imageCol imageCol${1}`} key={`col${x + 1}`}>
                   <img
                     src={images[Math.floor(Math.random() * images.length)]}
                     alt="albumImage"
                   />
                 </Col>
-                <Col className={`imageCol imageCol${2}`}>
+                <Col className={`imageCol imageCol${2}`} key={`col${x + 2}`}>
                   <img
                     src={images[Math.floor(Math.random() * images.length)]}
                     alt="albumImage"
                   />
                 </Col>
-                <Col className={`imageCol imageCol${3}`}>
+                <Col className={`imageCol imageCol${3}`} key={`col${x + 3}`}>
                   <img
                     src={images[Math.floor(Math.random() * images.length)]}
                     alt="albumImage"
@@ -80,7 +81,19 @@ const DiscoverDailyLogin = () => {
           <img
             src={github}
             alt="github"
-            width="10%"
+            width="5%"
+            style={{ margin: '10px' }}
+          />
+        </a>
+        <a
+          href="https://www.patreon.com/discoverify"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src={patreon}
+            alt="patreon"
+            width="5%"
             style={{ margin: '10px' }}
           />
         </a>

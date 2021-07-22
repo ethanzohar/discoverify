@@ -9,6 +9,7 @@ import SpotifyHelper from '../helpers/SpotifyHelper';
 import DiscoverDailyHelper from '../helpers/DiscoverDailyHelper';
 import { images } from './images';
 import github from '../images/githubLight.png';
+import patreon from '../images/patreon.png';
 
 import './discoverDaily.scss';
 
@@ -79,27 +80,34 @@ class DiscoverDaily extends Component {
     const refreshToken = localStorage.getItem('discoverDaily_refreshToken');
 
     if (refreshToken && refreshToken !== 'null') {
-      const accessToken = await DiscoverDailyHelper.getAccessToken(
-        refreshToken
-      );
-
-      if (accessToken) {
-        const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
-        sessionStorage.setItem(
-          'discoverDaily_spotifyUser',
-          JSON.stringify(spotifyUser)
+      try {
+        const accessToken = await DiscoverDailyHelper.getAccessToken(
+          refreshToken
         );
-        this.setState({ spotifyUser });
 
-        const getUser = await DiscoverDailyHelper.getUser(spotifyUser.id);
-        const usr = getUser.user;
-        const { now } = getUser;
-        if (usr) this.setState({ user: usr, now });
+        if (accessToken) {
+          const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
+          sessionStorage.setItem(
+            'discoverDaily_spotifyUser',
+            JSON.stringify(spotifyUser)
+          );
+          this.setState({ spotifyUser });
 
-        this.setState({ loading: false });
+          const getUser = await DiscoverDailyHelper.getUser(spotifyUser.id);
+          const usr = getUser.user;
+          const { now } = getUser;
+          if (usr) this.setState({ user: usr, now });
 
-        sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
-        return;
+          this.setState({ loading: false });
+
+          sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
+          return;
+        }
+      } catch (e) {
+        if (e.deletedUser) {
+          window.location = `${window.location.origin}/login`;
+          sessionStorage.clear();
+        }
       }
     }
 
@@ -179,14 +187,22 @@ class DiscoverDaily extends Component {
 
   async unsubscribeUser() {
     this.setState({ submitting: true });
-    const { success } = await DiscoverDailyHelper.unsubscribeUser(
-      this.state.user.userId,
-      this.state.user.refreshToken
-    );
-    if (success) {
-      this.setState({ user: null });
-      sessionStorage.setItem('discoverDaily_user', null);
-      sessionStorage.setItem('discoverDaily_spotifyUser', null);
+    try {
+      const { success } = await DiscoverDailyHelper.unsubscribeUser(
+        this.state.user.userId,
+        this.state.user.refreshToken
+      );
+      if (success) {
+        this.setState({ user: null });
+        sessionStorage.setItem('discoverDaily_user', null);
+        sessionStorage.setItem('discoverDaily_spotifyUser', null);
+      }
+    } catch (e) {
+      console.log(e);
+      if (e.deletedUser) {
+        window.location = `${window.location.origin}/login`;
+        sessionStorage.clear();
+      }
     }
 
     this.setState({ submitting: false });
@@ -276,18 +292,33 @@ class DiscoverDaily extends Component {
             <Col className="discoverDailyLeftColumn">{leftColumnRow}</Col>
             <Col className="discoverDailyRightColumn">
               {[0, 4, 8, 12].map((x, index) => (
-                <Row key={index} className={`imageRow imageRow${index}`}>
-                  <Col className={`imageCol imageCol${0}`}>
-                    <img src={images[imageIndexes[x]]} alt="albumImage" />
+                <Row
+                  className={`imageRow imageRow${index}`}
+                  key={`row${index}`}
+                >
+                  <Col className={`imageCol imageCol${0}`} key={`col${x}`}>
+                    <img
+                      src={images[Math.floor(Math.random() * images.length)]}
+                      alt="albumImage"
+                    />
                   </Col>
-                  <Col className={`imageCol imageCol${1}`}>
-                    <img src={images[imageIndexes[x + 1]]} alt="albumImage" />
+                  <Col className={`imageCol imageCol${1}`} key={`col${x + 1}`}>
+                    <img
+                      src={images[Math.floor(Math.random() * images.length)]}
+                      alt="albumImage"
+                    />
                   </Col>
-                  <Col className={`imageCol imageCol${2}`}>
-                    <img src={images[imageIndexes[x + 2]]} alt="albumImage" />
+                  <Col className={`imageCol imageCol${2}`} key={`col${x + 2}`}>
+                    <img
+                      src={images[Math.floor(Math.random() * images.length)]}
+                      alt="albumImage"
+                    />
                   </Col>
-                  <Col className={`imageCol imageCol${3}`}>
-                    <img src={images[imageIndexes[x + 3]]} alt="albumImage" />
+                  <Col className={`imageCol imageCol${3}`} key={`col${x + 3}`}>
+                    <img
+                      src={images[Math.floor(Math.random() * images.length)]}
+                      alt="albumImage"
+                    />
                   </Col>
                 </Row>
               ))}
@@ -303,7 +334,19 @@ class DiscoverDaily extends Component {
             <img
               src={github}
               alt="github"
-              width="10%"
+              width="5%"
+              style={{ margin: '10px' }}
+            />
+          </a>
+          <a
+            href="https://www.patreon.com/discoverify"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src={patreon}
+              alt="patreon"
+              width="5%"
               style={{ margin: '10px' }}
             />
           </a>
