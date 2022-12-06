@@ -32,6 +32,7 @@ const frontend = path.resolve(
 app.use(express.static(path.resolve(`${__dirname}/../frontend/deployedBuild`)));
 
 app.get('*', (req, res) => {
+  console.log("Received a request");
   res.sendFile(frontend);
 });
 
@@ -50,3 +51,5 @@ connection.on('connected', () => {
 connection.on('error', () => {
   console.log('MongoDB Connection Error');
 });
+
+console.log("The server is running!");
