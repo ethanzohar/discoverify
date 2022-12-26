@@ -17,7 +17,7 @@ class SpotifyHelper {
 
   static getOAuthCodeUrl(redirectUri) {
     const scope =
-      'user-top-read user-library-read playlist-modify-private playlist-modify-public playlist-read-private';
+      'user-top-read user-read-recently-played user-library-read playlist-modify-private playlist-modify-public playlist-read-private';
 
     let url = 'https://accounts.spotify.com/authorize';
     url += '?response_type=code';
