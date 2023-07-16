@@ -62,7 +62,11 @@ class UserController {
     const user = await UserController.getUser(userId);
 
     if (user.stripeId) {
-      await StripeHelper.cancelStripeSubscription(user.stripeId);
+      try {
+        await StripeHelper.cancelStripeSubscription(user.stripeId);
+      } catch (err) {
+        console.log(err);
+      }
     }
 
     const deleteResponse = await UserModel.deleteOne({
