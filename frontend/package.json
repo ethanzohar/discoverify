@@ -28,7 +28,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "git pull && npm install && npm run-script build && mv ./deployedBuild ./buildToDelete && mv ./build ./deployedBuild && rm -rf ./buildToDelete"
+    "deploy": "git pull && yarn install && npm run-script build && mv ./deployedBuild ./buildToDelete && mv ./build ./deployedBuild && rm -rf ./buildToDelete"
   },
   "browserslist": {
     "production": [

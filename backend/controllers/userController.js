@@ -46,9 +46,6 @@ class UserController {
   }
 
   static async createUser(userId, refreshToken, playlistOptions, stripeId) {
-    // TODO: delete use of grandmothered
-    const grandmothered = true;
-
     return UserModel.create({
       userId: CryptoJS.AES.encrypt(
         userId,
@@ -58,7 +55,6 @@ class UserController {
       refreshToken,
       playlistOptions,
       stripeId,
-      grandmothered,
     });
   }
 
