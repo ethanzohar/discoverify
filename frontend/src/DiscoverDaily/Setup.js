@@ -167,6 +167,7 @@ export default function DiscoverDailySetup() {
       !optionRef.current
     ) {
       window.location = `${window.location.origin}/cancel`;
+      return;
     }
 
     await DiscoverDailyHelper.sendToStripe(
