@@ -92,6 +92,18 @@ body {
     background-color: #cc1800 !important;
 }
 
+.stripe-blurple {
+    background-color: #625AFA !important;
+}
+
+.stripe-blurple:hover {
+    background-color:#4038d1 !important;
+}
+
+.stripe-blurple:active, .spotify-red:focus, .spotify-red:disabled {
+    background-color: #6e66ff !important;
+}
+
 .imageRow {
     width: max-content;
     margin: 0;

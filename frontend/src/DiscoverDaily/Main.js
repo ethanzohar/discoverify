@@ -187,6 +187,14 @@ class DiscoverDaily extends Component {
     window.location = `${window.location.origin}/options`;
   }
 
+  // eslint-disable-next-line class-methods-use-this
+  sendToStripePaymentPortal() {
+    window.open(
+      'https://billing.stripe.com/p/login/dR6aI7esz6VD6pG6oo',
+      '_blank'
+    );
+  }
+
   async unsubscribeUser() {
     this.setState({ submitting: true });
     try {
@@ -247,9 +255,17 @@ class DiscoverDaily extends Component {
             className="btn btn-primary spotify-button spotify-red"
             onClick={this.unsubscribeUser}
             disabled={this.state.submitting}
-            style={{ marginBottom: '2%' }}
+            style={{ marginBottom: '2%', marginRight: '2%' }}
           >
             Unsubscribe
+          </button>
+          <button
+            className="btn btn-primary spotify-button stripe-blurple"
+            onClick={this.sendToStripePaymentPortal}
+            disabled={this.state.submitting}
+            style={{ marginBottom: '2%' }}
+          >
+            Manage Payments
           </button>
           {this.state.submitting ? (
             <CircularProgress
