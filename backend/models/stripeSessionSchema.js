@@ -2,11 +2,10 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const userSchema = new Schema({
-  userId: { type: String, required: true, unique: true },
-  refreshToken: { type: String, required: true, unique: true },
-  playlistId: { type: String },
-  lastUpdated: { type: Date },
+const stripeSessionSchema = new Schema({
+  sessionId: { type: String, required: true, unique: true },
+  userId: { type: String, required: true },
+  refreshToken: { type: String, required: true, unique: false },
   playlistOptions: {
     seeds: { type: [String], default: ['ST', 'ST', 'MT', 'MT', 'MT'] },
     acousticness: { type: [Number, Number], default: [10, 90] },
@@ -16,10 +15,12 @@ const userSchema = new Schema({
     popularity: { type: [Number, Number], default: [50, 100] },
     valence: { type: [Number, Number], default: [10, 90] },
   },
-  stripeId: { type: String, required: false },
-  grandmothered: { type: Boolean, default: false },
 });
 
-const userModel = mongoose.model('users', userSchema, 'users');
+const stripeSessionModel = mongoose.model(
+  'stripeSessions',
+  stripeSessionSchema,
+  'stripeSessions'
+);
 
-module.exports = userModel;
+module.exports = stripeSessionModel;

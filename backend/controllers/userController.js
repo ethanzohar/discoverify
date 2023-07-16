@@ -1,7 +1,32 @@
 const CryptoJS = require('crypto-js');
 const UserModel = require('../models/userSchema');
+const SpotifyHelper = require('../helpers/spotifyHelper');
+const StripeHelper = require('../helpers/stripeHelper');
 
 class UserController {
+  static async subscribeUser(userId, refreshToken, options, stripeId = null) {
+    let user = await UserController.getUser(userId);
+
+    if (user) {
+      user.refreshToken = refreshToken;
+      user.stripeId = stripeId;
+      await user.save();
+    } else {
+      user = await UserController.createUser(
+        userId,
+        refreshToken,
+        options,
+        stripeId
+      );
+      await SpotifyHelper.updatePlaylist(user, null);
+    }
+
+    const returnUser = user.toObject();
+    returnUser.userId = userId;
+
+    return returnUser;
+  }
+
   static async getUser(userId) {
     return UserModel.findOne({
       userId: CryptoJS.AES.encrypt(
@@ -20,7 +45,10 @@ class UserController {
     return UserModel.find();
   }
 
-  static async createUser(userId, refreshToken, playlistOptions) {
+  static async createUser(userId, refreshToken, playlistOptions, stripeId) {
+    // TODO: delete use of grandmothered
+    const grandmothered = true;
+
     return UserModel.create({
       userId: CryptoJS.AES.encrypt(
         userId,
@@ -29,22 +57,38 @@ class UserController {
       ).toString(),
       refreshToken,
       playlistOptions,
+      stripeId,
+      grandmothered,
     });
   }
 
   static async deleteUser(userId) {
-    return UserModel.deleteOne({
+    const user = await UserController.getUser(userId);
+
+    if (user.stripeId) {
+      await StripeHelper.cancelStripeSubscription(user.stripeId);
+    }
+
+    const deleteResponse = await UserModel.deleteOne({
       userId: CryptoJS.AES.encrypt(
         userId,
         CryptoJS.enc.Base64.parse(process.env.SPOTIFY_API_CLIENT_SECRET),
         { mode: CryptoJS.mode.ECB }
       ).toString(),
     });
+
+    return deleteResponse;
   }
 
   static async setUserPlaylistId(userId, playListId) {
     const user = await this.getUser(userId);
     user.playListId = playListId;
+    return user.save();
+  }
+
+  static async setStripeId(userId, stripeId) {
+    const user = await this.getUser(userId);
+    user.stripeId = stripeId;
     return user.save();
   }
 

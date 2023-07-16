@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 
 const discoverDailyRouter = require('./routes/discoverDailyRoutes');
+const stripeRoutes = require('./routes/stripeRoutes');
 
 const app = express();
 const server = http.createServer(app);
@@ -20,11 +21,21 @@ server.listen(port);
 server.on('listening', onListening);
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+app.use(
+  bodyParser.json({
+    verify(req, res, buf) {
+      const url = req.originalUrl;
+      if (url.startsWith('/api/stripe/process-event')) {
+        req.rawBody = buf.toString();
+      }
+    },
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/api/discover-daily', discoverDailyRouter);
+app.use('/api/stripe', stripeRoutes);
 
 const frontend = path.resolve(
   `${__dirname}../../frontend/deployedBuild/index.html`
@@ -32,7 +43,7 @@ const frontend = path.resolve(
 app.use(express.static(path.resolve(`${__dirname}/../frontend/deployedBuild`)));
 
 app.get('*', (req, res) => {
-  console.log("Received a request");
+  console.log('Received a request');
   res.sendFile(frontend);
 });
 
@@ -52,4 +63,4 @@ connection.on('error', () => {
   console.log('MongoDB Connection Error');
 });
 
-console.log("The server is running!");
+console.log('The server is running!');
