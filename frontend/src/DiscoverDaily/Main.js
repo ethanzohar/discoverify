@@ -63,8 +63,10 @@ class DiscoverDaily extends Component {
     if (
       user &&
       user !== 'null' &&
+      user !== 'undefined' &&
       spotifyUserFromStorage &&
-      spotifyUserFromStorage !== 'null'
+      spotifyUserFromStorage !== 'null' &&
+      spotifyUserFromStorage !== 'undefined'
     ) {
       const { now } = await DiscoverDailyHelper.getNow();
       this.setState({
@@ -76,77 +78,6 @@ class DiscoverDaily extends Component {
       return;
     }
 
-    const code = sessionStorage.getItem('discoverDaily_code');
-    const refreshToken = localStorage.getItem('discoverDaily_refreshToken');
-
-    if (refreshToken && refreshToken !== 'null') {
-      try {
-        const accessToken = await DiscoverDailyHelper.getAccessToken(
-          refreshToken
-        );
-
-        if (accessToken) {
-          const spotifyUser = await SpotifyHelper.getUserInfo(accessToken);
-          sessionStorage.setItem(
-            'discoverDaily_spotifyUser',
-            JSON.stringify(spotifyUser)
-          );
-          this.setState({ spotifyUser });
-
-          const getUser = await DiscoverDailyHelper.getUser(spotifyUser.id);
-          const usr = getUser.user;
-          const { now } = getUser;
-          if (usr) this.setState({ user: usr, now });
-
-          this.setState({ loading: false });
-
-          sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
-          return;
-        }
-      } catch (e) {
-        if (e.deletedUser) {
-          window.location = `${window.location.origin}/login`;
-          sessionStorage.clear();
-        }
-      }
-    }
-
-    if (code && code !== 'null') {
-      const {
-        access_token,
-        refresh_token,
-      } = await DiscoverDailyHelper.getRefreshToken(
-        code,
-        process.env.REACT_APP_REDIRECT_URI
-      );
-      localStorage.setItem('discoverDaily_refreshToken', refresh_token || null);
-
-      if (!access_token) this.sendToLogin();
-
-      const spotifyUser = await SpotifyHelper.getUserInfo(access_token);
-      sessionStorage.setItem(
-        'discoverDaily_spotifyUser',
-        JSON.stringify(spotifyUser)
-      );
-      const getUser = await DiscoverDailyHelper.getUser(spotifyUser.id);
-      const usr = getUser.user;
-      const { now } = getUser;
-      this.setState({
-        user: usr,
-        now,
-        spotifyUser,
-        loading: false,
-      });
-
-      if (usr) {
-        await DiscoverDailyHelper.signupUser(spotifyUser.id, refresh_token);
-      }
-
-      sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
-      return;
-    }
-
-    this.sendToLogin();
   }
 
   // eslint-disable-next-line class-methods-use-this
