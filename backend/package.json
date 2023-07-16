@@ -4,7 +4,7 @@
     "scripts": {
         "start": "nodemon app.js",
         "startCron": "nodemon cronService.js",
-        "deploy": "git pull && npm install && pm2 reload discoverify-backend --update-env && pm2 reload discoverify-cronService --update-env",
+        "deploy": "git pull && yarn install --ignore-engines && pm2 reload discoverify-backend --update-env && pm2 reload discoverify-cronService --update-env",
         "logs-backend": "pm2 logs discoverify-backend --lines 500",
         "logs-cron": "pm2 logs discoverify-cronService --lines 500"
     },
