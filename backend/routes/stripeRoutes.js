@@ -30,8 +30,8 @@ router.post('/create-checkout-session', async function (req, res) {
     subscription_data: {
       trial_period_days: 30,
     },
-    success_url: `h/stripe/success?userId=${userId}`,
-    cancel_url: `${`${req.protocol}://${req.get('host')}`}/stripe/cancel`,
+    success_url: `https://discoverifymusic.com/stripe/success?userId=${userId}`,
+    cancel_url: `https://discoverifymusic.com/stripe/cancel`,
     allow_promotion_codes: true,
   });
 
