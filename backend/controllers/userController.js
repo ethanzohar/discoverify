@@ -63,12 +63,7 @@ class UserController {
 
     if (user.stripeId) {
       try {
-        console.log('Trying to cancel subscription: ', user.stripeId);
-        const response = await StripeHelper.cancelStripeSubscription(
-          user.stripeId
-        );
-        console.log('SUCCESSFUL UNSUB');
-        console.log(response);
+        await StripeHelper.cancelStripeSubscription(user.stripeId);
       } catch (err) {
         if (
           err.type !== 'StripeInvalidRequestError' ||
