@@ -20,7 +20,8 @@
     "react-ga": "^3.3.0",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.0",
-    "request": "~2.83.0"
+    "request": "~2.83.0",
+    "yarn": "^1.22.19"
   },
   "scripts": {
     "start": "react-scripts start",

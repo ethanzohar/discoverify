@@ -17,7 +17,8 @@
         "fs": "0.0.1-security",
         "mongoose": "^5.13.20",
         "node-fetch": "^2.6.12",
-        "stripe": "^12.13.0"
+        "stripe": "^12.13.0",
+        "yarn": "^1.22.19"
     },
     "devDependencies": {
         "nodemon": "^2.0.6"
