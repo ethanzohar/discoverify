@@ -22,14 +22,15 @@ router.post('/create-checkout-session', async function (req, res) {
   const session = await stripe.checkout.sessions.create({
     line_items: [
       {
-        price: 'price_1NUJRBDUxi5iZV5Vhva7BYBw',
+        price: 'price_1NUZX8DUxi5iZV5VRszw2X7t',
         quantity: 1,
       },
     ],
     mode: 'subscription',
-    success_url: `${`${req.protocol}://${req.get(
-      'host'
-    )}`}/stripe/success?userId=${userId}`,
+    subscription_data: {
+      trial_period_days: 30,
+    },
+    success_url: `h/stripe/success?userId=${userId}`,
     cancel_url: `${`${req.protocol}://${req.get('host')}`}/stripe/cancel`,
     allow_promotion_codes: true,
   });
