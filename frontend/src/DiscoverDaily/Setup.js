@@ -160,6 +160,7 @@ export default function DiscoverDailySetup() {
 
     document.getElementById('buttonLoadingCircle').style.display = '';
 
+    // TODO: DELETE
     const { user } = await DiscoverDailyHelper.signupUser(
       spotifyUser.id,
       refreshToken,
@@ -167,8 +168,24 @@ export default function DiscoverDailySetup() {
     );
     setSubmitting(false);
     sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
-
     sendToMain();
+    // TODO: END DELETE
+
+    // TODO: UNCOMMENT
+    // if (
+    //   !spotifyUser ||
+    //   !spotifyUser.id ||
+    //   !refreshToken ||
+    //   !optionRef.current
+    // ) {
+    //   window.location = `${window.location.origin}/cancel`;
+    // }
+
+    // await DiscoverDailyHelper.sendToStripe(
+    //   spotifyUser.id,
+    //   refreshToken,
+    //   optionRef.current
+    // );
   };
 
   return (

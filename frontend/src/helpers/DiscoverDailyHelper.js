@@ -19,6 +19,24 @@ class DiscoverDailyHelper {
     return response.json();
   }
 
+  static async sendToStripe(userId, refreshToken, options) {
+    const response = await fetch('/api/stripe/create-checkout-session', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId,
+        refreshToken,
+        options,
+      }),
+    });
+
+    const body = await response.json();
+    window.location.href = body.url;
+  }
+
   static async unsubscribeUser(userId, refreshToken) {
     const accessToken = await DiscoverDailyHelper.getAccessToken(refreshToken);
 

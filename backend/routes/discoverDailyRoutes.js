@@ -43,11 +43,17 @@ router.post('/migration', async function (req, res) {
     console.log(`${i + 1}. Running migration for user: ${users[i].userId}`);
 
     // Place migration here
-    users[i].userId = CryptoJS.AES.encrypt(
-      users[i].userId,
-      CryptoJS.enc.Base64.parse(CLIENT_SECRET),
-      { mode: CryptoJS.mode.ECB }
-    ).toString();
+
+    // Migration #1
+    // users[i].userId = CryptoJS.AES.encrypt(
+    //   users[i].userId,
+    //   CryptoJS.enc.Base64.parse(CLIENT_SECRET),
+    //   { mode: CryptoJS.mode.ECB }
+    // ).toString();
+
+    // Migration #2
+    users[i].stripeId = null;
+    users[i].grandmothered = true;
 
     await users[i].save();
   }
@@ -171,6 +177,8 @@ router.get('/getUser/:userId', async function (req, res) {
         lastUpdated: user.lastUpdated,
         refreshToken: user.refreshToken,
         playlistOptions: user.playlistOptions,
+        stripeId: user.stripeId,
+        grandmothered: user.grandmothered,
       },
       now: new Date(),
     });
@@ -188,16 +196,11 @@ router.post('/subscribe', async function (req, res) {
 
   console.log(`Subscribing for user: ${userId}`);
 
-  let user = await UserController.getUser(userId);
-  if (user) {
-    user.refreshToken = refreshToken;
-  } else {
-    user = await UserController.createUser(userId, refreshToken, options);
-    await SpotifyHelper.updatePlaylist(user, null);
-  }
-
-  const returnUser = user.toObject();
-  returnUser.userId = userId;
+  const returnUser = await UserController.subscribeUser(
+    userId,
+    refreshToken,
+    options
+  );
 
   return res.send({ user: returnUser, now: new Date() });
 });
