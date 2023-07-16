@@ -22,7 +22,7 @@ router.post('/create-checkout-session', async function (req, res) {
   const session = await stripe.checkout.sessions.create({
     line_items: [
       {
-        price: 'price_1NUZX8DUxi5iZV5VRszw2X7t',
+        price: 'price_1NUZgmDUxi5iZV5VnB1Owguu',
         quantity: 1,
       },
     ],
