@@ -53,6 +53,8 @@ router.post('/process-event', async function (req, res) {
   let event;
 
   try {
+    console.log('BODY');
+    console.log(req.rawBody);
     event = stripe.webhooks.constructEvent(
       req.rawBody,
       sig,
