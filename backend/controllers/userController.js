@@ -66,6 +66,7 @@ class UserController {
         await StripeHelper.cancelStripeSubscription(user.stripeId);
       } catch (err) {
         console.log(err);
+        console.log(err.type);
       }
     }
 
