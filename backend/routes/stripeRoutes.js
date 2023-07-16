@@ -46,33 +46,25 @@ router.post('/create-checkout-session', async function (req, res) {
 });
 
 router.post('/process-event', async function (req, res) {
-  console.log('got event');
-
   const sig = req.headers['stripe-signature'];
 
   let event;
 
   try {
-    console.log('BODY');
-    console.log(req.rawBody);
     event = stripe.webhooks.constructEvent(
       req.rawBody,
       sig,
       STRIPE_ENDPOINT_SECRET
     );
   } catch (err) {
-    console.log('event error ', err.message);
     res.status(400).send(`Webhook Error: ${err.message}`);
     return;
   }
-
-  console.log('Event type: ', event.type);
 
   const { id, subscription } = event.data.object;
   const session = await StripeSessionController.getSessionBySessionId(id);
 
   if (!session) {
-    console.log('no session');
     res.send();
     return;
   }
