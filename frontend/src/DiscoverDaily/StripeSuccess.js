@@ -18,8 +18,10 @@ class DiscoverDailyStripeSuccess extends Component {
 
     const { user } = await DiscoverDailyHelper.getUser(userId);
 
+    console.log(user);
+
     sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
-    window.location = window.location.origin;
+    // window.location = window.location.origin;
   }
 
   render() {
