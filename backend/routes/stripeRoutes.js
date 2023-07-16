@@ -75,7 +75,6 @@ router.post('/process-event', async function (req, res) {
   switch (event.type) {
     case 'checkout.session.expired':
     case 'checkout.session.async_payment_failed':
-      console.log(event.type);
       StripeSessionController.deleteSession(sessionId);
       break;
     case 'checkout.session.completed':
