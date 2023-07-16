@@ -65,8 +65,12 @@ class UserController {
       try {
         await StripeHelper.cancelStripeSubscription(user.stripeId);
       } catch (err) {
-        console.log(err);
-        console.log(err.type);
+        if (
+          err.type !== 'StripeInvalidRequestError' ||
+          err.raw.code !== 'resource_missing'
+        ) {
+          throw err;
+        }
       }
     }
 
