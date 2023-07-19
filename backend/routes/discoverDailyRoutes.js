@@ -70,7 +70,7 @@ router.post('/force', async function (req, res) {
   console.log('THIS');
   const users = await UserController.getAllUsers();
   console.log('THAT');
-  SpotifyHelper.updatePlaylists(users);
+  SpotifyHelper.updatePlaylists();
   return res.send('Playlist Generation has been started');
 });
 
