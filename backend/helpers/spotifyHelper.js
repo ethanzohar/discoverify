@@ -627,7 +627,7 @@ class SpotifyHelper {
 
       if (e.deleteUser) {
         console.log(`Deleting User: ${userId}`);
-        await UserController.deleteUser(userId);
+        // await UserController.deleteUser(userId);
         return;
       }
     }
