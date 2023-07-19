@@ -635,10 +635,8 @@ class SpotifyHelper {
     console.log(' ');
   }
 
-  static async updatePlaylists() {
-    console.log('A');
-    const users = await UserController.getAllUsers();
-    console.log('b');
+  static async updatePlaylists(users) {
+    console.log(users[0]);
     console.log(`running ${users.length} jobs | ${new Date()}`);
     // const playlistCover = 'images/playlistCover.jpeg';
     // await Promise.all(users.map(user => this.updatePlaylist(user, null)));
