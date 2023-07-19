@@ -184,6 +184,8 @@ router.get('/getUser/:userId', async function (req, res) {
     });
   }
 
+  console.log(user);
+
   return res.status(200).send({ success: false });
 });
 
