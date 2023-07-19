@@ -67,9 +67,7 @@ router.post('/force', async function (req, res) {
     return res.status(403).send('Invalid credentials');
   }
 
-  console.log('THIS');
   const users = await UserController.getAllUsers();
-  console.log('THAT');
   SpotifyHelper.updatePlaylists(users);
   return res.send('Playlist Generation has been started');
 });
