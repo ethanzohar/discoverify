@@ -11,6 +11,7 @@
 # production
 /build
 /deployedBuild
+/deployedBuildFromLocal
 
 # /src/keys.js
 .env
