@@ -1,9 +1,9 @@
 const bodyparser = require('body-parser');
 const express = require('express');
 
-const CryptoJS = require('crypto-js');
 const UserController = require('../controllers/userController');
 const SpotifyHelper = require('../helpers/spotifyHelper');
+const { decryptUserId } = require('../helpers/userIdCrypto');
 
 const router = express.Router();
 const app = express();
@@ -12,8 +12,6 @@ app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
 const { ADMIN_USERID } = process.env;
-const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET;
-
 async function validate(userId, accessToken) {
   const user = await SpotifyHelper.getMe(accessToken);
   return user.id === userId;
@@ -143,13 +141,7 @@ router.post('/cleanCorrupted', async function (req, res) {
   for (let i = 0; i < users.length; i += 1) {
     const user = users[i];
 
-    const userIdToDelete = CryptoJS.AES.decrypt(
-      user.userId,
-      CryptoJS.enc.Base64.parse(CLIENT_SECRET),
-      {
-        mode: CryptoJS.mode.ECB,
-      }
-    ).toString(CryptoJS.enc.Utf8);
+    const userIdToDelete = decryptUserId(user.userId);
 
     if ((now - user.lastUpdated) / 36e5 >= 48) {
       try {

@@ -2,9 +2,9 @@
 require('dotenv').config();
 const fetch = require('node-fetch');
 const fs = require('fs');
-const CryptoJS = require('crypto-js');
 
 const UserController = require('../controllers/userController');
+const { decryptUserId } = require('./userIdCrypto');
 
 const CLIENT_ID = process.env.SPOTIFY_API_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET;
@@ -569,13 +569,7 @@ class SpotifyHelper {
   static async updatePlaylist(user, playlistCover) {
     console.log(`Starting job for user: ${user.userId}`);
 
-    const userId = CryptoJS.AES.decrypt(
-      user.userId,
-      CryptoJS.enc.Base64.parse(CLIENT_SECRET),
-      {
-        mode: CryptoJS.mode.ECB,
-      }
-    ).toString(CryptoJS.enc.Utf8);
+    const userId = decryptUserId(user.userId);
 
     try {
       const accessToken = await this.getNewAccessToken(user.refreshToken);
@@ -676,13 +670,7 @@ class SpotifyHelper {
         const user = users[i];
         console.log(`Running no update for user: ${user.userId}`);
 
-        const userId = CryptoJS.AES.decrypt(
-          user.userId,
-          CryptoJS.enc.Base64.parse(CLIENT_SECRET),
-          {
-            mode: CryptoJS.mode.ECB,
-          }
-        ).toString(CryptoJS.enc.Utf8);
+        const userId = decryptUserId(user.userId);
 
         const accessToken = await this.getNewAccessToken(user.refreshToken);
 

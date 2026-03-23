@@ -1,7 +1,10 @@
-const CryptoJS = require('crypto-js');
 const UserModel = require('../models/userSchema');
 const SpotifyHelper = require('../helpers/spotifyHelper');
 const StripeHelper = require('../helpers/stripeHelper');
+const {
+  encryptUserId,
+  getEncryptedUserIdCandidates,
+} = require('../helpers/userIdCrypto');
 
 class UserController {
   static async subscribeUser(userId, refreshToken, options, stripeId = null) {
@@ -29,11 +32,7 @@ class UserController {
 
   static async getUser(userId) {
     return UserModel.findOne({
-      userId: CryptoJS.AES.encrypt(
-        userId,
-        CryptoJS.enc.Base64.parse(process.env.SPOTIFY_API_CLIENT_SECRET),
-        { mode: CryptoJS.mode.ECB }
-      ).toString(),
+      userId: { $in: getEncryptedUserIdCandidates(userId) },
     });
   }
 
@@ -47,11 +46,7 @@ class UserController {
 
   static async createUser(userId, refreshToken, playlistOptions, stripeId) {
     return UserModel.create({
-      userId: CryptoJS.AES.encrypt(
-        userId,
-        CryptoJS.enc.Base64.parse(process.env.SPOTIFY_API_CLIENT_SECRET),
-        { mode: CryptoJS.mode.ECB }
-      ).toString(),
+      userId: encryptUserId(userId),
       refreshToken,
       playlistOptions,
       stripeId,
@@ -81,11 +76,7 @@ class UserController {
     }
 
     const deleteResponse = await UserModel.deleteOne({
-      userId: CryptoJS.AES.encrypt(
-        userId,
-        CryptoJS.enc.Base64.parse(process.env.SPOTIFY_API_CLIENT_SECRET),
-        { mode: CryptoJS.mode.ECB }
-      ).toString(),
+      userId: { $in: getEncryptedUserIdCandidates(userId) },
     });
 
     return deleteResponse;
