@@ -39,6 +39,18 @@ async function migrateUserIdEncryptionKey() {
     const decryptedWithNew = decryptUserIdWithSecret(user.userId, NEW_SECRET);
     if (decryptedWithNew) {
       alreadyUsingNewKey += 1;
+
+      user.userId = encryptUserIdWithSecret(decryptedWithNew, NEW_SECRET);
+      try {
+        await SpotifyHelper.updatePlaylist(user, null);
+
+        migrated += 1;
+      } catch (error) {
+        failed += 1;
+        console.log(
+          `updatePlaylist failed for migrated user at index ${i}: ${error.message}`
+        );
+      }
     } else {
       const decryptedWithOld = decryptUserIdWithSecret(user.userId, OLD_SECRET);
       if (!decryptedWithOld) {
