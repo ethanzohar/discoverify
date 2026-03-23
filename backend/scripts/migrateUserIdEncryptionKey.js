@@ -33,12 +33,6 @@ async function migrateUserIdEncryptionKey() {
   let migrated = 0;
   let failed = 0;
 
-  const user = users[0];
-  decryptUserIdWithSecret(user.userId, process.env.SPOTIFY_API_CLIENT_SECRET);
-  decryptUserIdWithSecret(user.userId, process.env.SPOTIFY_API_CLIENT_SECRET_OLD);
-  decryptUserIdWithSecret(user.userId, process.env.SPOTIFY_API_CLIENT_SECRET_OLD_2);
-  
-
   for (let i = 0; i < 1; i += 1) {
     // for (let i = 0; i < users.length; i += 1) {
     const user = users[i];
