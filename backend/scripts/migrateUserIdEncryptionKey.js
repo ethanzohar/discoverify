@@ -59,33 +59,34 @@ async function migrateUserIdEncryptionKey() {
         console.log(`Failed to decrypt user at index ${i}`);
       } else {
         user.userId = encryptUserIdWithSecret(decryptedWithOld, NEW_SECRET);
-        try {
-          await SpotifyHelper.updatePlaylist(user, null);
+        // try {
+        //   await SpotifyHelper.updatePlaylist(user, null);
 
-          migrated += 1;
-        } catch (error) {
-          failed += 1;
-          console.log(
-            `updatePlaylist failed for migrated user at index ${i}: ${error.message}`
-          );
-        }
-        // let saveFailed = false;
-
-        // if (!DRY_RUN) {
-        //   try {
-        //     await user.save();
-        //   } catch (error) {
-        //     saveFailed = true;
-        //     failed += 1;
-        //     console.log(
-        //       `Failed to save migrated user at index ${i}: ${error.message}`
-        //     );
-        //   }
-        // }
-
-        // if (DRY_RUN || !saveFailed) {
         //   migrated += 1;
+        // } catch (error) {
+        //   failed += 1;
+        //   console.log(
+        //     `updatePlaylist failed for migrated user at index ${i}: ${error.message}`
+        //   );
         // }
+        let saveFailed = false;
+
+        if (!DRY_RUN) {
+          try {
+            await user.save();
+            console.log(`Saved migrated user at index ${i}`);
+          } catch (error) {
+            saveFailed = true;
+            failed += 1;
+            console.log(
+              `Failed to save migrated user at index ${i}: ${error.message}`
+            );
+          }
+        }
+
+        if (DRY_RUN || !saveFailed) {
+          migrated += 1;
+        }
       }
     }
   }
