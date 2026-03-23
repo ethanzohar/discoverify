@@ -30,12 +30,6 @@ function decryptUserIdWithSecret(encryptedUserId, secret) {
 
     return isLikelySpotifyUserId(decrypted) ? decrypted : null;
   } catch (error) {
-    console.log(
-      `error decrypting userId with ${
-        secret === ACTIVE_SECRET ? 'active' : 'old'
-      } secret:`,
-      error
-    );
     return null;
   }
 }
