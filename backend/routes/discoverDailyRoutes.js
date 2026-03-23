@@ -12,6 +12,7 @@ app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
 const { ADMIN_USERID } = process.env;
+const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET;
 async function validate(userId, accessToken) {
   const user = await SpotifyHelper.getMe(accessToken);
   return user.id === userId;
@@ -60,8 +61,8 @@ router.post('/migration', async function (req, res) {
 });
 
 router.post('/force', async function (req, res) {
-  const { userId, refreshToken } = req.body;
-  if (!isAdmin(userId, refreshToken)) {
+  const { clientSecret } = req.body;
+  if (clientSecret !== CLIENT_SECRET) {
     return res.status(403).send('Invalid credentials');
   }
 
