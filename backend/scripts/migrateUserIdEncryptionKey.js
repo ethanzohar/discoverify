@@ -74,7 +74,7 @@ async function migrateUserIdEncryptionKey() {
         if (!DRY_RUN) {
           try {
             await user.save();
-            console.log(`Saved migrated user at index ${i}`);
+            console.log(`Saved migrated user at index ${i}/${users.length}`);
           } catch (error) {
             saveFailed = true;
             failed += 1;
