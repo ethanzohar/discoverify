@@ -33,8 +33,7 @@ async function migrateUserIdEncryptionKey() {
   let migrated = 0;
   let failed = 0;
 
-  for (let i = 0; i < 1; i += 1) {
-    // for (let i = 0; i < users.length; i += 1) {
+  for (let i = 0; i < users.length; i += 1) {
     const user = users[i];
 
     const decryptedWithNew = decryptUserIdWithSecret(user.userId, NEW_SECRET);
@@ -84,6 +83,7 @@ async function migrateUserIdEncryptionKey() {
   console.log(`Already using new key: ${alreadyUsingNewKey}`);
   console.log(`Migrated old -> new: ${migrated}`);
   console.log(`Failed: ${failed}`);
+  console.log(`Success: ${migrated - failed}`);
   console.log(`Dry run: ${DRY_RUN}`);
 }
 
