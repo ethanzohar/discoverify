@@ -33,51 +33,57 @@ async function migrateUserIdEncryptionKey() {
   let migrated = 0;
   let failed = 0;
 
-  for (let i = 0; i < 1; i += 1) {
-    // for (let i = 0; i < users.length; i += 1) {
-    const user = users[i];
+  const user = users[0];
+  decryptUserIdWithSecret(user.userId, process.env.SPOTIFY_API_CLIENT_SECRET);
+  decryptUserIdWithSecret(user.userId, process.env.SPOTIFY_API_CLIENT_SECRET_OLD);
+  decryptUserIdWithSecret(user.userId, process.env.SPOTIFY_API_CLIENT_SECRET_OLD_2);
+  
 
-    const decryptedWithNew = decryptUserIdWithSecret(user.userId, NEW_SECRET);
-    if (decryptedWithNew) {
-      alreadyUsingNewKey += 1;
-    } else {
-      const decryptedWithOld = decryptUserIdWithSecret(user.userId, OLD_SECRET);
-      if (!decryptedWithOld) {
-        failed += 1;
-        // Keep logs minimal and avoid leaking full ids.
-        console.log(`Failed to decrypt user at index ${i}`);
-      } else {
-        user.userId = encryptUserIdWithSecret(decryptedWithOld, NEW_SECRET);
-        try {
-          await SpotifyHelper.updatePlaylist(user, null);
+  // for (let i = 0; i < 1; i += 1) {
+  //   // for (let i = 0; i < users.length; i += 1) {
+  //   const user = users[i];
 
-          migrated += 1;
-        } catch (error) {
-          failed += 1;
-          console.log(
-            `updatePlaylist failed for migrated user at index ${i}: ${error.message}`
-          );
-        }
-        // let saveFailed = false;
+  //   const decryptedWithNew = decryptUserIdWithSecret(user.userId, NEW_SECRET);
+  //   if (decryptedWithNew) {
+  //     alreadyUsingNewKey += 1;
+  //   } else {
+  //     const decryptedWithOld = decryptUserIdWithSecret(user.userId, OLD_SECRET);
+  //     if (!decryptedWithOld) {
+  //       failed += 1;
+  //       // Keep logs minimal and avoid leaking full ids.
+  //       console.log(`Failed to decrypt user at index ${i}`);
+  //     } else {
+  //       user.userId = encryptUserIdWithSecret(decryptedWithOld, NEW_SECRET);
+  //       try {
+  //         await SpotifyHelper.updatePlaylist(user, null);
 
-        // if (!DRY_RUN) {
-        //   try {
-        //     await user.save();
-        //   } catch (error) {
-        //     saveFailed = true;
-        //     failed += 1;
-        //     console.log(
-        //       `Failed to save migrated user at index ${i}: ${error.message}`
-        //     );
-        //   }
-        // }
+  //         migrated += 1;
+  //       } catch (error) {
+  //         failed += 1;
+  //         console.log(
+  //           `updatePlaylist failed for migrated user at index ${i}: ${error.message}`
+  //         );
+  //       }
+  //       // let saveFailed = false;
 
-        // if (DRY_RUN || !saveFailed) {
-        //   migrated += 1;
-        // }
-      }
-    }
-  }
+  //       // if (!DRY_RUN) {
+  //       //   try {
+  //       //     await user.save();
+  //       //   } catch (error) {
+  //       //     saveFailed = true;
+  //       //     failed += 1;
+  //       //     console.log(
+  //       //       `Failed to save migrated user at index ${i}: ${error.message}`
+  //       //     );
+  //       //   }
+  //       // }
+
+  //       // if (DRY_RUN || !saveFailed) {
+  //       //   migrated += 1;
+  //       // }
+  //     }
+  //   }
+  // }
 
   console.log('UserId key migration complete');
   console.log(`Total users: ${users.length}`);

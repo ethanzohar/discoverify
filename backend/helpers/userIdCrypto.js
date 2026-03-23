@@ -25,7 +25,6 @@ function decryptUserIdWithSecret(encryptedUserId, secret) {
 
     console.log('encryptedUserId', encryptedUserId);
     console.log('secret', secret);
-    console.log('parseSecret(secret)', parseSecret(secret));
     const decrypted = CryptoJS.AES.decrypt(
       encryptedUserId,
       parseSecret(secret),
