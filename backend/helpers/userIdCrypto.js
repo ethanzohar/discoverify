@@ -22,21 +22,11 @@ function isLikelySpotifyUserId(value) {
 
 function decryptUserIdWithSecret(encryptedUserId, secret) {
   try {
-
-    console.log('encryptedUserId', encryptedUserId);
-    console.log('secret', secret);
     const decrypted = CryptoJS.AES.decrypt(
       encryptedUserId,
       parseSecret(secret),
       { mode: CryptoJS.mode.ECB }
     ).toString(CryptoJS.enc.Utf8);
-
-    console.log(
-      `decrypted userId with ${
-        secret === ACTIVE_SECRET ? 'active' : 'old'
-      } secret:`,
-      decrypted
-    );
 
     return isLikelySpotifyUserId(decrypted) ? decrypted : null;
   } catch (error) {
