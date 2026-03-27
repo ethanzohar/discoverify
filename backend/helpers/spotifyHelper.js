@@ -13,6 +13,8 @@ const PLAYLIST_NAME = 'Discover Daily';
 const PLAYLIST_DESCRIPTION =
   "If you would like to support Discoverify, consider visiting patreon.com/discoverify (COMPLETELY OPTIONAL). Daily music, curated for you based on your listening history. If you don't want to get this daily playlist anymore, you can unsubscribe at https://discoverifymusic.com";
 
+const PLAYLIST_SIZE = 30;
+
 function SpotifyAPIException(deleteUser) {
   this.deleteUser = deleteUser;
 }
@@ -215,6 +217,8 @@ class SpotifyHelper {
   }
 
   static async getLiked(trackIds, accessToken) {
+    if (trackIds.length === 0) return [];
+
     const result = await fetch(
       `https://api.spotify.com/v1/me/tracks/contains?ids=${trackIds.join(',')}`,
       {
@@ -230,7 +234,7 @@ class SpotifyHelper {
   }
 
   static getRecommendationUrls(user, seeds) {
-    let baseUrl = 'https://api.spotify.com/v1/recommendations?limit=50';
+    let baseUrl = 'https://api.spotify.com/v1/recommendations?limit=100';
 
     if (seeds.artists.length > 0) {
       baseUrl += `&seed_artists=${seeds.artists.join(',')}`;
@@ -289,17 +293,8 @@ class SpotifyHelper {
     return { minMaxUrl, targetUrl };
   }
 
-  static async getTracks(user, userId, tracksInPlaylist, seeds, accessToken) {
-    const PLAYLIST_SIZE = 30;
-    let usr = user;
-
-    if (!user.playlistOptions) {
-      usr = await UserController.restorePlaylistOptions(userId);
-    }
-
-    const { minMaxUrl, targetUrl } = this.getRecommendationUrls(usr, seeds);
-
-    let recommendations = await fetch(minMaxUrl, {
+  static async loadPlaylistArrays(url, accessToken, tracksInPlaylist) {
+    let recommendations = await fetch(url, {
       Accepts: 'application/json',
       method: 'GET',
       headers: {
@@ -317,7 +312,7 @@ class SpotifyHelper {
 
       await new Promise((r) => setTimeout(r, 1000));
 
-      recommendations = await fetch(minMaxUrl, {
+      recommendations = await fetch(url, {
         Accepts: 'application/json',
         method: 'GET',
         headers: {
@@ -330,6 +325,10 @@ class SpotifyHelper {
 
     const tracks = responseJSON.tracks || [];
 
+    const likedTracks = new Set();
+    const alreadyInPlaylist = new Set();
+    const playlistUris = new Set();
+
     const trackIds = [];
     const uris = [];
     for (let i = 0; i < tracks.length; i += 1) {
@@ -337,64 +336,77 @@ class SpotifyHelper {
       uris.push(tracks[i].uri);
     }
 
-    const liked =
-      tracks.length === 0 ? [] : await this.getLiked(trackIds, accessToken);
+    const liked = await this.getLiked(trackIds, accessToken);
 
-    const likedTracks = new Set();
-    const alreadyInPlaylist = new Set();
-    const playlistUris = new Set();
     for (let i = 0; i < liked.length; i += 1) {
-      if (!liked[i]) {
-        playlistUris.add(uris[i]);
-      } else {
+      if (playlistUris.size >= PLAYLIST_SIZE) break;
+
+      const isLiked = liked[i];
+      const inPlaylist = tracksInPlaylist.has(trackIds[i]);
+
+      if (isLiked) {
         likedTracks.add(uris[i]);
       }
 
-      if (tracksInPlaylist.has(trackIds[i])) {
+      if (inPlaylist) {
         alreadyInPlaylist.add(uris[i]);
       }
 
-      if (playlistUris.size >= PLAYLIST_SIZE) break;
+      if (!isLiked && !inPlaylist) {
+        playlistUris.add(uris[i]);
+      }
     }
 
+    return {
+      likedTracks,
+      alreadyInPlaylist,
+      playlistUris,
+    };
+  }
+
+  static async getTracks(user, userId, tracksInPlaylist, seeds, accessToken) {
+    let usr = user;
+
+    if (!user.playlistOptions) {
+      usr = await UserController.restorePlaylistOptions(userId);
+    }
+
+    let likedTracks = new Set();
+    let alreadyInPlaylist = new Set();
+    let playlistUris = new Set();
+
+    const { minMaxUrl, targetUrl } = this.getRecommendationUrls(usr, seeds);
+
+    // Fetch
+    const {
+      likedTracks: minMaxLikedTracks,
+      alreadyInPlaylist: minMaxAlreadyInPlaylist,
+      playlistUris: minMaxPlaylistUris,
+    } = this.loadPlaylistArrays(minMaxUrl, accessToken, tracksInPlaylist);
+
+    // Join
+    likedTracks = new Set(...likedTracks, ...minMaxLikedTracks);
+    alreadyInPlaylist = new Set(
+      ...alreadyInPlaylist,
+      ...minMaxAlreadyInPlaylist
+    );
+    playlistUris = new Set(...playlistUris, ...minMaxPlaylistUris);
+
     if (playlistUris.size < PLAYLIST_SIZE) {
-      const targetRecommendations = await fetch(targetUrl, {
-        Accepts: 'application/json',
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      // Fetch
+      const {
+        likedTracks: targetLikedTracks,
+        alreadyInPlaylist: targetAlreadyInPlaylist,
+        playlistUris: targetPlaylistUris,
+      } = this.loadPlaylistArrays(targetUrl, accessToken, tracksInPlaylist);
 
-      const targetResponseJSON = await targetRecommendations.json();
-      const targetTracks = targetResponseJSON.tracks || [];
-
-      if (targetTracks.length === 0) {
-        return [];
-      }
-
-      const targetTrackIds = [];
-      const targetUris = [];
-      for (let i = 0; i < targetTracks.length; i += 1) {
-        targetTrackIds.push(targetTracks[i].id);
-        targetUris.push(targetTracks[i].uri);
-      }
-
-      const targetLiked = await this.getLiked(targetTrackIds, accessToken);
-
-      for (let i = 0; i < targetLiked.length; i += 1) {
-        if (!targetLiked[i]) {
-          playlistUris.add(targetUris[i]);
-        } else {
-          likedTracks.add(targetUris[i]);
-        }
-
-        if (tracksInPlaylist.has(targetTrackIds[i])) {
-          alreadyInPlaylist.add(targetUris[i]);
-        }
-
-        if (playlistUris.size >= PLAYLIST_SIZE) break;
-      }
+      // Join
+      likedTracks = new Set(...likedTracks, ...targetLikedTracks);
+      alreadyInPlaylist = new Set(
+        ...alreadyInPlaylist,
+        ...targetAlreadyInPlaylist
+      );
+      playlistUris = new Set(...playlistUris, ...targetPlaylistUris);
     }
 
     for (const track of alreadyInPlaylist) {
