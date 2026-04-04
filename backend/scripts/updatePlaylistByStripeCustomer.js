@@ -18,15 +18,16 @@ function userForLog(userDoc) {
 }
 
 /**
- * Users store Stripe subscription id (sub_...) on stripeId. Resolve a customer id (cus_...)
- * by listing that customer's subscriptions and matching against the DB.
+ * DB usually stores subscription id (sub_...). Accept sub_ (direct match) or cus_ (list subs, then match).
  */
-async function findUserByStripeCustomerId(customerId) {
-  const direct = await UserModel.findOne({ stripeId: customerId });
+async function findUserByStripeId(stripeId) {
+  const direct = await UserModel.findOne({ stripeId });
   if (direct) return direct;
 
+  if (!/^cus_/.test(stripeId)) return null;
+
   const subs = await stripe.subscriptions.list({
-    customer: customerId,
+    customer: stripeId,
     status: 'all',
     limit: 100,
   });
@@ -38,11 +39,14 @@ async function findUserByStripeCustomerId(customerId) {
 }
 
 async function main() {
-  const customerId = process.argv[2];
-  if (!customerId || !/^cus_/.test(customerId)) {
+  const stripeId = process.argv[2];
+  if (!stripeId || !/^(cus_|sub_)/.test(stripeId)) {
     console.error(
-      'Usage: node updatePlaylistByStripeCustomer.js <stripe_customer_id>\n' +
-        'Example: node updatePlaylistByStripeCustomer.js cus_abc123'
+      'Usage: node updatePlaylistByStripeCustomer.js <stripe_customer_or_subscription_id>\n' +
+        'Examples:\n' +
+        '  node updatePlaylistByStripeCustomer.js cus_abc123   (customer id from Stripe Dashboard)\n' +
+        '  node updatePlaylistByStripeCustomer.js sub_xyz789   (subscription id — usually what is stored in DB)\n' +
+        'Run: node scripts/printSampleUserWithStripeId.js  to print a real stripeId from your database.'
     );
     process.exitCode = 1;
     return;
@@ -54,9 +58,9 @@ async function main() {
     useUnifiedTopology: true,
   });
 
-  const user = await findUserByStripeCustomerId(customerId);
+  const user = await findUserByStripeId(stripeId);
   if (!user) {
-    console.error(`No user found for Stripe customer ${customerId}`);
+    console.error(`No user found for Stripe id ${stripeId}`);
     process.exitCode = 1;
     return;
   }
@@ -76,6 +80,3 @@ main()
   .finally(async () => {
     await mongoose.connection.close();
   });
-
-//   cd backend
-// node scripts/updatePlaylistByStripeCustomer.js cus_xxxxx
