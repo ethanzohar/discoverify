@@ -690,14 +690,14 @@ class SpotifyHelper {
 
   static async updatePlaylistsNoUpdate() {
     const users = await UserController.getAllUsers();
-    console.log(`running ${users.length} jobs | ${new Date()}`);
+    logger.info({ event: 'no_update_batch_started', userCount: users.length, timestamp: new Date().toISOString() }, `Running ${users.length} jobs`);
     // const playlistCover = 'images/playlistCover.jpeg';
     // await Promise.all(users.map(user => this.updatePlaylist(user, null)));
 
     for (let i = 0; i < users.length; i += 1) {
       try {
         const user = users[i];
-        console.log(`Running no update for user: ${user.userId}`);
+        logger.info({ event: 'no_update_processing_user', userId: user.userId }, `Processing no update for user: ${user.userId}`);
 
         const userId = decryptUserId(user.userId);
 
@@ -716,7 +716,7 @@ class SpotifyHelper {
         );
 
         if (!(await playlist) || !(await doesMyPlaylistExist)) {
-          console.log('HAD TO CREATE NEW PLAYLIST');
+          logger.info({ event: 'no_update_playlist_created', userId: user.userId, playlistId: user.playlistId }, 'Had to create new playlist');
         }
 
         const playlistId = (await playlist).id;
@@ -732,17 +732,15 @@ class SpotifyHelper {
           accessToken
         );
 
-        console.log(`${tracks.length} tracks found`);
-        console.log('Playlist ID', playlistId);
-        console.log('PLAYLIST EXISTS', await doesMyPlaylistExist);
+        logger.info({ event: 'no_update_tracks_found', userId: user.userId, trackCount: tracks.length, playlistId }, `${tracks.length} tracks found`);
+        logger.info({ event: 'no_update_playlist_info', userId: user.userId, playlistId, playlistExists: await doesMyPlaylistExist }, 'Playlist info');
 
-        console.log(' ');
       } catch (e) {
-        console.log(e);
+        logger.warn({ event: 'no_update_error', error: e.message, stack: e.stack }, 'Error during no update processing');
       }
     }
 
-    console.log(`${users.length} jobs complete | ${new Date()}`);
+    logger.info({ event: 'no_update_batch_complete', userCount: users.length, timestamp: new Date().toISOString() }, `${users.length} jobs complete`);
   }
 }
 
