@@ -134,8 +134,10 @@ class UserController {
       userId: { $in: getEncryptedUserIdCandidates(userId) },
     });
 
-    subscriptionEventsTotal.inc({ event: 'unsubscribe' });
-    logger.info({ event: 'user_deleted_from_db', userId }, 'User record deleted');
+    if (deleteResponse.deletedCount > 0) {
+      subscriptionEventsTotal.inc({ event: 'unsubscribe' });
+      logger.info({ event: 'user_deleted_from_db', userId }, 'User record deleted');
+    }
 
     return deleteResponse;
   }
