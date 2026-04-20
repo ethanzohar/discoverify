@@ -38,9 +38,15 @@ router.post('/migration', async function (req, res) {
 
   const users = await UserController.getAllUsers();
 
-  logger.info({ event: 'migration_start', userCount: users.length }, `Running ${users.length} migrations`);
+  logger.info(
+    { event: 'migration_start', userCount: users.length },
+    `Running ${users.length} migrations`
+  );
   for (let i = 0; i < users.length; i += 1) {
-    logger.info({ event: 'migration_user', index: i + 1, userId: users[i].userId }, `${i + 1}. Running migration for user: ${users[i].userId}`);
+    logger.info(
+      { event: 'migration_user', index: i + 1, userId: users[i].userId },
+      `${i + 1}. Running migration for user: ${users[i].userId}`
+    );
 
     // Place migration here
 
@@ -150,7 +156,10 @@ router.post('/cleanCorrupted', async function (req, res) {
         await SpotifyHelper.getNewAccessToken(user.refreshToken);
       } catch (e) {
         if (e.deleteUser) {
-          logger.info({ event: 'user_deleted_corrupted', userId: userIdToDelete }, `Deleting corrupted user: ${userIdToDelete}`);
+          logger.info(
+            { event: 'user_deleted_corrupted', userId: userIdToDelete },
+            `Deleting corrupted user: ${userIdToDelete}`
+          );
           await UserController.deleteUser(userIdToDelete);
           deletedCount += 1;
         }
@@ -188,7 +197,10 @@ router.get('/now', async function (req, res) {
 router.post('/subscribe', async function (req, res) {
   const { userId, refreshToken, options } = req.body;
 
-  logger.info({ event: 'user_subscribe_request', userId }, `Subscribe request for user: ${userId}`);
+  logger.info(
+    { event: 'user_subscribe_request', userId },
+    `Subscribe request for user: ${userId}`
+  );
 
   const returnUser = await UserController.subscribeUser(
     userId,
@@ -204,13 +216,19 @@ router.post('/unsubscribe', async function (req, res) {
   if (!(await validate(userId, accessToken))) {
     return res.send({ success: false });
   }
-  logger.info({ event: 'user_unsubscribe_request', userId }, `Unsubscribe request for user: ${userId}`);
+  logger.info(
+    { event: 'user_unsubscribe_request', userId },
+    `Unsubscribe request for user: ${userId}`
+  );
 
   try {
     await UserController.deleteUser(userId);
     return res.send({ success: true });
   } catch (err) {
-    logger.error({ event: 'user_unsubscribe_route_error', userId, err }, `Failed to unsubscribe user ${userId}`);
+    logger.error(
+      { event: 'user_unsubscribe_route_error', userId, err },
+      `Failed to unsubscribe user ${userId}`
+    );
     return res.status(500).send({ success: false });
   }
 });
@@ -221,7 +239,10 @@ router.post('/restorePlaylistOptions', async function (req, res) {
     return res.send({ success: false });
   }
 
-  logger.info({ event: 'restore_playlist_options', userId }, `Restoring playlist options for user: ${userId}`);
+  logger.info(
+    { event: 'restore_playlist_options', userId },
+    `Restoring playlist options for user: ${userId}`
+  );
 
   const user = await UserController.restorePlaylistOptions(userId);
 
@@ -237,7 +258,10 @@ router.post('/updatePlaylistOptions', async function (req, res) {
     return res.send({ success: false });
   }
 
-  logger.info({ event: 'update_playlist_options', userId }, `Updating playlist options for user: ${userId}`);
+  logger.info(
+    { event: 'update_playlist_options', userId },
+    `Updating playlist options for user: ${userId}`
+  );
 
   const user = await UserController.updatePlaylistOptions(userId, options);
 
@@ -266,7 +290,10 @@ router.post('/accessToken', async function (req, res) {
     if (e.deleteUser) {
       const user = await UserController.getUserByRefreshToken(refreshToken);
       if (user) {
-        logger.info({ event: 'user_deleted_corrupted', userId: user.userId }, `Deleting corrupted user: ${user.userId}`);
+        logger.info(
+          { event: 'user_deleted_corrupted', userId: user.userId },
+          `Deleting corrupted user: ${user.userId}`
+        );
         await UserController.deleteUser(user.userId);
       }
       return res.status(500).send({ deletedUser: true });

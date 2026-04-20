@@ -21,7 +21,10 @@ app.use(bodyparser.urlencoded({ extended: true }));
 router.post('/create-checkout-session', async function (req, res) {
   const { userId, refreshToken, options } = req.body;
 
-  logger.info({ event: 'stripe_checkout_session_creating', userId }, 'Creating Stripe checkout session');
+  logger.info(
+    { event: 'stripe_checkout_session_creating', userId },
+    'Creating Stripe checkout session'
+  );
 
   const session = await stripe.checkout.sessions.create({
     line_items: [
@@ -46,11 +49,14 @@ router.post('/create-checkout-session', async function (req, res) {
     options
   );
 
-  logger.info({
-    event: 'stripe_checkout_session_created',
-    userId,
-    checkoutSessionId: session.id,
-  }, 'Stripe checkout session created');
+  logger.info(
+    {
+      event: 'stripe_checkout_session_created',
+      userId,
+      checkoutSessionId: session.id,
+    },
+    'Stripe checkout session created'
+  );
 
   res.json({ url: session.url });
 });
@@ -67,22 +73,31 @@ router.post('/process-event', async function (req, res) {
       STRIPE_ENDPOINT_SECRET
     );
   } catch (err) {
-    logger.error({ event: 'stripe_webhook_signature_failed', err: err.message }, `Webhook signature verification failed`);
+    logger.error(
+      { event: 'stripe_webhook_signature_failed', err: err.message },
+      `Webhook signature verification failed`
+    );
     res.status(400).send(`Webhook Error: ${err.message}`);
     return;
   }
 
-  logger.info({ event: 'stripe_webhook_received', type: event.type }, `Stripe webhook received: ${event.type}`);
+  logger.info(
+    { event: 'stripe_webhook_received', type: event.type },
+    `Stripe webhook received: ${event.type}`
+  );
 
   const { id, subscription } = event.data.object;
   const session = await StripeSessionController.getSessionBySessionId(id);
 
   if (!session) {
-    logger.warn({
-      event: 'stripe_webhook_session_not_found',
-      checkoutSessionId: id,
-      webhookType: event.type,
-    }, 'No pending session found for checkout session ID — ignoring webhook');
+    logger.warn(
+      {
+        event: 'stripe_webhook_session_not_found',
+        checkoutSessionId: id,
+        webhookType: event.type,
+      },
+      'No pending session found for checkout session ID — ignoring webhook'
+    );
     res.send();
     return;
   }
@@ -92,23 +107,29 @@ router.post('/process-event', async function (req, res) {
   switch (event.type) {
     case 'checkout.session.expired':
     case 'checkout.session.async_payment_failed':
-      logger.info({
-        event: 'stripe_checkout_expired_or_failed',
-        userId,
-        checkoutSessionId: id,
-        webhookType: event.type,
-      }, 'Stripe checkout session expired or payment failed');
+      logger.info(
+        {
+          event: 'stripe_checkout_expired_or_failed',
+          userId,
+          checkoutSessionId: id,
+          webhookType: event.type,
+        },
+        'Stripe checkout session expired or payment failed'
+      );
       StripeSessionController.deleteSession(sessionId);
       break;
     case 'checkout.session.completed':
     case 'checkout.session.async_payment_succeeded':
-      logger.info({
-        event: 'stripe_checkout_completed',
-        userId,
-        checkoutSessionId: id,
-        stripeId: subscription,
-        webhookType: event.type,
-      }, 'Stripe checkout completed — subscribing user');
+      logger.info(
+        {
+          event: 'stripe_checkout_completed',
+          userId,
+          checkoutSessionId: id,
+          stripeId: subscription,
+          webhookType: event.type,
+        },
+        'Stripe checkout completed — subscribing user'
+      );
       await UserController.subscribeUser(
         userId,
         refreshToken,
@@ -118,7 +139,10 @@ router.post('/process-event', async function (req, res) {
       StripeSessionController.deleteSession(sessionId);
       break;
     default:
-      logger.info({ event: 'stripe_webhook_unhandled', type: event.type }, `Unhandled Stripe webhook type: ${event.type}`);
+      logger.info(
+        { event: 'stripe_webhook_unhandled', type: event.type },
+        `Unhandled Stripe webhook type: ${event.type}`
+      );
       break;
   }
 

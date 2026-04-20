@@ -28,18 +28,24 @@ const job = new CronJob(
     const start = Date.now();
     const users = await UserController.getAllUsers();
 
-    logger.info({
-      event: 'cron_run_started',
-      userCount: users.length,
-    }, `Cron run started — ${users.length} users`);
+    logger.info(
+      {
+        event: 'cron_run_started',
+        userCount: users.length,
+      },
+      `Cron run started — ${users.length} users`
+    );
 
     await SpotifyHelper.updatePlaylists(users);
 
-    logger.info({
-      event: 'cron_run_complete',
-      userCount: users.length,
-      durationMs: Date.now() - start,
-    }, `Cron run complete — ${users.length} users processed`);
+    logger.info(
+      {
+        event: 'cron_run_complete',
+        userCount: users.length,
+        durationMs: Date.now() - start,
+      },
+      `Cron run complete — ${users.length} users processed`
+    );
   },
   null,
   true,

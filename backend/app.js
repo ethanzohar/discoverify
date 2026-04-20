@@ -17,7 +17,10 @@ const port = 8081;
 function onListening() {
   const addr = server.address();
   const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr.port}`;
-  logger.info({ event: 'server_started', port: addr.port || port }, `Listening on ${bind}`);
+  logger.info(
+    { event: 'server_started', port: addr.port || port },
+    `Listening on ${bind}`
+  );
 }
 
 server.listen(port);
@@ -43,7 +46,10 @@ app.use(httpMetrics);
 app.get('/metrics', async (req, res) => {
   const ip = req.ip || req.connection.remoteAddress;
   if (ip !== '127.0.0.1' && ip !== '::1' && ip !== '::ffff:127.0.0.1') {
-    logger.warn({ event: 'metrics_access_denied', ip }, 'Blocked external /metrics request');
+    logger.warn(
+      { event: 'metrics_access_denied', ip },
+      'Blocked external /metrics request'
+    );
     return res.status(403).send('Forbidden');
   }
   res.set('Content-Type', register.contentType);

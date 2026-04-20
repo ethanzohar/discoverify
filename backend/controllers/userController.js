@@ -25,17 +25,24 @@ class UserController {
       await user.save();
 
       if (stripeId !== null) {
-        const event = previousStripeId ? 'user_resubscribed' : 'user_subscribed';
+        const event = previousStripeId
+          ? 'user_resubscribed'
+          : 'user_subscribed';
         subscriptionEventsTotal.inc({ event });
-        logger.info({
-          event,
-          userId,
-          stripeId,
-          previousStripeId: previousStripeId || undefined,
-          playlistId: user.playlistId,
-          grandmothered: user.grandmothered,
-          isNewUser: false,
-        }, event === 'user_resubscribed' ? 'User resubscribed' : 'Existing user subscribed via Stripe');
+        logger.info(
+          {
+            event,
+            userId,
+            stripeId,
+            previousStripeId: previousStripeId || undefined,
+            playlistId: user.playlistId,
+            grandmothered: user.grandmothered,
+            isNewUser: false,
+          },
+          event === 'user_resubscribed'
+            ? 'User resubscribed'
+            : 'Existing user subscribed via Stripe'
+        );
       }
     } else {
       user = await UserController.createUser(
@@ -48,14 +55,17 @@ class UserController {
 
       if (stripeId !== null) {
         subscriptionEventsTotal.inc({ event: 'user_subscribed' });
-        logger.info({
-          event: 'user_subscribed',
-          userId,
-          stripeId,
-          playlistId: user.playlistId,
-          grandmothered: false,
-          isNewUser: true,
-        }, 'New user subscribed');
+        logger.info(
+          {
+            event: 'user_subscribed',
+            userId,
+            stripeId,
+            playlistId: user.playlistId,
+            grandmothered: false,
+            isNewUser: true,
+          },
+          'New user subscribed'
+        );
       }
     }
 
@@ -95,14 +105,17 @@ class UserController {
       try {
         await StripeHelper.cancelStripeSubscription(user.stripeId);
         stripeCancellationTotal.inc({ result: 'success' });
-        logger.info({
-          event: 'user_unsubscribed',
-          userId,
-          stripeId: user.stripeId,
-          playlistId: user.playlistId,
-          grandmothered: user.grandmothered,
-          stripeCancelled: true,
-        }, 'User unsubscribed — Stripe subscription cancelled');
+        logger.info(
+          {
+            event: 'user_unsubscribed',
+            userId,
+            stripeId: user.stripeId,
+            playlistId: user.playlistId,
+            grandmothered: user.grandmothered,
+            stripeCancelled: true,
+          },
+          'User unsubscribed — Stripe subscription cancelled'
+        );
       } catch (err) {
         if (
           err.type !== 'StripeInvalidRequestError' ||
@@ -111,23 +124,31 @@ class UserController {
           throw err;
         } else {
           stripeCancellationTotal.inc({ result: 'resource_missing' });
-          logger.error({
-            event: 'stripe_cancel_failed',
-            userId,
-            stripeId: user.stripeId,
-            stripeErrorType: err.type,
-            stripeErrorCode: err.raw.code,
-          }, '[STRIPE_RESOURCE_MISSING] Subscription not found in Stripe — user deleted from DB but subscription NOT cancelled');
+          logger.error(
+            {
+              event: 'stripe_cancel_failed',
+              userId,
+              stripeId: user.stripeId,
+              stripeErrorType: err.type,
+              stripeErrorCode: err.raw.code,
+            },
+            '[STRIPE_RESOURCE_MISSING] Subscription not found in Stripe — user deleted from DB but subscription NOT cancelled'
+          );
         }
       }
     } else {
       subscriptionEventsTotal.inc({ event: 'unsubscribe' });
-      logger.info({
-        event: user ? 'user_unsubscribe_no_stripe_id' : 'user_unsubscribe_not_found',
-        userId,
-        grandmothered: user ? user.grandmothered : undefined,
-        stripeId: null,
-      }, 'User unsubscribed — no Stripe ID, no cancellation needed');
+      logger.info(
+        {
+          event: user
+            ? 'user_unsubscribe_no_stripe_id'
+            : 'user_unsubscribe_not_found',
+          userId,
+          grandmothered: user ? user.grandmothered : undefined,
+          stripeId: null,
+        },
+        'User unsubscribed — no Stripe ID, no cancellation needed'
+      );
     }
 
     const deleteResponse = await UserModel.deleteOne({
@@ -136,7 +157,10 @@ class UserController {
 
     if (deleteResponse.deletedCount > 0) {
       subscriptionEventsTotal.inc({ event: 'unsubscribe' });
-      logger.info({ event: 'user_deleted_from_db', userId }, 'User record deleted');
+      logger.info(
+        { event: 'user_deleted_from_db', userId },
+        'User record deleted'
+      );
     }
 
     return deleteResponse;
