@@ -5,6 +5,7 @@ const fs = require('fs');
 
 const UserController = require('../controllers/userController');
 const { decryptUserId } = require('./userIdCrypto');
+const logger = require('./logger');
 
 const CLIENT_ID = process.env.SPOTIFY_API_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET;
@@ -312,8 +313,7 @@ class SpotifyHelper {
       responseJSON = await recommendations.json();
     } catch (e) {
       // eslint-disable-next-line no-use-before-define
-      console.log(responseJSON);
-      console.log(e);
+      logger.warn({ event: 'spotify_recommendations_retry', err: e.message }, 'Retrying Spotify recommendations fetch');
 
       await new Promise((r) => setTimeout(r, 1000));
 
@@ -447,8 +447,7 @@ class SpotifyHelper {
 
       return resultJSON.owner.id === userId ? resultJSON : null;
     } catch (e) {
-      console.log(resultJSON);
-      console.log(e);
+      logger.warn({ event: 'spotify_playlist_fetch_retry', err: e.message }, 'Retrying Spotify playlist fetch');
 
       const result = await fetch(
         `https://api.spotify.com/v1/playlists/${playlistId}`,
@@ -567,9 +566,16 @@ class SpotifyHelper {
   }
 
   static async updatePlaylist(user, playlistCover) {
-    console.log(`Starting job for user: ${user.userId}`);
-
     const userId = decryptUserId(user.userId);
+    const start = Date.now();
+
+    logger.info({
+      event: 'playlist_update_started',
+      userId,
+      stripeId: user.stripeId || null,
+      playlistId: user.playlistId || null,
+      grandmothered: user.grandmothered,
+    }, `Starting playlist update for user: ${userId}`);
 
     try {
       const accessToken = await this.getNewAccessToken(user.refreshToken);
@@ -588,7 +594,7 @@ class SpotifyHelper {
 
       if (!(await playlist) || !(await doesMyPlaylistExist)) {
         playlist = await this.createPlaylist(user, userId, accessToken);
-        console.log('Had to create new playlist');
+        logger.info({ event: 'playlist_created', userId, stripeId: user.stripeId || null }, 'Created new Discover Daily playlist');
       }
 
       const playlistId = (await playlist).id;
@@ -604,8 +610,6 @@ class SpotifyHelper {
         accessToken
       );
 
-      console.log(`${tracks.length} tracks found`);
-
       this.updatePlaylistTracks(playlistId, tracks, accessToken);
 
       user.lastUpdated = new Date();
@@ -615,48 +619,73 @@ class SpotifyHelper {
         await this.addPlaylistCover(playlistId, playlistCover, accessToken);
       }
 
-      console.log(`Playlist updated for user: ${user.userId}`);
+      const durationMs = Date.now() - start;
+      logger.info({
+        event: 'playlist_updated',
+        userId,
+        stripeId: user.stripeId || null,
+        playlistId,
+        grandmothered: user.grandmothered,
+        trackCount: tracks.length,
+        durationMs,
+      }, `Playlist updated for user: ${userId}`);
+
     } catch (e) {
-      console.log(e);
+      const durationMs = Date.now() - start;
 
       if (e.deleteUser) {
-        console.log(`Deleting User: ${userId}`);
+        logger.warn({
+          event: 'playlist_update_failed',
+          userId,
+          stripeId: user.stripeId || null,
+          playlistId: user.playlistId || null,
+          grandmothered: user.grandmothered,
+          reason: 'token_expired',
+          durationMs,
+        }, `Playlist update failed — token expired for user: ${userId}`);
         // await UserController.deleteUser(userId);
         return;
       }
-    }
 
-    console.log(' ');
+      logger.error({
+        event: 'playlist_update_failed',
+        userId,
+        stripeId: user.stripeId || null,
+        playlistId: user.playlistId || null,
+        grandmothered: user.grandmothered,
+        reason: 'unknown',
+        err: e.message,
+        durationMs,
+      }, `Playlist update failed for user: ${userId}`);
+    }
   }
 
   static async updatePlaylists(users) {
-    console.log(`running ${users.length} jobs | ${new Date()}`);
-    // const playlistCover = 'images/playlistCover.jpeg';
-    // await Promise.all(users.map(user => this.updatePlaylist(user, null)));
+    logger.info({ event: 'cron_batch_started', userCount: users.length }, `Starting playlist batch for ${users.length} users`);
 
     const failures = [];
     for (let i = 0; i < users.length; i += 1) {
       try {
-        console.log(`${i + 1}/${users.length}`);
+        logger.info({ event: 'cron_batch_progress', current: i + 1, total: users.length }, `Processing user ${i + 1}/${users.length}`);
         await this.updatePlaylist(users[i], null);
       } catch (e) {
-        console.log(e);
+        logger.error({ event: 'cron_batch_user_error', err: e.message }, 'Unexpected error processing user in batch');
         failures.push(users[i]);
       }
     }
 
-    console.log();
-    console.log(`running ${failures.length} failure jobs | ${new Date()}`);
-    for (let i = 0; i < failures.length; i += 1) {
-      try {
-        console.log(`${i + 1}/${failures.length}`);
-        await this.updatePlaylist(failures[i], null);
-      } catch (e) {
-        console.log(e);
+    if (failures.length > 0) {
+      logger.info({ event: 'cron_batch_retrying_failures', failureCount: failures.length }, `Retrying ${failures.length} failed users`);
+      for (let i = 0; i < failures.length; i += 1) {
+        try {
+          await this.updatePlaylist(failures[i], null);
+        } catch (e) {
+          logger.error({ event: 'cron_batch_retry_failed', err: e.message }, 'Retry also failed for user');
+        }
       }
     }
 
-    console.log(`${users.length} jobs complete | ${new Date()}`);
+    logger.info({ event: 'cron_batch_complete', userCount: users.length, failureCount: failures.length }, `Playlist batch complete: ${users.length} users, ${failures.length} failures`);
   }
 
   static async updatePlaylistsNoUpdate() {
