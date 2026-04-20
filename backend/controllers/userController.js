@@ -12,7 +12,9 @@ class UserController {
 
     if (user) {
       user.refreshToken = refreshToken;
-      user.stripeId = stripeId;
+      if (stripeId !== null) {
+        user.stripeId = stripeId;
+      }
       await user.save();
     } else {
       user = await UserController.createUser(
@@ -66,8 +68,8 @@ class UserController {
         ) {
           throw err;
         } else {
-          console.log('error in deleteUser calling cancelStripeSubscription');
-          console.log(JSON.stringify(err));
+          console.error(`[STRIPE_RESOURCE_MISSING] stripeId="${user.stripeId}" userId="${userId}" — subscription not found in Stripe, user will be deleted from DB but Stripe subscription was NOT cancelled`);
+          console.error(JSON.stringify(err));
         }
       }
     } else {

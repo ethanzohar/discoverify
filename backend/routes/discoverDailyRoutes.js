@@ -205,8 +205,13 @@ router.post('/unsubscribe', async function (req, res) {
   }
   console.log(`Unsubscribing user: ${userId}`);
 
-  await UserController.deleteUser(userId);
-  return res.send({ success: true });
+  try {
+    await UserController.deleteUser(userId);
+    return res.send({ success: true });
+  } catch (err) {
+    console.error(`Failed to unsubscribe user ${userId}:`, err);
+    return res.status(500).send({ success: false });
+  }
 });
 
 router.post('/restorePlaylistOptions', async function (req, res) {
