@@ -6,7 +6,7 @@ function httpMetrics(req, res, next) {
   const start = Date.now();
 
   res.on('finish', () => {
-    const route = (req.route && req.route.path) ? req.route.path : req.path;
+    const route = (req.route && req.route.path) ? req.route.path : 'unknown';
     const durationMs = Date.now() - start;
 
     httpRequestsTotal.inc({
@@ -16,7 +16,7 @@ function httpMetrics(req, res, next) {
     });
 
     httpRequestDurationSeconds.observe(
-      { method: req.method, route },
+      { method: req.method, route, status_code: res.statusCode },
       durationMs / 1000
     );
 
