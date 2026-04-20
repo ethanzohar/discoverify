@@ -4,6 +4,7 @@ const express = require('express');
 const UserController = require('../controllers/userController');
 const SpotifyHelper = require('../helpers/spotifyHelper');
 const { decryptUserId } = require('../helpers/userIdCrypto');
+const logger = require('../helpers/logger');
 
 const router = express.Router();
 const app = express();
@@ -37,9 +38,9 @@ router.post('/migration', async function (req, res) {
 
   const users = await UserController.getAllUsers();
 
-  console.log(`Running ${users.length} migrations`);
+  logger.info({ event: 'migration_start', userCount: users.length }, `Running ${users.length} migrations`);
   for (let i = 0; i < users.length; i += 1) {
-    console.log(`${i + 1}. Running migration for user: ${users[i].userId}`);
+    logger.info({ event: 'migration_user', index: i + 1, userId: users[i].userId }, `${i + 1}. Running migration for user: ${users[i].userId}`);
 
     // Place migration here
 
@@ -149,7 +150,7 @@ router.post('/cleanCorrupted', async function (req, res) {
         await SpotifyHelper.getNewAccessToken(user.refreshToken);
       } catch (e) {
         if (e.deleteUser) {
-          console.log(`Deleting User: ${userIdToDelete}`);
+          logger.info({ event: 'user_deleted_corrupted', userId: userIdToDelete }, `Deleting corrupted user: ${userIdToDelete}`);
           await UserController.deleteUser(userIdToDelete);
           deletedCount += 1;
         }
@@ -187,7 +188,7 @@ router.get('/now', async function (req, res) {
 router.post('/subscribe', async function (req, res) {
   const { userId, refreshToken, options } = req.body;
 
-  console.log(`Subscribing for user: ${userId}`);
+  logger.info({ event: 'user_subscribe_request', userId }, `Subscribe request for user: ${userId}`);
 
   const returnUser = await UserController.subscribeUser(
     userId,
@@ -203,13 +204,13 @@ router.post('/unsubscribe', async function (req, res) {
   if (!(await validate(userId, accessToken))) {
     return res.send({ success: false });
   }
-  console.log(`Unsubscribing user: ${userId}`);
+  logger.info({ event: 'user_unsubscribe_request', userId }, `Unsubscribe request for user: ${userId}`);
 
   try {
     await UserController.deleteUser(userId);
     return res.send({ success: true });
   } catch (err) {
-    console.error(`Failed to unsubscribe user ${userId}:`, err);
+    logger.error({ event: 'user_unsubscribe_route_error', userId, err }, `Failed to unsubscribe user ${userId}`);
     return res.status(500).send({ success: false });
   }
 });
@@ -220,7 +221,7 @@ router.post('/restorePlaylistOptions', async function (req, res) {
     return res.send({ success: false });
   }
 
-  console.log(`Restoring playlist options for user: ${userId}`);
+  logger.info({ event: 'restore_playlist_options', userId }, `Restoring playlist options for user: ${userId}`);
 
   const user = await UserController.restorePlaylistOptions(userId);
 
@@ -236,7 +237,7 @@ router.post('/updatePlaylistOptions', async function (req, res) {
     return res.send({ success: false });
   }
 
-  console.log(`Updating playlist options for user: ${userId}`);
+  logger.info({ event: 'update_playlist_options', userId }, `Updating playlist options for user: ${userId}`);
 
   const user = await UserController.updatePlaylistOptions(userId, options);
 
@@ -265,7 +266,7 @@ router.post('/accessToken', async function (req, res) {
     if (e.deleteUser) {
       const user = await UserController.getUserByRefreshToken(refreshToken);
       if (user) {
-        console.log(`Deleting User: ${user.userId}`);
+        logger.info({ event: 'user_deleted_corrupted', userId: user.userId }, `Deleting corrupted user: ${user.userId}`);
         await UserController.deleteUser(user.userId);
       }
       return res.status(500).send({ deletedUser: true });
