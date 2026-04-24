@@ -168,7 +168,6 @@ router.get('/getUser/:userId', async function (req, res) {
         userId: req.params.userId,
         playlistId: user.playlistId,
         lastUpdated: user.lastUpdated,
-        refreshToken: user.refreshToken,
         playlistOptions: user.playlistOptions,
         stripeId: user.stripeId,
         grandmothered: user.grandmothered,
