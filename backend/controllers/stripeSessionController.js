@@ -1,13 +1,12 @@
 const stripeSessionModel = require('../models/stripeSessionSchema');
-const StripeSession = require('../models/stripeSessionSchema');
 
 class StripeSessionController {
   static async getSessionBySessionId(sessionId) {
-    return StripeSession.findOne({ sessionId });
+    return stripeSessionModel.findOne({ sessionId });
   }
 
   static async getAllSessions() {
-    return StripeSession.find();
+    return stripeSessionModel.find();
   }
 
   static async createSession(sessionId, userId, refreshToken, playlistOptions) {
