@@ -1,5 +1,4 @@
 /* eslint-disable no-case-declarations */
-const bodyparser = require('body-parser');
 const express = require('express');
 
 require('dotenv').config();
@@ -11,10 +10,6 @@ const StripeSessionController = require('../controllers/stripeSessionController'
 const UserController = require('../controllers/userController');
 
 const router = express.Router();
-const app = express();
-
-app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({ extended: true }));
 
 router.post('/create-checkout-session', async function (req, res) {
   const { userId, refreshToken, options } = req.body;

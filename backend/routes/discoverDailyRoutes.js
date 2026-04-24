@@ -1,4 +1,3 @@
-const bodyparser = require('body-parser');
 const express = require('express');
 
 const UserController = require('../controllers/userController');
@@ -6,10 +5,6 @@ const SpotifyHelper = require('../helpers/spotifyHelper');
 const { decryptUserId } = require('../helpers/userIdCrypto');
 
 const router = express.Router();
-const app = express();
-
-app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({ extended: true }));
 
 const { ADMIN_USERID } = process.env;
 const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET;
