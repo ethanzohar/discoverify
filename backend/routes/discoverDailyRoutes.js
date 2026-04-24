@@ -265,6 +265,7 @@ router.post('/accessToken', async function (req, res) {
       }
       return res.status(500).send({ deletedUser: true });
     }
+    return res.status(500).send({ error: 'Failed to get access token' });
   }
 });
 
