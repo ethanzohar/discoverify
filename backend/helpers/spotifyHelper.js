@@ -6,6 +6,10 @@ const fs = require('fs');
 const UserController = require('../controllers/userController');
 const { decryptUserId } = require('./userIdCrypto');
 
+const logger = {
+  warn: (data, msg) => console.warn(msg, data),
+};
+
 const CLIENT_ID = process.env.SPOTIFY_API_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_API_CLIENT_SECRET;
 
@@ -99,6 +103,10 @@ class SpotifyHelper {
 
       return resultJSON.items.map((x) => x.id);
     } catch (e) {
+      logger.warn(
+        { event: 'spotify_top_fetch_retry', type, range, err: e.message },
+        'Spotify top fetch failed, retrying once'
+      );
       const result = await fetch(
         `https://api.spotify.com/v1/me/top/${type}?limit=20&time_range=${range}`,
         {
