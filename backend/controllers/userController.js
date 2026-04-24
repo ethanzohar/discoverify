@@ -84,7 +84,7 @@ class UserController {
 
   static async setUserPlaylistId(userId, playListId) {
     const user = await this.getUser(userId);
-    user.playListId = playListId;
+    user.playlistId = playListId;
     return user.save();
   }
 
