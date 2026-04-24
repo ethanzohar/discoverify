@@ -606,10 +606,10 @@ class SpotifyHelper {
 
       console.log(`${tracks.length} tracks found`);
 
-      this.updatePlaylistTracks(playlistId, tracks, accessToken);
+      await this.updatePlaylistTracks(playlistId, tracks, accessToken);
 
       user.lastUpdated = new Date();
-      user.save();
+      await user.save();
 
       if (playlistCover) {
         await this.addPlaylistCover(playlistId, playlistCover, accessToken);
