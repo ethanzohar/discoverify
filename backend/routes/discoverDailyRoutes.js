@@ -50,11 +50,10 @@ router.post('/migration', async function (req, res) {
     //   { mode: CryptoJS.mode.ECB }
     // ).toString();
 
-    // Migration #2
-    users[i].stripeId = null;
-    users[i].grandmothered = true;
-
-    await users[i].save();
+    // Migration #2 (completed — do not re-run)
+    // users[i].stripeId = null;
+    // users[i].grandmothered = true;
+    // await users[i].save();
   }
 
   return res.send('Migration complete');
