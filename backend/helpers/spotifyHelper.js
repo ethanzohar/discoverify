@@ -50,6 +50,10 @@ class SpotifyHelper {
       throw new SpotifyAPIException(true);
     }
 
+    if (resultJSON.error) {
+      throw new SpotifyAPIException(false);
+    }
+
     return resultJSON.access_token;
   }
 
