@@ -155,9 +155,9 @@ class UserController {
     return deleteResponse;
   }
 
-  static async setUserPlaylistId(userId, playListId) {
+  static async setUserPlaylistId(userId, playlistId) {
     const user = await this.getUser(userId);
-    user.playListId = playListId;
+    user.playlistId = playlistId;
     return user.save();
   }
 
