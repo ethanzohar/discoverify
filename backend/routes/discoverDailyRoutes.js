@@ -32,7 +32,7 @@ router.get('/', function (req, res) {
 
 router.post('/migration', async function (req, res) {
   const { userId, refreshToken } = req.body;
-  if (!isAdmin(userId, refreshToken)) {
+  if (!(await isAdmin(userId, refreshToken))) {
     return res.status(403).send('Invalid credentials');
   }
 
@@ -80,7 +80,7 @@ router.post('/force', async function (req, res) {
 
 router.post('/forceNoUpdate', async function (req, res) {
   const { userId, refreshToken, count } = req.body;
-  if (!isAdmin(userId, refreshToken)) {
+  if (!(await isAdmin(userId, refreshToken))) {
     return res.status(403).send('Invalid credentials');
   }
 
@@ -95,7 +95,7 @@ router.post('/forceNoUpdate', async function (req, res) {
 
 router.post('/forceSingle', async function (req, res) {
   const { userId, refreshToken, target } = req.body;
-  if (!isAdmin(userId, refreshToken)) {
+  if (!(await isAdmin(userId, refreshToken))) {
     return res.status(403).send('Invalid credentials');
   }
 
@@ -112,7 +112,7 @@ router.post('/forceSingle', async function (req, res) {
 
 router.post('/forceUnsubscribeUser', async function (req, res) {
   const { userId, refreshToken, target } = req.body;
-  if (!isAdmin(userId, refreshToken)) {
+  if (!(await isAdmin(userId, refreshToken))) {
     return res.status(403).send('Invalid credentials');
   }
 
@@ -128,7 +128,7 @@ router.post('/forceUnsubscribeUser', async function (req, res) {
 
 router.post('/count', async function (req, res) {
   const { userId, refreshToken } = req.body;
-  if (!isAdmin(userId, refreshToken)) {
+  if (!(await isAdmin(userId, refreshToken))) {
     return res.status(403).send('Invalid credentials');
   }
 
@@ -138,7 +138,7 @@ router.post('/count', async function (req, res) {
 
 router.post('/cleanCorrupted', async function (req, res) {
   const { userId, refreshToken } = req.body;
-  if (!isAdmin(userId, refreshToken)) {
+  if (!(await isAdmin(userId, refreshToken))) {
     return res.status(403).send('Invalid credentials');
   }
 
@@ -196,6 +196,15 @@ router.get('/now', async function (req, res) {
 
 router.post('/subscribe', async function (req, res) {
   const { userId, refreshToken, options } = req.body;
+  if (!userId || !refreshToken) {
+    logger.warn(
+      { event: 'user_subscribe_missing_fields', userId },
+      'Subscribe request missing required fields'
+    );
+    return res
+      .status(400)
+      .send({ error: 'userId and refreshToken are required' });
+  }
 
   logger.info(
     { event: 'user_subscribe_request', userId },
@@ -213,6 +222,15 @@ router.post('/subscribe', async function (req, res) {
 
 router.post('/unsubscribe', async function (req, res) {
   const { userId, accessToken } = req.body;
+  if (!userId || !accessToken) {
+    logger.warn(
+      { event: 'user_unsubscribe_missing_fields', userId },
+      'Unsubscribe request missing required fields'
+    );
+    return res
+      .status(400)
+      .send({ error: 'userId and accessToken are required' });
+  }
   if (!(await validate(userId, accessToken))) {
     return res.send({ success: false });
   }
@@ -235,6 +253,15 @@ router.post('/unsubscribe', async function (req, res) {
 
 router.post('/restorePlaylistOptions', async function (req, res) {
   const { userId, accessToken } = req.body;
+  if (!userId || !accessToken) {
+    logger.warn(
+      { event: 'restore_playlist_options_missing_fields', userId },
+      'restorePlaylistOptions request missing required fields'
+    );
+    return res
+      .status(400)
+      .send({ error: 'userId and accessToken are required' });
+  }
   if (!(await validate(userId, accessToken))) {
     return res.send({ success: false });
   }
@@ -254,6 +281,15 @@ router.post('/restorePlaylistOptions', async function (req, res) {
 
 router.post('/updatePlaylistOptions', async function (req, res) {
   const { userId, accessToken, options } = req.body;
+  if (!userId || !accessToken || !options) {
+    logger.warn(
+      { event: 'update_playlist_options_missing_fields', userId },
+      'updatePlaylistOptions request missing required fields'
+    );
+    return res
+      .status(400)
+      .send({ error: 'userId, accessToken, and options are required' });
+  }
   if (!(await validate(userId, accessToken))) {
     return res.send({ success: false });
   }
@@ -298,6 +334,7 @@ router.post('/accessToken', async function (req, res) {
       }
       return res.status(500).send({ deletedUser: true });
     }
+    return res.status(500).send({ error: 'Failed to get access token' });
   }
 });
 

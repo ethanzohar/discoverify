@@ -50,6 +50,10 @@ class SpotifyHelper {
       throw new SpotifyAPIException(true);
     }
 
+    if (resultJSON.error) {
+      throw new SpotifyAPIException(false);
+    }
+
     return resultJSON.access_token;
   }
 
@@ -100,6 +104,11 @@ class SpotifyHelper {
 
       return resultJSON.items.map((x) => x.id);
     } catch (e) {
+      logger.warn(
+        { event: 'spotify_get_top_retry', type, range, err: e.message },
+        'Retrying Spotify getTop fetch'
+      );
+
       const result = await fetch(
         `https://api.spotify.com/v1/me/top/${type}?limit=20&time_range=${range}`,
         {
@@ -110,6 +119,10 @@ class SpotifyHelper {
           },
         }
       );
+
+      // if (!result.ok) {
+      //   throw new Error(`Spotify getTop retry failed: ${result.status}`);
+      // }
 
       const resultJSON = await result.json();
 
@@ -492,6 +505,7 @@ class SpotifyHelper {
     const responseJSON = await response.json();
 
     user.playlistId = responseJSON.id;
+    await user.save();
 
     return responseJSON;
   }
@@ -535,7 +549,7 @@ class SpotifyHelper {
     return response.json();
   }
 
-  static async doesMyPlaylistExists(playlistId, accessToken) {
+  static async doesMyPlaylistExist(playlistId, accessToken) {
     let playlists = await this.getUserPlaylists(accessToken);
 
     if (!playlists || !playlists.items) {
@@ -560,14 +574,14 @@ class SpotifyHelper {
     return false;
   }
 
-  static async addPlaylistCover(playlistId, encodedImage, accessToken) {
+  static async addPlaylistCover(playlistId, imagePath, accessToken) {
     await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/images`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'image/jpeg',
         Authorization: `Bearer ${accessToken}`,
       },
-      body: fs.createReadStream(encodedImage),
+      body: fs.createReadStream(imagePath),
     });
   }
 
@@ -596,7 +610,7 @@ class SpotifyHelper {
 
       let playlist = this.getPlaylist(userId, user.playlistId, accessToken);
 
-      const doesMyPlaylistExist = this.doesMyPlaylistExists(
+      const doesMyPlaylistExist = this.doesMyPlaylistExist(
         user.playlistId,
         accessToken
       );
@@ -626,10 +640,10 @@ class SpotifyHelper {
         accessToken
       );
 
-      this.updatePlaylistTracks(playlistId, tracks, accessToken);
+      await this.updatePlaylistTracks(playlistId, tracks, accessToken);
 
       user.lastUpdated = new Date();
-      user.save();
+      await user.save();
 
       if (playlistCover) {
         await this.addPlaylistCover(playlistId, playlistCover, accessToken);
@@ -769,7 +783,7 @@ class SpotifyHelper {
 
         const playlist = this.getPlaylist(userId, user.playlistId, accessToken);
 
-        const doesMyPlaylistExist = this.doesMyPlaylistExists(
+        const doesMyPlaylistExist = this.doesMyPlaylistExist(
           user.playlistId,
           accessToken
         );

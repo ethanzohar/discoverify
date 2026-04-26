@@ -1,4 +1,3 @@
-const stripeSessionModel = require('../models/stripeSessionSchema');
 const StripeSession = require('../models/stripeSessionSchema');
 
 class StripeSessionController {
@@ -11,7 +10,7 @@ class StripeSessionController {
   }
 
   static async createSession(sessionId, userId, refreshToken, playlistOptions) {
-    return stripeSessionModel.create({
+    return StripeSession.create({
       sessionId,
       userId,
       refreshToken,
@@ -20,7 +19,7 @@ class StripeSessionController {
   }
 
   static async deleteSession(sessionId) {
-    return stripeSessionModel.deleteOne({
+    return StripeSession.deleteOne({
       sessionId,
     });
   }
