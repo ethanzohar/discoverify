@@ -549,7 +549,7 @@ class SpotifyHelper {
     return response.json();
   }
 
-  static async doesMyPlaylistExists(playlistId, accessToken) {
+  static async doesMyPlaylistExist(playlistId, accessToken) {
     let playlists = await this.getUserPlaylists(accessToken);
 
     if (!playlists || !playlists.items) {
@@ -610,7 +610,7 @@ class SpotifyHelper {
 
       let playlist = this.getPlaylist(userId, user.playlistId, accessToken);
 
-      const doesMyPlaylistExist = this.doesMyPlaylistExists(
+      const doesMyPlaylistExist = this.doesMyPlaylistExist(
         user.playlistId,
         accessToken
       );
@@ -783,7 +783,7 @@ class SpotifyHelper {
 
         const playlist = this.getPlaylist(userId, user.playlistId, accessToken);
 
-        const doesMyPlaylistExist = this.doesMyPlaylistExists(
+        const doesMyPlaylistExist = this.doesMyPlaylistExist(
           user.playlistId,
           accessToken
         );
