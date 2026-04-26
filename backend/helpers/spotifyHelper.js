@@ -100,6 +100,11 @@ class SpotifyHelper {
 
       return resultJSON.items.map((x) => x.id);
     } catch (e) {
+      logger.warn(
+        { event: 'spotify_get_top_retry', type, range, err: e.message },
+        'Retrying Spotify getTop fetch'
+      );
+
       const result = await fetch(
         `https://api.spotify.com/v1/me/top/${type}?limit=20&time_range=${range}`,
         {
@@ -110,6 +115,10 @@ class SpotifyHelper {
           },
         }
       );
+
+      // if (!result.ok) {
+      //   throw new Error(`Spotify getTop retry failed: ${result.status}`);
+      // }
 
       const resultJSON = await result.json();
 
