@@ -1,6 +1,6 @@
 # Grafana Cloud Setup — EC2 Guide
 
-This guide sets up metrics and log shipping from your EC2 instance to Grafana Cloud using Grafana Agent.
+This guide sets up metrics and log shipping from your EC2 instance to Grafana Cloud using Grafana Alloy.
 
 ## Prerequisites
 
@@ -24,9 +24,10 @@ You need credentials for both Prometheus (metrics) and Loki (logs).
 
 ### Prometheus / Mimir credentials
 1. In Grafana Cloud, go to **Home → Connections → Prometheus**
-2. Note the **Remote Write Endpoint** URL (looks like `https://prometheus-prod-XX-prod-XX.grafana.net/api/prom/push`)
-3. Note your **Username** (a numeric instance ID)
-4. Click **Generate now** to create an API key — copy it immediately
+2. Click **Hosted Prometheus metrics** (not "Prometheus data source")
+3. Note the **Remote Write Endpoint** URL (looks like `https://prometheus-prod-XX-prod-XX.grafana.net/api/prom/push`)
+4. Note your **Username** (a numeric instance ID)
+5. Click **Generate now** to create an API key — copy it immediately
 
 ### Loki credentials
 1. Go to **Home → Connections → Loki**
@@ -36,107 +37,119 @@ You need credentials for both Prometheus (metrics) and Loki (logs).
 
 ---
 
-## Step 3: Install Grafana Agent on EC2
+## Step 3: Install Grafana Alloy on EC2
 
 SSH into your EC2 instance, then run:
 
 ```bash
-# Download the latest Grafana Agent binary (check releases.grafana.com for latest version)
-ARCH=$(dpkg --print-architecture 2>/dev/null || echo "amd64")
-wget https://github.com/grafana/agent/releases/latest/download/grafana-agent-linux-${ARCH}.zip
-unzip grafana-agent-linux-${ARCH}.zip
-chmod +x grafana-agent-linux-${ARCH}
-sudo mv grafana-agent-linux-${ARCH} /usr/local/bin/grafana-agent
+ARCH=$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/')
+wget https://github.com/grafana/alloy/releases/latest/download/alloy-linux-${ARCH}.zip
+unzip alloy-linux-${ARCH}.zip
+chmod +x alloy-linux-${ARCH}
+sudo mv alloy-linux-${ARCH} /usr/local/bin/alloy
 ```
 
 Verify:
 ```bash
-grafana-agent --version
+alloy --version
 ```
 
 ---
 
-## Step 4: Create the Agent config file
+## Step 4: Create the Alloy config file
 
 ```bash
-sudo mkdir -p /etc/grafana-agent
-sudo nano /etc/grafana-agent/config.yaml
+sudo mkdir -p /etc/alloy
+sudo nano /etc/alloy/config.alloy
 ```
 
 Paste the following, replacing all `<PLACEHOLDER>` values with your actual credentials:
 
-```yaml
-metrics:
-  global:
-    scrape_interval: 15s
-  configs:
-    - name: discoverify
-      scrape_configs:
-        - job_name: discoverify-backend
-          static_configs:
-            - targets: ['localhost:8081']
-              labels:
-                app: 'discoverify-backend'
-                env: 'production'
-      remote_write:
-        - url: <YOUR_PROMETHEUS_REMOTE_WRITE_URL>
-          basic_auth:
-            username: '<YOUR_PROMETHEUS_INSTANCE_ID>'
-            password: '<YOUR_API_KEY>'
+```alloy
+// Metrics: scrape discoverify backend
+prometheus.scrape "discoverify_backend" {
+  targets = [{
+    "__address__" = "localhost:8081",
+    "app"         = "discoverify-backend",
+    "env"         = "production",
+  }]
+  forward_to      = [prometheus.remote_write.grafana_cloud.receiver]
+  scrape_interval = "15s"
+}
 
-logs:
-  positions:
-    filename: /tmp/grafana-agent-positions.yaml
-  configs:
-    - name: discoverify-logs
-      clients:
-        - url: <YOUR_LOKI_PUSH_URL>
-          basic_auth:
-            username: '<YOUR_LOKI_INSTANCE_ID>'
-            password: '<YOUR_API_KEY>'
-      scrape_configs:
-        - job_name: discoverify-backend
-          static_configs:
-            - targets:
-                - localhost
-              labels:
-                app: 'discoverify-backend'
-                env: 'production'
-                __path__: '/home/ec2-user/.pm2/logs/discoverify-backend-out*.log'
-        - job_name: discoverify-cron
-          static_configs:
-            - targets:
-                - localhost
-              labels:
-                app: 'discoverify-cron'
-                env: 'production'
-                __path__: '/home/ec2-user/.pm2/logs/discoverify-cronService-out*.log'
+// System metrics (CPU, memory, disk)
+prometheus.exporter.unix "default" {}
 
-integrations:
-  node_exporter:
-    enabled: true
+prometheus.scrape "node_exporter" {
+  targets    = prometheus.exporter.unix.default.targets
+  forward_to = [prometheus.remote_write.grafana_cloud.receiver]
+}
+
+// Ship metrics to Grafana Cloud
+prometheus.remote_write "grafana_cloud" {
+  endpoint {
+    url = "<YOUR_PROMETHEUS_REMOTE_WRITE_URL>"
+    basic_auth {
+      username = "<YOUR_PROMETHEUS_INSTANCE_ID>"
+      password = "<YOUR_API_KEY>"
+    }
+  }
+}
+
+// Tail pm2 logs
+local.file_match "backend_logs" {
+  path_targets = [{
+    "__path__" = "/home/ec2-user/.pm2/logs/discoverify-backend-out*.log",
+    "app"      = "discoverify-backend",
+    "env"      = "production",
+  }]
+}
+
+local.file_match "cron_logs" {
+  path_targets = [{
+    "__path__" = "/home/ec2-user/.pm2/logs/discoverify-cronService-out*.log",
+    "app"      = "discoverify-cron",
+    "env"      = "production",
+  }]
+}
+
+loki.source.file "pm2_logs" {
+  targets    = concat(local.file_match.backend_logs.targets, local.file_match.cron_logs.targets)
+  forward_to = [loki.write.grafana_cloud.receiver]
+}
+
+// Ship logs to Grafana Cloud
+loki.write "grafana_cloud" {
+  endpoint {
+    url = "<YOUR_LOKI_PUSH_URL>"
+    basic_auth {
+      username = "<YOUR_LOKI_INSTANCE_ID>"
+      password = "<YOUR_API_KEY>"
+    }
+  }
+}
 ```
 
 > **Note:** If your EC2 user is not `ec2-user` (e.g. Ubuntu uses `ubuntu`), update the `__path__` values to match. Run `echo ~/.pm2/logs/` to confirm the path.
 
 ---
 
-## Step 5: Start Grafana Agent as a systemd service
+## Step 5: Start Grafana Alloy as a systemd service
 
 ```bash
-sudo nano /etc/systemd/system/grafana-agent.service
+sudo nano /etc/systemd/system/alloy.service
 ```
 
 Paste:
 
 ```ini
 [Unit]
-Description=Grafana Agent
+Description=Grafana Alloy
 After=network.target
 
 [Service]
 User=ec2-user
-ExecStart=/usr/local/bin/grafana-agent --config.file=/etc/grafana-agent/config.yaml
+ExecStart=/usr/local/bin/alloy run /etc/alloy/config.alloy
 Restart=always
 RestartSec=5
 
@@ -150,9 +163,9 @@ Then enable and start:
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable grafana-agent
-sudo systemctl start grafana-agent
-sudo systemctl status grafana-agent
+sudo systemctl enable alloy
+sudo systemctl start alloy
+sudo systemctl status alloy
 ```
 
 Expected: `active (running)` in the status output.
@@ -215,14 +228,14 @@ For app-specific dashboards, use the **Dashboard builder** in Grafana and add pa
 
 ## Troubleshooting
 
-**Agent not starting:**
+**Alloy not starting:**
 ```bash
-sudo journalctl -u grafana-agent -f
+sudo journalctl -u alloy -f
 ```
 
 **No metrics in Grafana:**
 - Confirm the backend is running: `curl http://localhost:8081/metrics`
-- Check the Agent logs for scrape errors
+- Check Alloy logs for scrape errors
 
 **No logs in Loki:**
 - Confirm pm2 log paths exist: `ls ~/.pm2/logs/`
