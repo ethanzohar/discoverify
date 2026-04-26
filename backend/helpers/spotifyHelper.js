@@ -574,14 +574,14 @@ class SpotifyHelper {
     return false;
   }
 
-  static async addPlaylistCover(playlistId, encodedImage, accessToken) {
+  static async addPlaylistCover(playlistId, imagePath, accessToken) {
     await fetch(`https://api.spotify.com/v1/playlists/${playlistId}/images`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'image/jpeg',
         Authorization: `Bearer ${accessToken}`,
       },
-      body: fs.createReadStream(encodedImage),
+      body: fs.createReadStream(imagePath),
     });
   }
 
