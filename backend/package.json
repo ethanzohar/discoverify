@@ -7,7 +7,8 @@
         "force:update-all-users": "node scripts/forceUpdateAllUsers.js",
         "deploy": "git pull && yarn install --ignore-engines && pm2 reload discoverify-backend --update-env && pm2 reload discoverify-cronService --update-env",
         "logs-backend": "pm2 logs discoverify-backend --lines 500",
-        "logs-cron": "pm2 logs discoverify-cronService --lines 500"
+        "logs-cron": "pm2 logs discoverify-cronService --lines 500",
+        "logs-stripe-errors": "pm2 logs discoverify-backend --nostream --lines 5000 | grep STRIPE_RESOURCE_MISSING"
     },
     "dependencies": {
         "body-parser": "^1.20.2",

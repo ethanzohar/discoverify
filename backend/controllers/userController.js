@@ -5,15 +5,39 @@ const {
   encryptUserId,
   getEncryptedUserIdCandidates,
 } = require('../helpers/userIdCrypto');
+const logger = require('../helpers/logger');
 
 class UserController {
   static async subscribeUser(userId, refreshToken, options, stripeId = null) {
     let user = await UserController.getUser(userId);
 
     if (user) {
+      const previousStripeId = user.stripeId;
       user.refreshToken = refreshToken;
-      user.stripeId = stripeId;
+      if (stripeId !== null) {
+        user.stripeId = stripeId;
+      }
       await user.save();
+
+      if (stripeId !== null) {
+        const event = previousStripeId
+          ? 'user_resubscribed'
+          : 'user_subscribed';
+        logger.info(
+          {
+            event,
+            userId,
+            stripeId,
+            previousStripeId: previousStripeId || undefined,
+            playlistId: user.playlistId,
+            grandmothered: user.grandmothered,
+            isNewUser: false,
+          },
+          event === 'user_resubscribed'
+            ? 'User resubscribed'
+            : 'Existing user subscribed via Stripe'
+        );
+      }
     } else {
       user = await UserController.createUser(
         userId,
@@ -22,6 +46,20 @@ class UserController {
         stripeId
       );
       await SpotifyHelper.updatePlaylist(user, null);
+
+      if (stripeId !== null) {
+        logger.info(
+          {
+            event: 'user_subscribed',
+            userId,
+            stripeId,
+            playlistId: user.playlistId,
+            grandmothered: false,
+            isNewUser: true,
+          },
+          'New user subscribed'
+        );
+      }
     }
 
     const returnUser = user.toObject();
@@ -59,6 +97,17 @@ class UserController {
     if (user && user.stripeId) {
       try {
         await StripeHelper.cancelStripeSubscription(user.stripeId);
+        logger.info(
+          {
+            event: 'user_unsubscribed',
+            userId,
+            stripeId: user.stripeId,
+            playlistId: user.playlistId,
+            grandmothered: user.grandmothered,
+            stripeCancelled: true,
+          },
+          'User unsubscribed — Stripe subscription cancelled'
+        );
       } catch (err) {
         if (
           err.type !== 'StripeInvalidRequestError' ||
@@ -66,18 +115,42 @@ class UserController {
         ) {
           throw err;
         } else {
-          console.log('error in deleteUser calling cancelStripeSubscription');
-          console.log(JSON.stringify(err));
+          logger.error(
+            {
+              event: 'stripe_cancel_failed',
+              userId,
+              stripeId: user.stripeId,
+              stripeErrorType: err.type,
+              stripeErrorCode: err.raw.code,
+            },
+            '[STRIPE_RESOURCE_MISSING] Subscription not found in Stripe — user deleted from DB but subscription NOT cancelled'
+          );
         }
       }
     } else {
-      console.log(`Unable to find user or user Stripe ID in "deleteUser"`);
-      console.log(JSON.stringify(user));
+      logger.info(
+        {
+          event: user
+            ? 'user_unsubscribe_no_stripe_id'
+            : 'user_unsubscribe_not_found',
+          userId,
+          grandmothered: user ? user.grandmothered : undefined,
+          stripeId: null,
+        },
+        'User unsubscribed — no Stripe ID, no cancellation needed'
+      );
     }
 
     const deleteResponse = await UserModel.deleteOne({
       userId: { $in: getEncryptedUserIdCandidates(userId) },
     });
+
+    if (deleteResponse.deletedCount > 0) {
+      logger.info(
+        { event: 'user_deleted_from_db', userId },
+        'User record deleted'
+      );
+    }
 
     return deleteResponse;
   }
