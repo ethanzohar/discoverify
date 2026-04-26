@@ -32,7 +32,7 @@ router.get('/', function (req, res) {
 
 router.post('/migration', async function (req, res) {
   const { userId, refreshToken } = req.body;
-  if (!isAdmin(userId, refreshToken)) {
+  if (!(await isAdmin(userId, refreshToken))) {
     return res.status(403).send('Invalid credentials');
   }
 
@@ -80,7 +80,7 @@ router.post('/force', async function (req, res) {
 
 router.post('/forceNoUpdate', async function (req, res) {
   const { userId, refreshToken, count } = req.body;
-  if (!isAdmin(userId, refreshToken)) {
+  if (!(await isAdmin(userId, refreshToken))) {
     return res.status(403).send('Invalid credentials');
   }
 
@@ -95,7 +95,7 @@ router.post('/forceNoUpdate', async function (req, res) {
 
 router.post('/forceSingle', async function (req, res) {
   const { userId, refreshToken, target } = req.body;
-  if (!isAdmin(userId, refreshToken)) {
+  if (!(await isAdmin(userId, refreshToken))) {
     return res.status(403).send('Invalid credentials');
   }
 
@@ -112,7 +112,7 @@ router.post('/forceSingle', async function (req, res) {
 
 router.post('/forceUnsubscribeUser', async function (req, res) {
   const { userId, refreshToken, target } = req.body;
-  if (!isAdmin(userId, refreshToken)) {
+  if (!(await isAdmin(userId, refreshToken))) {
     return res.status(403).send('Invalid credentials');
   }
 
@@ -128,7 +128,7 @@ router.post('/forceUnsubscribeUser', async function (req, res) {
 
 router.post('/count', async function (req, res) {
   const { userId, refreshToken } = req.body;
-  if (!isAdmin(userId, refreshToken)) {
+  if (!(await isAdmin(userId, refreshToken))) {
     return res.status(403).send('Invalid credentials');
   }
 
@@ -138,7 +138,7 @@ router.post('/count', async function (req, res) {
 
 router.post('/cleanCorrupted', async function (req, res) {
   const { userId, refreshToken } = req.body;
-  if (!isAdmin(userId, refreshToken)) {
+  if (!(await isAdmin(userId, refreshToken))) {
     return res.status(403).send('Invalid credentials');
   }
 
