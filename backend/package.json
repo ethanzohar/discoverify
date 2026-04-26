@@ -7,7 +7,9 @@
         "force:update-all-users": "node scripts/forceUpdateAllUsers.js",
         "deploy": "git pull && yarn install --ignore-engines && pm2 reload discoverify-backend --update-env && pm2 reload discoverify-cronService --update-env",
         "logs-backend": "pm2 logs discoverify-backend --lines 500",
-        "logs-cron": "pm2 logs discoverify-cronService --lines 500"
+        "logs-cron": "pm2 logs discoverify-cronService --lines 500",
+        "logs-stripe-errors": "pm2 logs discoverify-backend --nostream --lines 5000 | grep STRIPE_RESOURCE_MISSING",
+        "logs-pretty": "pm2 logs discoverify-backend --nostream --lines 200 | pino-pretty"
     },
     "dependencies": {
         "body-parser": "^1.20.2",
@@ -18,10 +20,12 @@
         "fs": "0.0.1-security",
         "mongoose": "^5.13.20",
         "node-fetch": "^2.6.12",
+        "pino": "^10.3.1",
         "stripe": "^12.13.0",
         "yarn": "^1.22.19"
     },
     "devDependencies": {
-        "nodemon": "^2.0.6"
+        "nodemon": "^2.0.6",
+        "pino-pretty": "^13.1.3"
     }
 }
