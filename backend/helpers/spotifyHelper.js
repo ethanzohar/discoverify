@@ -492,6 +492,7 @@ class SpotifyHelper {
     const responseJSON = await response.json();
 
     user.playlistId = responseJSON.id;
+    await user.save();
 
     return responseJSON;
   }
