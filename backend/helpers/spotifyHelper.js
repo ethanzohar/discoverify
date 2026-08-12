@@ -98,8 +98,9 @@ class SpotifyHelper {
 
       const resultJSON = await result.json();
 
-      // FIX: Add optional chaining and fallback empty array
-      return (resultJSON?.items || []).map((x) => x.id);
+      // Standard fallback for older Node versions:
+      const items = resultJSON && resultJSON.items ? resultJSON.items : [];
+      return items.map((x) => x.id);
     } catch (e) {
       const result = await fetch(
         `https://api.spotify.com/v1/me/top/${type}?limit=20&time_range=${range}`,
@@ -114,8 +115,9 @@ class SpotifyHelper {
 
       const resultJSON = await result.json();
 
-      // FIX: Add optional chaining and fallback empty array
-      return (resultJSON?.items || []).map((x) => x.id);
+      // Standard fallback for older Node versions:
+      const items = resultJSON && resultJSON.items ? resultJSON.items : [];
+      return items.map((x) => x.id);
     }
   }
 
