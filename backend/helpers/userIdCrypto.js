@@ -16,7 +16,7 @@ function isLikelySpotifyUserId(value) {
     typeof value === 'string' &&
     value.length > 0 &&
     value.length <= 128 &&
-    /^[A-Za-z0-9]+$/.test(value)
+    /^[A-Za-z0-9._-]+$/.test(value)
   );
 }
 
