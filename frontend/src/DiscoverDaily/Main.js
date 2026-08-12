@@ -102,13 +102,16 @@ class DiscoverDaily extends Component {
 
           this.setState({ loading: false });
 
-          sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
+          sessionStorage.setItem('discoverDaily_user', JSON.stringify(usr));
           return;
         }
       } catch (e) {
-        if (e.deletedUser) {
-          window.location = `${window.location.origin}/login`;
+        // If refresh token expired or user was deleted from backend:
+        if (e.deletedUser || e) {
+          localStorage.removeItem('discoverDaily_refreshToken');
           sessionStorage.clear();
+          this.sendToLogin(); // Redirects to /login -> auto-triggers Spotify OAuth
+          return;
         }
       }
     }
@@ -144,7 +147,7 @@ class DiscoverDaily extends Component {
         await DiscoverDailyHelper.signupUser(spotifyUser.id, refresh_token);
       }
 
-      sessionStorage.setItem('discoverDaily_user', JSON.stringify(user));
+      sessionStorage.setItem('discoverDaily_user', JSON.stringify(usr));
       return;
     }
 

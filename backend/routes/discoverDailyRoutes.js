@@ -288,16 +288,11 @@ router.post('/accessToken', async function (req, res) {
     return res.status(200).send({ accessToken });
   } catch (e) {
     if (e.deleteUser) {
-      const user = await UserController.getUserByRefreshToken(refreshToken);
-      if (user) {
-        logger.info(
-          { event: 'user_deleted_corrupted', userId: user.userId },
-          `Deleting corrupted user: ${user.userId}`
-        );
-        await UserController.deleteUser(user.userId);
-      }
-      return res.status(500).send({ deletedUser: true });
+      // Return deletedUser: true so frontend clears local storage & redirects to Spotify,
+      // but DO NOT call UserController.deleteUser() so their settings/Stripe stay intact.
+      return res.status(401).send({ deletedUser: true });
     }
+    return res.status(500).send({ error: e.message });
   }
 });
 

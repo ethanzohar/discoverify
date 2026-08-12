@@ -1,5 +1,5 @@
 /* eslint-disable react/button-has-type */
-import React from 'react';
+import React, { useEffect } from 'react';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import SpotifyHelper from '../helpers/SpotifyHelper';
@@ -16,6 +16,11 @@ const DiscoverDailyLogin = () => {
     );
   };
 
+  // AUTO-REDIRECT: Trigger Spotify login immediately on mount
+  useEffect(() => {
+    sendLoginRedirect();
+  }, []);
+
   return (
     <div className="DiscoverDailyMain">
       <Row style={{ width: '100%', margin: '0' }}>
@@ -25,12 +30,7 @@ const DiscoverDailyLogin = () => {
               <h1 style={{ margin: '0' }}>Discover Weekly...</h1>
               <h1 style={{ margin: '0 0 3% 0' }}>But Daily</h1>
               <h3>
-                Finding new songs that you love is hard, so let us take care of
-                that for you!
-              </h3>
-              <h3>
-                Link your Spotify account by logging in below to get access to
-                daily music playlists curated to you.
+                Redirecting to Spotify to verify your account connection...
               </h3>
               <button
                 className="btn btn-primary spotify-button"
