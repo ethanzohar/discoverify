@@ -98,7 +98,8 @@ class SpotifyHelper {
 
       const resultJSON = await result.json();
 
-      return resultJSON.items.map((x) => x.id);
+      // FIX: Add optional chaining and fallback empty array
+      return (resultJSON?.items || []).map((x) => x.id);
     } catch (e) {
       const result = await fetch(
         `https://api.spotify.com/v1/me/top/${type}?limit=20&time_range=${range}`,
@@ -113,7 +114,8 @@ class SpotifyHelper {
 
       const resultJSON = await result.json();
 
-      return resultJSON.items.map((x) => x.id);
+      // FIX: Add optional chaining and fallback empty array
+      return (resultJSON?.items || []).map((x) => x.id);
     }
   }
 
@@ -572,21 +574,24 @@ class SpotifyHelper {
   }
 
   static async updatePlaylist(user, playlistCover) {
-    const userId = decryptUserId(user.userId);
     const start = Date.now();
-
-    logger.info(
-      {
-        event: 'playlist_update_started',
-        userId,
-        stripeId: user.stripeId || null,
-        playlistId: user.playlistId || null,
-        grandmothered: user.grandmothered,
-      },
-      `Starting playlist update for user: ${userId}`
-    );
+    let userId = 'UNKNOWN';
 
     try {
+      // FIX: Move decryption inside the try block
+      userId = decryptUserId(user.userId);
+
+      logger.info(
+        {
+          event: 'playlist_update_started',
+          userId,
+          stripeId: user.stripeId || null,
+          playlistId: user.playlistId || null,
+          grandmothered: user.grandmothered,
+        },
+        `Starting playlist update for user: ${userId}`
+      );
+
       const accessToken = await this.getNewAccessToken(user.refreshToken);
 
       const seeds = this.getAllTop(
