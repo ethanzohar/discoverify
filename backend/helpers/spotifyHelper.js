@@ -626,10 +626,12 @@ class SpotifyHelper {
         accessToken
       );
 
-      this.updatePlaylistTracks(playlistId, tracks, accessToken);
+      // FIX 1: Await Spotify API track replacement
+      await this.updatePlaylistTracks(playlistId, tracks, accessToken);
 
+      // FIX 2: Await MongoDB timestamp update
       user.lastUpdated = new Date();
-      user.save();
+      await user.save();
 
       if (playlistCover) {
         await this.addPlaylistCover(playlistId, playlistCover, accessToken);
